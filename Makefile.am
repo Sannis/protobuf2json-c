@@ -1,5 +1,9 @@
-ACLOCAL_AMFLAGS = -I m4
+# libprotobuf2json Copyright (c) 2014 Oleg Efimov <efimovov@gmail.com>
+#
+# protobuf2json-c is free software; you can redistribute it
+# and/or modify it under the terms of the MIT license.
+# See LICENSE for details.
 
-AUTOMAKE_OPTIONS = subdir-objects
+ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = src

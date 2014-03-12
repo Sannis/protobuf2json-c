@@ -9,9 +9,8 @@
 #ifndef PROTOBUF2JSON_H
 #define PROTOBUF2JSON_H 1
 
+#include <google/protobuf-c/protobuf-c.h>
 #include <jansson.h>
-/*#include <google/protobuf-c/protobuf-c.h>*/
-#include <protobuf-c.h>
 
 #ifdef __cplusplus
 extern "C" {
