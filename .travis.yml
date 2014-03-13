@@ -2,5 +2,8 @@ language: c
 compiler:
   - clang
   - gcc
+before_install:
+  - sudo apt-get install libprotobuf-c0-dev
+  - sudo apt-get install libjansson-dev
 install: ./autogen.sh && ./configure && make
 script: make test
