@@ -4,8 +4,6 @@
 # and/or modify it under the terms of the MIT license.
 # See LICENSE for details.
 
-TESTS = run-tests
-
 check_PROGRAMS = run-tests
 
 run_tests_SOURCES = run-tests.c \

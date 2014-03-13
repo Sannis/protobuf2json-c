@@ -9,3 +9,6 @@ ACLOCAL_AMFLAGS = -I m4
 #AUTOMAKE_OPTIONS = subdir-objects
 
 SUBDIRS = src test
+
+test: check
+	@./test/run-tests

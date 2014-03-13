@@ -3,6 +3,3 @@ Makefile.in
 .deps
 .libs
 run-tests
-run-tests.log
-run-tests.trs
-test-suite.log
