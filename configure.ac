@@ -18,15 +18,18 @@ AC_PROG_MAKE_SET
 
 LT_INIT
 
-AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])
+AC_CHECK_LIB([pthread], [pthread_create])
+AC_CHECK_LIB([pthread], [pthread_join])
+
+AM_CONDITIONAL([WINNT],   [AS_CASE([$host_os], [mingw*],   [true], [false])])
 
 AC_MSG_RESULT([])
 
 AX_PROTOBUF_C
 AX_LIBJANSSON
 
-AM_CONDITIONAL([WINNT],   [AS_CASE([$host_os], [mingw*],   [true], [false])])
-
 AC_MSG_RESULT([])
+
+AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])
 
 AC_OUTPUT
