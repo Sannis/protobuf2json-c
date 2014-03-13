@@ -2,3 +2,5 @@ language: c
 compiler:
   - clang
   - gcc
+install: ./autogen.sh && ./configure && make
+script: make test
