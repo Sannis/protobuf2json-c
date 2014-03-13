@@ -14,16 +14,18 @@ AC_ENABLE_STATIC
 
 AC_PROG_CC
 AM_PROG_AR
+AC_PROG_MAKE_SET
 
 LT_INIT
 
-AC_CONFIG_FILES([Makefile src/Makefile])
-AC_CONFIG_SRCDIR([src])
+AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])
 
 AC_MSG_RESULT([])
 
 AX_PROTOBUF_C
 AX_LIBJANSSON
+
+AM_CONDITIONAL([WINNT],   [AS_CASE([$host_os], [mingw*],   [true], [false])])
 
 AC_MSG_RESULT([])
 

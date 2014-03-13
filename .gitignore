@@ -32,6 +32,7 @@
 /libtool
 /ltmain.sh
 /missing
+/test-driver
 Makefile
 Makefile.in
 

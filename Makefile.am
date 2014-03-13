@@ -6,4 +6,6 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src
+#AUTOMAKE_OPTIONS = subdir-objects
+
+SUBDIRS = src test
