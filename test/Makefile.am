@@ -6,7 +6,13 @@
 
 # protoc
 
-person.pb-c.c: person.proto
+BUILT_SOURCES =
+BUILT_SOURCES += person.pb-c.c
+
+CLEANFILES =
+CLEANFILES += *.pb-c.[ch]
+
+%.pb-c.c %.pb-c.h: %.proto
 	$(PROTOBUF_C_COMPILER) --c_out=$(top_srcdir)/test person.proto
 
 # check
