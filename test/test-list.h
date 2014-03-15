@@ -6,9 +6,11 @@
  * See LICENSE for details.
  */
 
-TEST_DECLARE   (dummy)
+TEST_DECLARE(dummy_ok)
+TEST_DECLARE(dummy_todo)
 
 
 TASK_LIST_START
-  TEST_ENTRY  (dummy)
+  TEST_ENTRY(dummy_ok)
+  TEST_ENTRY(dummy_todo)
 TASK_LIST_END

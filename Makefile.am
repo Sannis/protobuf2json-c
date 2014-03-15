@@ -12,3 +12,6 @@ SUBDIRS = src test
 
 test: check
 	@./test/run-tests
+
+benchmark: check
+	@./test/run-benchmarks

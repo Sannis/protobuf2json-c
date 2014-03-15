@@ -8,14 +8,16 @@
 
 #include "task.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 
-
-TEST_IMPL(dummy) {
+TEST_IMPL(dummy_ok) {
   int r = 0;
 
   ASSERT(r == 0);
 
   RETURN_OK();
+}
+
+
+TEST_IMPL(dummy_todo) {
+  RETURN_TODO("Implement tests");
 }

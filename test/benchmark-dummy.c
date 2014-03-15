@@ -7,33 +7,26 @@
  */
 
 #include "task.h"
-
-#include <stdio.h>
-#include <stdlib.h>
+#include "getrusage-helper.h"
 
 
 BENCHMARK_IMPL(dummy) {
-  uint64_t start_time;
-  double duration;
-  uv_thread_t tid;
-  int r = 0;
+  double ru_stime = 0, ru_utime = 0;
+  int i = 0, r = 0;
 
-  start_time = uv_hrtime();
+  if (getrusage_helper(&ru_stime, &ru_utime)) {
+    FATAL("getrusage_helper failed");
+  }
 
-  for (i = 0; i < NUM_THREADS; i++) {
-    r = uv_thread_create(&tid, thread_entry, (void *) 42);
-    ASSERT(r == 0);
-
-    r = uv_thread_join(&tid);
+  for (i = 0; i < 1000000; i++) {
     ASSERT(r == 0);
   }
 
-  duration = (uv_hrtime() - start_time) / 1e9;
+  if (getrusage_helper_sub(&ru_stime, &ru_utime, ru_stime, ru_utime)) {
+    FATAL("getrusage_helper_sub failed");
+  }
 
-  ASSERT(num_threads == NUM_THREADS);
-
-  printf("%d threads created in %.2f seconds (%.0f/s)\n",
-      NUM_THREADS, duration, NUM_THREADS / duration);
+  getrusage_helper_printf("Dummy", ru_stime, ru_utime);
 
   RETURN_OK();
 }
