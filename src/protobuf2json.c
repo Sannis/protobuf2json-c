@@ -60,7 +60,11 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
     const size_t *quantifier = (const size_t *)quantifier_member;
 
     if (field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) {
-      if (json_object_set_new(json_message, field_descriptor->name, protobuf2json_process_field(field_descriptor, member))) {
+      json_t *json_value = protobuf2json_process_field(field_descriptor, member);
+      if (!json_value) {
+        return NULL;
+      }
+      if (json_object_set_new(json_message, field_descriptor->name, json_value)) {
         return NULL;
       }
     } else if (field_descriptor->label == PROTOBUF_C_LABEL_OPTIONAL) {
