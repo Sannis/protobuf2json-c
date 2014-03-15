@@ -151,6 +151,7 @@ static json_t* protobuf2json_process_field(const ProtobufCFieldDescriptor *field
 }
 
 /* === Protobuf -> JSON === */
+
 int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json) {
   json_t *json_message = protobuf2json_process_message(protobuf_message);
   if (!json_message) {
@@ -162,7 +163,21 @@ int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json) {
   return 0;
 }
 
+char* protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags) {
+  json_t *json_message = protobuf2json_process_message(protobuf_message);
+  if (!json_message) {
+    return NULL;
+  }
+
+  char *json_string = json_dumps(json_message, flags);
+  json_decref(json_message);
+
+  // Should be freed by caller
+  return json_string;
+}
+
 /* === JSON -> Protobuf === */
+
 int json2protobuf(json_t *json, ProtobufCMessage *protobuf_message) {
   return 0;
 }
