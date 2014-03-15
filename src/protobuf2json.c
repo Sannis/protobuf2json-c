@@ -135,7 +135,7 @@ static json_t* protobuf2json_process_field(const ProtobufCFieldDescriptor *field
       }
     }
     case PROTOBUF_C_TYPE_STRING:
-      return json_string((char *)protobuf_value);
+      return json_string(*(char **)protobuf_value);
     /*case PROTOBUF_C_TYPE_BYTES:
     {
       const ProtobufCBinaryData *protobuf_binary_data = (const ProtobufCBinaryData *)protobuf_value;
