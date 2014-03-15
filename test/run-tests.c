@@ -50,11 +50,11 @@ int main(int argc, char **argv) {
   platform_init(argc, argv);
 
   switch (argc) {
-  case 1: return run_tests(0);
-  case 2: return maybe_run_test(argc, argv);
-  case 3: return run_test_part(argv[1], argv[2]);
-  default:
-    LOGF("Too many arguments.\n");
-    return 1;
+    case 1: return run_tests(0);
+    case 2: return maybe_run_test(argc, argv);
+    case 3: return run_test_part(argv[1], argv[2]);
+    default:
+      LOGF("Too many arguments.\n");
+      return 1;
   }
 }
