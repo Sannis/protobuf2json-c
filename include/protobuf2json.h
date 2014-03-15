@@ -17,10 +17,10 @@ extern "C" {
 #endif
 
 /* === Protobuf -> JSON === */
-int protobuf2json_object(ProtobufCMessage *protobuf, json_t *json);
+int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json);
 
 /* === JSON -> Protobuf === */
-int json2protobuf(json_t *json, ProtobufCMessage *protobuf);
+int json2protobuf(json_t *json, ProtobufCMessage *protobuf_message);
 
 /* === END === */
 
