@@ -6,11 +6,8 @@
  * See LICENSE for details.
  */
 
-TEST_DECLARE(dummy_ok)
-TEST_DECLARE(dummy_todo)
-
+TEST_DECLARE(protobuf2json)
 
 TASK_LIST_START
-  TEST_ENTRY(dummy_ok)
-  TEST_ENTRY(dummy_todo)
+  TEST_ENTRY(protobuf2json)
 TASK_LIST_END

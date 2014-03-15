@@ -2,5 +2,6 @@ Makefile
 Makefile.in
 .deps
 .libs
+person.pb-c.[ch]
 run-tests
 run-benchmarks

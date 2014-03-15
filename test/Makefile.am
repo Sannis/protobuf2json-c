@@ -4,16 +4,29 @@
 # and/or modify it under the terms of the MIT license.
 # See LICENSE for details.
 
+# protoc
+
+person.pb-c.c: person.proto
+	protoc-c --c_out=./ person.proto
+
+# check
+
 check_PROGRAMS = run-tests run-benchmarks
+
+AM_CFLAGS = -I$(top_srcdir)/include
+AM_CFLAGS += $(PROTOBUF_C_INCLUDES)
+AM_CFLAGS += $(PROTOBUF_C_CFLAGS)
+AM_CFLAGS += $(LIBJANSSON_INCLUDES)
 
 # run-tests
 
 run_tests_SOURCES = run-tests.c \
                     test-list.h \
-                    test-dummy.c \
+                    test-protobuf2json.c \
                     runner.c \
                     runner.h \
                     task.h \
+                    person.pb-c.c \
                     getrusage-helper.h
 
 if WINNT
@@ -24,7 +37,10 @@ else
                        runner-unix.h
 endif
 
-run_tests_CFLAGS =
+run_tests_LDADD =
+run_tests_LDADD += $(PROTOBUF_C_LIBS)
+run_tests_LDADD += $(LIBJANSSON_LIBS)
+
 run_tests_LDADD = $(top_srcdir)/src/libprotobuf2json.la
 
 # run-benchmarks
@@ -35,6 +51,7 @@ run_benchmarks_SOURCES = run-benchmarks.c \
                          runner.c \
                          runner.h \
                          task.h \
+                         person.pb-c.c \
                          getrusage-helper.h
 
 if WINNT
@@ -45,5 +62,8 @@ else
                             runner-unix.h
 endif
 
-run_benchmarks_CFLAGS =
+run_benchmarks_LDADD =
+run_benchmarks_LDADD += $(PROTOBUF_C_LIBS)
+run_benchmarks_LDADD += $(LIBJANSSON_LIBS)
+
 run_benchmarks_LDADD = $(top_srcdir)/src/libprotobuf2json.la
