@@ -8,5 +8,4 @@ before_install:
 install: ./autogen.sh && ./configure && make
 script:
   - make test
-  - make test-valgrind
   - make benchmark
