@@ -64,8 +64,24 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
         return NULL;
       }
     } else if (field_descriptor->label == PROTOBUF_C_LABEL_OPTIONAL) {
-      if (*(const protobuf_c_boolean *)quantifier_member) {
-        if (json_object_set_new(json_message, field_descriptor->name, protobuf2json_process_field(field_descriptor, member))) {
+      protobuf_c_boolean is_set = 0;
+
+      if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE || field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
+        if (*(const void * const *)member) {
+          is_set = 1;
+        }
+      } else {
+        if (*(const protobuf_c_boolean *)quantifier_member) {
+          is_set = 1;
+        }
+      }
+
+      if (is_set) {
+        json_t *json_value = protobuf2json_process_field(field_descriptor, member);
+        if (!json_value) {
+          return NULL;
+        }
+        if (json_object_set_new(json_message, field_descriptor->name, json_value)) {
           return NULL;
         }
       }
