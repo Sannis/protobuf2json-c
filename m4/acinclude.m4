@@ -11,6 +11,7 @@ AC_DEFUN([AX_PROTOBUF_C],
   PROTOBUF_C_INCLUDES=""
   PROTOBUF_C_CFLAGS=""
   PROTOBUF_C_LIBS=""
+  PROTOBUF_C_COMPILER=""
 
   have_protobuf_c=false
   if test "$1" != "optional" -o \( "$with_protobuf_c" != "no" -a -n "$with_protobuf_c" \) ; then
@@ -18,7 +19,7 @@ AC_DEFUN([AX_PROTOBUF_C],
 
     protobuf_c_path=""
     for path in "$with_protobuf_c" /usr/local /usr /opt/local /opt ; do
-      if test -r "$path/include/google/protobuf-c/protobuf-c.h" ; then
+      if test -r "$path/include/google/protobuf-c/protobuf-c.h" -a "$path/bin/protoc-c" ; then
         protobuf_c_path=$path
         break
       fi
@@ -30,6 +31,7 @@ AC_DEFUN([AX_PROTOBUF_C],
       PROTOBUF_C_INCLUDES="-I$protobuf_c_path/include"
       PROTOBUF_C_LIBS="-L$protobuf_c_path/lib -lprotobuf-c"
       PROTOBUF_C_CFLAGS="-DPRINT_UNPACK_ERRORS=0"
+      PROTOBUF_C_COMPILER="$path/bin/protoc-c"
     else
       AC_MSG_ERROR([protobuf_c headers not found])
     fi
@@ -38,12 +40,13 @@ AC_DEFUN([AX_PROTOBUF_C],
   AM_CONDITIONAL([ENABLE_PROTOBUF_C], [test "x$have_protobuf_c" = "xtrue"])
 
   if test "x$have_protobuf_c" = "xtrue" ; then
-    AC_MSG_RESULT([protobuf_c: INCLUDES=$PROTOBUF_C_INCLUDES, LIBS=$PROTOBUF_C_LIBS, CFLAGS=$PROTOBUF_C_CFLAGS])
+    AC_MSG_RESULT([protobuf_c: INCLUDES=$PROTOBUF_C_INCLUDES, LIBS=$PROTOBUF_C_LIBS, CFLAGS=$PROTOBUF_C_CFLAGS, PROTOC-C=$PROTOBUF_C_COMPILER])
   fi
 
   AC_SUBST([PROTOBUF_C_INCLUDES])
   AC_SUBST([PROTOBUF_C_LIBS])
   AC_SUBST([PROTOBUF_C_CFLAGS])
+  AC_SUBST([PROTOBUF_C_COMPILER])
 ])
 
 AC_DEFUN([AX_LIBJANSSON],

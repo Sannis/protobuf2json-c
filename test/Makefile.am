@@ -7,7 +7,7 @@
 # protoc
 
 person.pb-c.c: person.proto
-	protoc-c --c_out=./ person.proto
+	$(PROTOBUF_C_COMPILER) --c_out=$(top_srcdir)/test person.proto
 
 # check
 
