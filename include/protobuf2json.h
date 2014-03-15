@@ -12,6 +12,10 @@
 #include <google/protobuf-c/protobuf-c.h>
 #include <jansson.h>
 
+#ifndef json_boolean
+#define json_boolean(val)      ((val) ? json_true() : json_false())
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
