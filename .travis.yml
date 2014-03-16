@@ -1,10 +1,22 @@
 language: c
 compiler:
-  - clang
   - gcc
-env:
-  - SANITIZE=0
-  - SANITIZE=1
+  - clang
+matrix:
+  include:
+    - compiler: clang
+      env: SANITIZE=address
+    - compiler: clang
+      env: SANITIZE=memory
+    - compiler: clang
+      env: SANITIZE=undefined
+  allow_failures:
+    - compiler: clang
+      env: SANITIZE=address
+    - compiler: clang
+      env: SANITIZE=memory
+    - compiler: clang
+      env: SANITIZE=undefined
 before_install:
   - sudo apt-get install libprotobuf-c0-dev libprotobuf-c0 protobuf-c-compiler
   - sudo apt-get install libjansson-dev libjansson4
