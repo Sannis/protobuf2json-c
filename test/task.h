@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
 #if defined(_MSC_VER) && _MSC_VER < 1600
 # include "stdint-msvc2008.h"
@@ -96,6 +97,20 @@ typedef enum {
             #expr);                                       \
     abort();                                              \
   }                                                       \
+ } while (0)
+
+/* Assert that string are equal */
+#define ASSERT_STRCMP(actual, expected)                                                \
+ do {                                                                                  \
+  if (strcmp(actual, expected)) {                                                      \
+    fprintf(stderr,                                                                    \
+            "Assertion failed in %s on line %d:\n%s\n --- not equal to --- \n%s\n",    \
+            __FILE__,                                                                  \
+            __LINE__,                                                                  \
+            actual,                                                                    \
+            expected);                                                                 \
+    abort();                                                                           \
+  }                                                                                    \
  } while (0)
 
 /* Just sugar for wrapping the main() for a task or helper. */

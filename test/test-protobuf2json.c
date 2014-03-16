@@ -16,16 +16,10 @@ TEST_IMPL(protobuf2json) {
   person.name = "John Doe";
   person.id = 42;
 
-  printf("1\n");
-
   char *json_string = protobuf2json_string(&person.base, 0);
   ASSERT(json_string);
 
-  printf("2\n");
-
-  printf("\nJSON: %s\n\n", json_string);
-
-  printf("3\n");
+  ASSERT_STRCMP(json_string, "{\"name\": \"John Doe\", \"id\": 42}");
 
   RETURN_OK();
 }
