@@ -112,6 +112,10 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
             return NULL;
           }
         }
+
+        if (json_object_set_new(json_message, field_descriptor->name, array)) {
+          return NULL;
+        }
       }
     }
   }
