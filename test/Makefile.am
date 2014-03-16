@@ -24,6 +24,10 @@ AM_CFLAGS += $(PROTOBUF_C_INCLUDES)
 AM_CFLAGS += $(PROTOBUF_C_CFLAGS)
 AM_CFLAGS += $(LIBJANSSON_INCLUDES)
 
+LDADD =
+LDADD += $(PROTOBUF_C_LIBS)
+LDADD += $(LIBJANSSON_LIBS)
+
 # run-tests
 
 run_tests_SOURCES = run-tests.c \
@@ -42,6 +46,8 @@ else
   run_tests_SOURCES += runner-unix.c \
                        runner-unix.h
 endif
+
+run_tests_LDFLAGS = $(AX_LDFLAGS)
 
 run_tests_LDADD =
 run_tests_LDADD += $(PROTOBUF_C_LIBS)
@@ -67,6 +73,8 @@ else
   run_benchmarks_SOURCES += runner-unix.c \
                             runner-unix.h
 endif
+
+run_benchmarks_LDFLAGS = $(AX_LDFLAGS)
 
 run_benchmarks_LDADD =
 run_benchmarks_LDADD += $(PROTOBUF_C_LIBS)
