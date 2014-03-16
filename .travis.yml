@@ -7,14 +7,10 @@ matrix:
     - compiler: clang
       env: SANITIZE=address
     - compiler: clang
-      env: SANITIZE=memory
-    - compiler: clang
       env: SANITIZE=undefined
   allow_failures:
     - compiler: clang
       env: SANITIZE=address
-    - compiler: clang
-      env: SANITIZE=memory
     - compiler: clang
       env: SANITIZE=undefined
 before_install:
