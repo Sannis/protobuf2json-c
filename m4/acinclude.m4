@@ -87,3 +87,42 @@ AC_DEFUN([AX_LIBJANSSON],
   AC_SUBST([LIBJANSSON_INCLUDES])
   AC_SUBST([LIBJANSSON_LIBS])
 ])
+
+AC_DEFUN([AX_SANITIZE],
+[
+  SANITIZE_CFLAGS=""
+  SANITIZE_LIBS=""
+
+  if test "x$CC" = "xclang" -a "x$SANITIZE" = "x1" ; then
+    # To get a reasonable performance add -O1 or higher.
+    # Use -g to get file names and line numbers in the warning messages.
+    SANITIZE_CFLAGS+="-g -O1 "
+    SANITIZE_LIBS+="-g "
+
+    # To get meaningful stack traces in error messages add -fno-omit-frame-pointer.
+    # To get perfect stack traces you may need to disable inlining (just use -O1)
+    # and tail call elimination (-fno-optimize-sibling-calls).
+    SANITIZE_CFLAGS+="-fno-omit-frame-pointer -fno-optimize-sibling-calls "
+
+    # ASAN
+    SANITIZE_CFLAGS+="-fsanitize=address "
+    SANITIZE_LIBS+="-fsanitize=address "
+
+    # TSAN (not now)
+    #SANITIZE_CFLAGS+="-fsanitize=thread "
+    #SANITIZE_LIBS+="-fsanitize=thread "
+
+    # MSAN (not now)
+    #SANITIZE_CFLAGS+="-fsanitize=memory -fsanitize-memory-track-origins "
+    #SANITIZE_LIBS+="-fsanitize=memory -fsanitize-memory-track-origins "
+
+    # Other checks (not now)
+    #SANITIZE_CFLAGS+="-fsanitize=undefined "
+    #SANITIZE_LIBS+="-fsanitize=undefined "
+
+    AC_MSG_RESULT([sanitize: enabled])
+  fi
+
+  AC_SUBST([SANITIZE_CFLAGS])
+  AC_SUBST([SANITIZE_LIBS])
+])

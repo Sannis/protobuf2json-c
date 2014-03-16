@@ -29,6 +29,8 @@ AC_MSG_RESULT([])
 AX_PROTOBUF_C
 AX_LIBJANSSON
 
+AX_SANITIZE
+
 AC_MSG_RESULT([])
 
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])

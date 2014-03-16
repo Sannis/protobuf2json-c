@@ -23,10 +23,12 @@ AM_CFLAGS = -I$(top_srcdir)/include
 AM_CFLAGS += $(PROTOBUF_C_INCLUDES)
 AM_CFLAGS += $(PROTOBUF_C_CFLAGS)
 AM_CFLAGS += $(LIBJANSSON_INCLUDES)
+AM_CFLAGS += $(SANITIZE_CFLAGS)
 
 LDADD =
 LDADD += $(PROTOBUF_C_LIBS)
 LDADD += $(LIBJANSSON_LIBS)
+LDADD += $(SANITIZE_LIBS)
 LDADD += $(top_srcdir)/src/libprotobuf2json.la
 
 # run-tests
