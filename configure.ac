@@ -7,13 +7,14 @@ dnl See LICENSE for details.
 AC_PREREQ([2.59])
 AC_INIT([libprotobuf2json], [0.0.1], [efimovov@gmail.com])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([1.11 foreign -Wall])
+
+AM_INIT_AUTOMAKE([foreign -Wall])
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 AC_ENABLE_SHARED
 AC_ENABLE_STATIC
 
 AC_PROG_CC
-AM_PROG_AR
 AC_PROG_MAKE_SET
 
 LT_INIT
