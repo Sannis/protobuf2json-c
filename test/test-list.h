@@ -6,8 +6,10 @@
  * See LICENSE for details.
  */
 
-TEST_DECLARE(protobuf2json)
+TEST_DECLARE(protobuf2json_string__required)
+TEST_DECLARE(protobuf2json_string__optional)
 
 TASK_LIST_START
-  TEST_ENTRY(protobuf2json)
+  TEST_ENTRY(protobuf2json_string__required)
+  TEST_ENTRY(protobuf2json_string__optional)
 TASK_LIST_END
