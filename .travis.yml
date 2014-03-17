@@ -2,12 +2,17 @@ language: c
 compiler:
   - gcc
   - clang
+env:
+  -
+  - SANITIZE=address
+  - SANITIZE=undefined
 matrix:
-  include:
-    - compiler: clang
+  exclude:
+    - compiler: gcc
       env: SANITIZE=address
-    - compiler: clang
+    - compiler: gcc
       env: SANITIZE=undefined
+
   allow_failures:
     - compiler: clang
       env: SANITIZE=address
