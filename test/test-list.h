@@ -8,8 +8,10 @@
 
 TEST_DECLARE(protobuf2json_string__required)
 TEST_DECLARE(protobuf2json_string__optional)
+TEST_DECLARE(protobuf2json_string__repeated_message)
 
 TASK_LIST_START
   TEST_ENTRY(protobuf2json_string__required)
   TEST_ENTRY(protobuf2json_string__optional)
+  TEST_ENTRY(protobuf2json_string__repeated_message)
 TASK_LIST_END

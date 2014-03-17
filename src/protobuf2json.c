@@ -103,11 +103,12 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
 
         unsigned j;
         for (j = 0; j < *quantifier; j++) {
-          json_t* json_value = protobuf2json_process_field(field_descriptor, member + field_size * j);
+          const char *protobuf_message_repeated = (*(char * const *)member) + j * field_size;
+
+          json_t* json_value = protobuf2json_process_field(field_descriptor, (const ProtobufCMessage *)protobuf_message_repeated);
           if (!json_value) {
             return NULL;
           }
-
           if (json_array_append_new(array, json_value)) {
             return NULL;
           }
@@ -166,7 +167,10 @@ static json_t* protobuf2json_process_field(const ProtobufCFieldDescriptor *field
       return json_stringn(protobuf_binary_data->data, protobuf_binary_data->len);
     }*/
     case PROTOBUF_C_TYPE_MESSAGE:
-      return protobuf2json_process_message((const ProtobufCMessage *)protobuf_value);
+    {
+      const ProtobufCMessage **protobuf_message = (const ProtobufCMessage **)protobuf_value;
+      return protobuf2json_process_message(*protobuf_message);
+    }
     //case PROTOBUF_C_TYPE_GROUP: // NOT SUPPORTED
     default:
       assert(0);
