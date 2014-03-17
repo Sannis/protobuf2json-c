@@ -55,8 +55,8 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
   unsigned i;
   for (i = 0; i < protobuf_message->descriptor->n_fields; i++) {
     const ProtobufCFieldDescriptor *field_descriptor = protobuf_message->descriptor->fields + i;
-    const void *member = ((const char *) protobuf_message) + field_descriptor->offset;
-    const void *quantifier_member = ((const char *) protobuf_message) + field_descriptor->quantifier_offset;
+    const void *member = ((const char *)protobuf_message) + field_descriptor->offset;
+    const void *quantifier_member = ((const char *)protobuf_message) + field_descriptor->quantifier_offset;
     const size_t *quantifier = (const size_t *)quantifier_member;
 
     if (field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) {
