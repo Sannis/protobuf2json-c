@@ -16,10 +16,16 @@ TEST_IMPL(protobuf2json_string__required) {
   person.name = "John Doe";
   person.id = 42;
 
-  char *json_string = protobuf2json_string(&person.base, 0);
+  char *json_string = protobuf2json_string(&person.base, JSON_INDENT(2));
   ASSERT(json_string);
 
-  ASSERT_STRCMP(json_string, "{\"name\": \"John Doe\", \"id\": 42}");
+  ASSERT_STRCMP(
+    json_string,
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42\n"
+    "}"
+  );
 
   RETURN_OK();
 }
@@ -32,10 +38,17 @@ TEST_IMPL(protobuf2json_string__optional) {
 
   person.email = "john@doe.name";
 
-  char *json_string = protobuf2json_string(&person.base, 0);
+  char *json_string = protobuf2json_string(&person.base, JSON_INDENT(2));
   ASSERT(json_string);
 
-  ASSERT_STRCMP(json_string, "{\"name\": \"John Doe\", \"id\": 42, \"email\": \"john@doe.name\"}");
+  ASSERT_STRCMP(
+    json_string,
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42,\n"
+    "  \"email\": \"john@doe.name\"\n"
+    "}"
+  );
 
   RETURN_OK();
 }
@@ -65,10 +78,26 @@ TEST_IMPL(protobuf2json_string__repeated_message) {
   person.phone[0] = (Foo__Person__PhoneNumber*)&person_phonenumber1;
   person.phone[1] = (Foo__Person__PhoneNumber*)&person_phonenumber2;
 
-  char *json_string = protobuf2json_string(&person.base, 0);
+  char *json_string = protobuf2json_string(&person.base, JSON_INDENT(2));
   ASSERT(json_string);
 
-  ASSERT_STRCMP(json_string, "{\"name\": \"John Doe\", \"id\": 42, \"phone\": [{\"number\": \"+123456789\", \"type\": \"WORK\"}, {\"number\": \"+987654321\", \"type\": \"MOBILE\"}]}");
+  ASSERT_STRCMP(
+    json_string,
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42,\n"
+    "  \"phone\": [\n"
+    "    {\n"
+    "      \"number\": \"+123456789\",\n"
+    "      \"type\": \"WORK\"\n"
+    "    },\n"
+    "    {\n"
+    "      \"number\": \"+987654321\",\n"
+    "      \"type\": \"MOBILE\"\n"
+    "    }\n"
+    "  ]\n"
+    "}"
+  );
 
   RETURN_OK();
 }
