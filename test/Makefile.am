@@ -7,13 +7,13 @@
 # protoc
 
 BUILT_SOURCES =
-BUILT_SOURCES += person.pb-c.c
+BUILT_SOURCES += person.pb-c.c bar.pb-c.c
 
 CLEANFILES =
 CLEANFILES += *.pb-c.[ch]
 
 %.pb-c.c %.pb-c.h: %.proto
-	$(PROTOBUF_C_COMPILER) --c_out=$(top_srcdir)/test person.proto
+	$(PROTOBUF_C_COMPILER) --c_out=$(top_srcdir)/test $<
 
 # check
 
@@ -37,11 +37,13 @@ LDADD += $(top_srcdir)/src/libprotobuf2json.la
 
 run_tests_SOURCES = run-tests.c \
                     test-list.h \
-                    test-protobuf2json.c \
+                    test-protobuf2json-person.c \
+                    test-protobuf2json-bar.c \
                     runner.c \
                     runner.h \
                     task.h \
                     person.pb-c.c \
+                    bar.pb-c.c \
                     getrusage-helper.h
 
 if WINNT
@@ -60,7 +62,6 @@ run_benchmarks_SOURCES = run-benchmarks.c \
                          runner.c \
                          runner.h \
                          task.h \
-                         person.pb-c.c \
                          getrusage-helper.h
 
 if WINNT

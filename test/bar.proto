@@ -1,0 +1,17 @@
+package Foo;
+
+message Bar {
+  required string string_required = 1;
+  required string string_required_default = 2 [default = "default value 1"];
+  optional string string_optional = 3;
+  optional string string_optional_default = 4 [default = "default value 2"];
+
+  enum FizzBuzzType {
+    FIZZ = 3;
+    BUZZ = 5;
+    FIZZBUZZ = 15;
+  }
+
+  optional FizzBuzzType enum_optional = 5;
+  optional FizzBuzzType enum_optional_default = 6 [default = FIZZBUZZ];
+}

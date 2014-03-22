@@ -10,7 +10,7 @@
 #include "person.pb-c.h"
 #include "protobuf2json.h"
 
-TEST_IMPL(protobuf2json_string__required) {
+TEST_IMPL(protobuf2json_string__person__required) {
   Foo__Person person = FOO__PERSON__INIT;
 
   person.name = "John Doe";
@@ -32,7 +32,7 @@ TEST_IMPL(protobuf2json_string__required) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_string__optional) {
+TEST_IMPL(protobuf2json_string__person__optional) {
   Foo__Person person = FOO__PERSON__INIT;
 
   person.name = "John Doe";
@@ -57,7 +57,7 @@ TEST_IMPL(protobuf2json_string__optional) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_string__repeated_message) {
+TEST_IMPL(protobuf2json_string__person__repeated_message) {
   Foo__Person person = FOO__PERSON__INIT;
 
   person.name = "John Doe";
@@ -75,12 +75,17 @@ TEST_IMPL(protobuf2json_string__repeated_message) {
   person_phonenumber2.has_type = 1;
   person_phonenumber2.type = FOO__PERSON__PHONE_TYPE__MOBILE;
 
-  person.n_phone = 2;
+  Foo__Person__PhoneNumber person_phonenumber3 = FOO__PERSON__PHONE_NUMBER__INIT;
+
+  person_phonenumber3.number = "+555555555";
+
+  person.n_phone = 3;
   person.phone = calloc(person.n_phone, sizeof(Foo__Person__PhoneNumber*));
   ASSERT(person.phone);
 
   person.phone[0] = (Foo__Person__PhoneNumber*)&person_phonenumber1;
   person.phone[1] = (Foo__Person__PhoneNumber*)&person_phonenumber2;
+  person.phone[2] = (Foo__Person__PhoneNumber*)&person_phonenumber3;
 
   char *json_string;
   int r = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
@@ -100,6 +105,10 @@ TEST_IMPL(protobuf2json_string__repeated_message) {
     "    {\n"
     "      \"number\": \"+987654321\",\n"
     "      \"type\": \"MOBILE\"\n"
+    "    },\n"
+    "    {\n"
+    "      \"number\": \"+555555555\",\n"
+    "      \"type\": \"HOME\"\n"
     "    }\n"
     "  ]\n"
     "}"

@@ -80,7 +80,7 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
         }
       }
 
-      if (is_set) {
+      if (is_set || field_descriptor->default_value) {
         json_t *json_value = protobuf2json_process_field(field_descriptor, member);
         if (!json_value) {
           return NULL;
