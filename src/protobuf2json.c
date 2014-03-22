@@ -37,7 +37,7 @@ static size_t protobuf2json_type_size(ProtobufCType type) {
       return sizeof(void *);
     case PROTOBUF_C_TYPE_BYTES:
       return sizeof(ProtobufCBinaryData);
-    //case PROTOBUF_C_TYPE_GROUP: // NOT SUPPORTED
+    /* case PROTOBUF_C_TYPE_GROUP: - NOT SUPPORTED */
     default:
       assert(0);
       return 0;
@@ -171,7 +171,7 @@ static json_t* protobuf2json_process_field(const ProtobufCFieldDescriptor *field
       const ProtobufCMessage **protobuf_message = (const ProtobufCMessage **)protobuf_value;
       return protobuf2json_process_message(*protobuf_message);
     }
-    //case PROTOBUF_C_TYPE_GROUP: // NOT SUPPORTED
+    /* case PROTOBUF_C_TYPE_GROUP: - NOT SUPPORTED */
     default:
       assert(0);
       return NULL;
@@ -210,11 +210,28 @@ int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char 
 
 /* === JSON -> Protobuf === Public === */
 
+int json2protobuf_process_message(
+  json_t *json_object,
+  const ProtobufCMessageDescriptor *protobuf_message_descriptor,
+  ProtobufCMessage **protobuf_message
+) {
+  return 0;
+}
+
 int json2protobuf_object(
   json_t *json_object,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message
 ) {
+  if (!json_is_object(json_object)) {
+    return PROTOBUF2JSON_ERR_IS_NOT_OBJECT;
+  }
+
+  int result = json2protobuf_process_message(json_object, protobuf_message_descriptor, protobuf_message);
+  if (result) {
+    return result;
+  }
+
   return 0;
 }
 
@@ -233,15 +250,10 @@ int json2protobuf_string(
     return PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING;
   }
 
-  if (!json_is_array(json_object)) {
+  int result = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message);
+  if (result) {
     json_decref(json_object);
-    return PROTOBUF2JSON_ERR_IS_NOT_ARRAY;
-  }
-
-  int ret = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message);
-  if (ret) {
-    json_decref(json_object);
-    return ret;
+    return result;
   }
 
   return 0;
@@ -258,19 +270,14 @@ int json2protobuf_file(
 
   json_object = json_load_file(json_file, flags, NULL);
   if (!json_object) {
-  json_decref(json_object);
+    json_decref(json_object);
     return PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE;
   }
 
-  if (!json_is_array(json_object)) {
+  int result = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message);
+  if (result) {
     json_decref(json_object);
-    return PROTOBUF2JSON_ERR_IS_NOT_ARRAY;
-  }
-
-  int ret = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message);
-  if (ret) {
-    json_decref(json_object);
-    return ret;
+    return result;
   }
 
   return 0;

@@ -17,7 +17,7 @@
 
 #define PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE      -201
 #define PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING    -202
-#define PROTOBUF2JSON_ERR_IS_NOT_ARRAY           -203
+#define PROTOBUF2JSON_ERR_IS_NOT_OBJECT          -203
 
 #ifndef json_boolean
 #define json_boolean(val)      ((val) ? json_true() : json_false())
