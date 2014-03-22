@@ -209,7 +209,6 @@ int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char 
 
 int json2protobuf_object(
   json_t *json_object,
-  size_t flags,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message
 ) {
@@ -223,6 +222,25 @@ int json2protobuf_string(
   ProtobufCMessage **protobuf_message
   /*, json_error_t *json_error*/
 ) {
+  json_t *json_object;
+
+  json_object = json_loads(json_string, flags, NULL);
+  if (!json_object) {
+    json_decref(json_object);
+    return -1;
+  }
+
+  if (!json_is_array(json_object)) {
+    json_decref(json_object);
+    return -2;
+  }
+
+  int ret = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message);
+  if (ret) {
+    json_decref(json_object);
+    return -3;
+  }
+
   return 0;
 }
 
@@ -237,7 +255,19 @@ int json2protobuf_file(
 
   json_object = json_load_file(json_file, flags, NULL);
   if (!json_object) {
+  json_decref(json_object);
     return -1;
+  }
+
+  if (!json_is_array(json_object)) {
+    json_decref(json_object);
+    return -2;
+  }
+
+  int ret = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message);
+  if (ret) {
+    json_decref(json_object);
+    return -3;
   }
 
   return 0;
