@@ -22,13 +22,34 @@ extern "C" {
 
 /* === Protobuf -> JSON === */
 
-int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json);
+int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json_object);
 
-int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char **string);
+int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char **json_string);
 
 /* === JSON -> Protobuf === */
 
-int json2protobuf(json_t *json, ProtobufCMessage *protobuf_message);
+int json2protobuf_object(
+  json_t *json_object,
+  size_t flags,
+  const ProtobufCMessageDescriptor *protobuf_message_descriptor,
+  ProtobufCMessage **protobuf_message
+);
+
+int json2protobuf_string(
+  char *json_string,
+  size_t flags,
+  const ProtobufCMessageDescriptor *protobuf_message_descriptor,
+  ProtobufCMessage **protobuf_message
+  /*, json_error_t *json_error*/
+);
+
+int json2protobuf_file(
+  char *json_file,
+  size_t flags,
+  const ProtobufCMessageDescriptor *protobuf_message_descriptor,
+  ProtobufCMessage **protobuf_message
+  /*, json_error_t *json_error*/
+);
 
 /* === END === */
 

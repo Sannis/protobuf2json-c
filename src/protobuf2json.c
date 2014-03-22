@@ -10,7 +10,7 @@
 
 #include "protobuf2json.h"
 
-/* === Internal === */
+/* === Protobuf -> JSON === Private === */
 
 static size_t protobuf2json_type_size(ProtobufCType type) {
   switch (type) {
@@ -178,39 +178,69 @@ static json_t* protobuf2json_process_field(const ProtobufCFieldDescriptor *field
   }
 }
 
-/* === Protobuf -> JSON === */
+/* === Protobuf -> JSON === Public === */
 
-int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json) {
-  json_t *json_message = protobuf2json_process_message(protobuf_message);
-  if (!json_message) {
+int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json_object) {
+  *json_object = protobuf2json_process_message(protobuf_message);
+  if (!*json_object) {
     return -1;
   }
-
-  *json = json_message;
 
   return 0;
 }
 
-int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char **string) {
-  json_t *json_message = protobuf2json_process_message(protobuf_message);
-  if (!json_message) {
+int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char **json_string) {
+  json_t *json_object = protobuf2json_process_message(protobuf_message);
+  if (!json_object) {
     return -1;
   }
 
-  // Should be freed by caller
-  char *json_string = json_dumps(json_message, flags);
-  if (!json_string) {
-    json_decref(json_message);
+  // NOTICE: Should be freed by caller
+  *json_string = json_dumps(json_object, flags);
+  if (!*json_string) {
+    json_decref(json_object);
     return -2;
   }
 
-  *string = json_string;
+  return 0;
+}
+
+/* === JSON -> Protobuf === Public === */
+
+int json2protobuf_object(
+  json_t *json_object,
+  size_t flags,
+  const ProtobufCMessageDescriptor *protobuf_message_descriptor,
+  ProtobufCMessage **protobuf_message
+) {
+  return 0;
+}
+
+int json2protobuf_string(
+  char *json_string,
+  size_t flags,
+  const ProtobufCMessageDescriptor *protobuf_message_descriptor,
+  ProtobufCMessage **protobuf_message
+  /*, json_error_t *json_error*/
+) {
+  return 0;
+}
+
+int json2protobuf_file(
+  char *json_file,
+  size_t flags,
+  const ProtobufCMessageDescriptor *protobuf_message_descriptor,
+  ProtobufCMessage **protobuf_message
+  /*, json_error_t *json_error*/
+) {
+  json_t *json_object;
+
+  json_object = json_load_file(json_file, flags, NULL);
+  if (!json_object) {
+    return -1;
+  }
 
   return 0;
 }
 
-/* === JSON -> Protobuf === */
-
-int json2protobuf(json_t *json, ProtobufCMessage *protobuf_message) {
-  return 0;
-}
+/* === END === */
