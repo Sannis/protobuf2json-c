@@ -36,7 +36,7 @@ static size_t protobuf2json_type_size(ProtobufCType type) {
     case PROTOBUF_C_TYPE_MESSAGE:
       return sizeof(void *);
     case PROTOBUF_C_TYPE_BYTES:
-      return sizeof (ProtobufCBinaryData);
+      return sizeof(ProtobufCBinaryData);
     //case PROTOBUF_C_TYPE_GROUP: // NOT SUPPORTED
     default:
       assert(0);
@@ -191,17 +191,22 @@ int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json) {
   return 0;
 }
 
-char* protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags) {
+int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char **string) {
   json_t *json_message = protobuf2json_process_message(protobuf_message);
   if (!json_message) {
-    return NULL;
+    return -1;
   }
 
-  char *json_string = json_dumps(json_message, flags);
-  json_decref(json_message);
-
   // Should be freed by caller
-  return json_string;
+  char *json_string = json_dumps(json_message, flags);
+  if (!json_string) {
+    json_decref(json_message);
+    return -2;
+  }
+
+  *string = json_string;
+
+  return 0;
 }
 
 /* === JSON -> Protobuf === */

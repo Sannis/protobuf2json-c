@@ -16,7 +16,9 @@ TEST_IMPL(protobuf2json_string__required) {
   person.name = "John Doe";
   person.id = 42;
 
-  char *json_string = protobuf2json_string(&person.base, JSON_INDENT(2));
+  char *json_string;
+  int r = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
+  ASSERT(r == 0);
   ASSERT(json_string);
 
   ASSERT_STRCMP(
@@ -38,7 +40,9 @@ TEST_IMPL(protobuf2json_string__optional) {
 
   person.email = "john@doe.name";
 
-  char *json_string = protobuf2json_string(&person.base, JSON_INDENT(2));
+  char *json_string;
+  int r = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
+  ASSERT(r == 0);
   ASSERT(json_string);
 
   ASSERT_STRCMP(
@@ -78,7 +82,9 @@ TEST_IMPL(protobuf2json_string__repeated_message) {
   person.phone[0] = (Foo__Person__PhoneNumber*)&person_phonenumber1;
   person.phone[1] = (Foo__Person__PhoneNumber*)&person_phonenumber2;
 
-  char *json_string = protobuf2json_string(&person.base, JSON_INDENT(2));
+  char *json_string;
+  int r = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
+  ASSERT(r == 0);
   ASSERT(json_string);
 
   ASSERT_STRCMP(
