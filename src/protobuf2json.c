@@ -183,23 +183,26 @@ static json_t* protobuf2json_process_field(const ProtobufCFieldDescriptor *field
 int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json_object) {
   *json_object = protobuf2json_process_message(protobuf_message);
   if (!*json_object) {
-    return -1;
+    return PROTOBUF2JSON_ERR_CANNOT_PROCESS_MESSAGE;
   }
 
   return 0;
 }
 
 int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char **json_string) {
-  json_t *json_object = protobuf2json_process_message(protobuf_message);
-  if (!json_object) {
-    return -1;
+  json_t *json_object = NULL;
+
+  int ret = protobuf2json_object(protobuf_message, &json_object);
+  if (ret) {
+    json_decref(json_object);
+    return ret;
   }
 
   // NOTICE: Should be freed by caller
   *json_string = json_dumps(json_object, flags);
   if (!*json_string) {
     json_decref(json_object);
-    return -2;
+    return PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING;
   }
 
   return 0;
@@ -222,23 +225,23 @@ int json2protobuf_string(
   ProtobufCMessage **protobuf_message
   /*, json_error_t *json_error*/
 ) {
-  json_t *json_object;
+  json_t *json_object = NULL;
 
   json_object = json_loads(json_string, flags, NULL);
   if (!json_object) {
     json_decref(json_object);
-    return -1;
+    return PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING;
   }
 
   if (!json_is_array(json_object)) {
     json_decref(json_object);
-    return -2;
+    return PROTOBUF2JSON_ERR_IS_NOT_ARRAY;
   }
 
   int ret = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message);
   if (ret) {
     json_decref(json_object);
-    return -3;
+    return ret;
   }
 
   return 0;
@@ -251,23 +254,23 @@ int json2protobuf_file(
   ProtobufCMessage **protobuf_message
   /*, json_error_t *json_error*/
 ) {
-  json_t *json_object;
+  json_t *json_object = NULL;
 
   json_object = json_load_file(json_file, flags, NULL);
   if (!json_object) {
   json_decref(json_object);
-    return -1;
+    return PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE;
   }
 
   if (!json_is_array(json_object)) {
     json_decref(json_object);
-    return -2;
+    return PROTOBUF2JSON_ERR_IS_NOT_ARRAY;
   }
 
   int ret = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message);
   if (ret) {
     json_decref(json_object);
-    return -3;
+    return ret;
   }
 
   return 0;

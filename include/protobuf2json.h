@@ -12,6 +12,13 @@
 #include <google/protobuf-c/protobuf-c.h>
 #include <jansson.h>
 
+#define PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING     -101
+#define PROTOBUF2JSON_ERR_CANNOT_PROCESS_MESSAGE -102
+
+#define PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE      -201
+#define PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING    -202
+#define PROTOBUF2JSON_ERR_IS_NOT_ARRAY           -203
+
 #ifndef json_boolean
 #define json_boolean(val)      ((val) ? json_true() : json_false())
 #endif
