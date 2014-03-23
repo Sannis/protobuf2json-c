@@ -11,6 +11,9 @@
 
 #include "protobuf2json.h"
 
+/* For compatibility with old Jansson from repositories */
+#include "jansson_compat.h"
+
 /* === Protobuf -> JSON === Private === */
 
 static size_t protobuf2json_type_size(ProtobufCType type) {
