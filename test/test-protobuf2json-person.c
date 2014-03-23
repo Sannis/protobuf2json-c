@@ -11,14 +11,16 @@
 #include "protobuf2json.h"
 
 TEST_IMPL(protobuf2json_string__person__required) {
+  int result;
+
   Foo__Person person = FOO__PERSON__INIT;
 
   person.name = "John Doe";
   person.id = 42;
 
   char *json_string;
-  int r = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
-  ASSERT(r == 0);
+  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
+  ASSERT(result == 0);
   ASSERT(json_string);
 
   ASSERT_STRCMP(
@@ -33,6 +35,8 @@ TEST_IMPL(protobuf2json_string__person__required) {
 }
 
 TEST_IMPL(protobuf2json_string__person__optional) {
+  int result;
+  
   Foo__Person person = FOO__PERSON__INIT;
 
   person.name = "John Doe";
@@ -41,8 +45,8 @@ TEST_IMPL(protobuf2json_string__person__optional) {
   person.email = "john@doe.name";
 
   char *json_string;
-  int r = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
-  ASSERT(r == 0);
+  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
+  ASSERT(result == 0);
   ASSERT(json_string);
 
   ASSERT_STRCMP(
@@ -58,6 +62,8 @@ TEST_IMPL(protobuf2json_string__person__optional) {
 }
 
 TEST_IMPL(protobuf2json_string__person__repeated_message) {
+  int result;
+
   Foo__Person person = FOO__PERSON__INIT;
 
   person.name = "John Doe";
@@ -88,8 +94,8 @@ TEST_IMPL(protobuf2json_string__person__repeated_message) {
   person.phone[2] = (Foo__Person__PhoneNumber*)&person_phonenumber3;
 
   char *json_string;
-  int r = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
-  ASSERT(r == 0);
+  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
+  ASSERT(result == 0);
   ASSERT(json_string);
 
   ASSERT_STRCMP(

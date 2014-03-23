@@ -7,6 +7,7 @@
  */
 
 #include <assert.h>
+#include <string.h>
 
 #include "protobuf2json.h"
 
@@ -215,6 +216,52 @@ int json2protobuf_process_message(
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message
 ) {
+  *protobuf_message = calloc(1, protobuf_message_descriptor->sizeof_message);
+  if (!protobuf_message) {
+    return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+  }
+
+  protobuf_c_message_init(protobuf_message_descriptor, *protobuf_message);
+
+  const char *json_key;
+  json_t *json_value;
+  json_object_foreach(json_object, json_key, json_value) {
+    const ProtobufCFieldDescriptor *field_descriptor = protobuf_c_message_descriptor_get_field_by_name(protobuf_message_descriptor, json_key);
+    void *member = ((char *)*protobuf_message) + field_descriptor->offset;
+    void *quantifier_member = ((char *)*protobuf_message) + field_descriptor->quantifier_offset;
+
+    if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
+      return PROTOBUF2JSON_ERR_TODO;
+    } else if (field_descriptor->type == PROTOBUF_C_TYPE_ENUM) {
+      const ProtobufCEnumValue *enum_value;
+
+      enum_value = protobuf_c_enum_descriptor_get_value_by_name((const ProtobufCEnumDescriptor *)field_descriptor, json_key);
+      if (!enum_value) {
+        return PROTOBUF2JSON_ERR_TODO;
+      }
+
+      return PROTOBUF2JSON_ERR_TODO;
+    } else { // primitive field
+      if (field_descriptor->type == PROTOBUF_C_TYPE_INT32) {
+        if (!json_is_integer(json_value)) {
+          return PROTOBUF2JSON_ERR_TODO;
+        }
+
+        int32_t protobuf_value = (int32_t)json_integer_value(json_value);
+
+        memcpy(member, &protobuf_value, sizeof(protobuf_value));
+      } else if (field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
+        if (!json_is_string(json_value)) {
+         return PROTOBUF2JSON_ERR_TODO;
+        }
+
+        const char* protobuf_value = json_string_value(json_value);
+
+        memcpy(member, &protobuf_value, sizeof(protobuf_value));
+      }
+    }
+  }
+
   return 0;
 }
 

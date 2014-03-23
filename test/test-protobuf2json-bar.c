@@ -12,13 +12,15 @@
 
 
 TEST_IMPL(protobuf2json_string__bar__default_values) {
+  int result;
+
   Foo__Bar bar = FOO__BAR__INIT;
 
   bar.string_required = "required";
 
   char *json_string;
-  int r = protobuf2json_string(&bar.base, JSON_INDENT(2), &json_string);
-  ASSERT(r == 0);
+  result = protobuf2json_string(&bar.base, JSON_INDENT(2), &json_string);
+  ASSERT(result == 0);
   ASSERT(json_string);
 
   /* Notice strange fields order here */

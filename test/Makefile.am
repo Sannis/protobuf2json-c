@@ -17,7 +17,7 @@ CLEANFILES += *.pb-c.[ch]
 
 # check
 
-check_PROGRAMS = run-tests run-benchmarks
+check_PROGRAMS = run-tests run-benchmarks run-tmp
 
 AM_CFLAGS = -I$(top_srcdir)/include
 AM_CFLAGS += $(PROTOBUF_C_INCLUDES)
@@ -39,6 +39,7 @@ run_tests_SOURCES = run-tests.c \
                     test-list.h \
                     test-protobuf2json-person.c \
                     test-protobuf2json-bar.c \
+                    test-json2protobuf-person.c \
                     runner.c \
                     runner.h \
                     task.h \
@@ -71,3 +72,9 @@ else
   run_benchmarks_SOURCES += runner-unix.c \
                             runner-unix.h
 endif
+
+# run-tmp
+
+run_tmp_SOURCES = run-tmp.c \
+                  person.pb-c.c \
+                  bar.pb-c.c
