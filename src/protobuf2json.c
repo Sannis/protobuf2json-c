@@ -16,7 +16,7 @@
 
 /* === Protobuf -> JSON === Private === */
 
-static size_t protobuf2json_type_size(ProtobufCType type) {
+static size_t protobuf2json_value_size_by_type(ProtobufCType type) {
   switch (type) {
     case PROTOBUF_C_TYPE_INT32:
     case PROTOBUF_C_TYPE_SINT32:
@@ -36,9 +36,9 @@ static size_t protobuf2json_type_size(ProtobufCType type) {
     case PROTOBUF_C_TYPE_BOOL:
       return sizeof(protobuf_c_boolean);
     case PROTOBUF_C_TYPE_STRING:
-      return sizeof(void *);
+      return sizeof(char *);
     case PROTOBUF_C_TYPE_MESSAGE:
-      return sizeof(void *);
+      return sizeof(ProtobufCMessage *);
     case PROTOBUF_C_TYPE_BYTES:
       return sizeof(ProtobufCBinaryData);
     /* case PROTOBUF_C_TYPE_GROUP: - NOT SUPPORTED */
@@ -59,12 +59,11 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
   unsigned i;
   for (i = 0; i < protobuf_message->descriptor->n_fields; i++) {
     const ProtobufCFieldDescriptor *field_descriptor = protobuf_message->descriptor->fields + i;
-    const void *member = ((const char *)protobuf_message) + field_descriptor->offset;
-    const void *quantifier_member = ((const char *)protobuf_message) + field_descriptor->quantifier_offset;
-    const size_t *quantifier = (const size_t *)quantifier_member;
+    const void *protobuf_value = ((const char *)protobuf_message) + field_descriptor->offset;
+    const void *protobuf_value_quantifier = ((const char *)protobuf_message) + field_descriptor->quantifier_offset;
 
     if (field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) {
-      json_t *json_value = protobuf2json_process_field(field_descriptor, member);
+      json_t *json_value = protobuf2json_process_field(field_descriptor, protobuf_value);
       if (!json_value) {
         return NULL;
       }
@@ -75,17 +74,17 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
       protobuf_c_boolean is_set = 0;
 
       if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE || field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
-        if (*(const void * const *)member) {
+        if (*(const void * const *)protobuf_value) {
           is_set = 1;
         }
       } else {
-        if (*(const protobuf_c_boolean *)quantifier_member) {
+        if (*(const protobuf_c_boolean *)protobuf_value_quantifier) {
           is_set = 1;
         }
       }
 
       if (is_set || field_descriptor->default_value) {
-        json_t *json_value = protobuf2json_process_field(field_descriptor, member);
+        json_t *json_value = protobuf2json_process_field(field_descriptor, protobuf_value);
         if (!json_value) {
           return NULL;
         }
@@ -94,22 +93,24 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
         }
       }
     } else { // PROTOBUF_C_LABEL_REPEATED
-      if (*quantifier) {
+      const size_t *protobuf_values_count = (const size_t *)protobuf_value_quantifier;
+
+      if (*protobuf_values_count) {
         json_t *array = json_array();
         if (!array) {
           return NULL;
         }
 
-        size_t field_size = protobuf2json_type_size(field_descriptor->type);
-        if (!field_size) {
+        size_t value_size = protobuf2json_value_size_by_type(field_descriptor->type);
+        if (!value_size) {
           return NULL;
         }
 
         unsigned j;
-        for (j = 0; j < *quantifier; j++) {
-          const char *protobuf_message_repeated = (*(char * const *)member) + j * field_size;
+        for (j = 0; j < *protobuf_values_count; j++) {
+          const char *protobuf_value_repeated = (*(char * const *)protobuf_value) + j * value_size;
 
-          json_t* json_value = protobuf2json_process_field(field_descriptor, (const ProtobufCMessage *)protobuf_message_repeated);
+          json_t* json_value = protobuf2json_process_field(field_descriptor, (const void *)protobuf_value_repeated);
           if (!json_value) {
             return NULL;
           }
