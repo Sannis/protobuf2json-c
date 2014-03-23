@@ -28,7 +28,9 @@ TEST_IMPL(json2protobuf_string__person__required) {
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
   ASSERT(person->id == 42);
+  ASSERT(person->name);
   ASSERT_STRCMP(person->name, "John Doe");
+  ASSERT(!person->email);
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string);
@@ -68,6 +70,7 @@ TEST_IMPL(json2protobuf_string__person__optional) {
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
   ASSERT(person->id == 42);
+  ASSERT(person->name);
   ASSERT_STRCMP(person->name, "John Doe");
   ASSERT(person->email);
   ASSERT_STRCMP(person->email, "john@doe.name");
@@ -93,7 +96,25 @@ TEST_IMPL(json2protobuf_string__person__optional) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__bar__default_values_1) {
+TEST_IMPL(json2protobuf_string__person__unknown_field) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"unknown\": 42\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message);
+  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__bar__default_values) {
   int result;
 
   const char *initial_json_string = \

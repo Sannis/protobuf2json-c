@@ -214,6 +214,35 @@ int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char 
 
 /* === JSON -> Protobuf === Public === */
 
+int json2protobuf_process_field(
+  ProtobufCMessage **protobuf_message,
+  const ProtobufCFieldDescriptor *field_descriptor,
+  json_t *json_value
+) {
+  void *member = ((char *)*protobuf_message) + field_descriptor->offset;
+  void *quantifier_member = ((char *)*protobuf_message) + field_descriptor->quantifier_offset;
+
+  if (field_descriptor->type == PROTOBUF_C_TYPE_INT32) {
+    if (!json_is_integer(json_value)) {
+      return PROTOBUF2JSON_ERR_TODO;
+    }
+
+    int32_t protobuf_value = (int32_t)json_integer_value(json_value);
+
+    memcpy(member, &protobuf_value, sizeof(protobuf_value));
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
+    if (!json_is_string(json_value)) {
+     return PROTOBUF2JSON_ERR_TODO;
+    }
+
+    const char* protobuf_value = json_string_value(json_value);
+
+    memcpy(member, &protobuf_value, sizeof(protobuf_value));
+  }
+
+  return 0;
+}
+
 int json2protobuf_process_message(
   json_t *json_object,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
@@ -230,8 +259,10 @@ int json2protobuf_process_message(
   json_t *json_value;
   json_object_foreach(json_object, json_key, json_value) {
     const ProtobufCFieldDescriptor *field_descriptor = protobuf_c_message_descriptor_get_field_by_name(protobuf_message_descriptor, json_key);
-    void *member = ((char *)*protobuf_message) + field_descriptor->offset;
-    void *quantifier_member = ((char *)*protobuf_message) + field_descriptor->quantifier_offset;
+    if (!field_descriptor) {
+      // Unknown field
+      return PROTOBUF2JSON_ERR_UNKNOWN_FIELD;
+    }
 
     if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
       return PROTOBUF2JSON_ERR_TODO;
@@ -244,23 +275,10 @@ int json2protobuf_process_message(
       }
 
       return PROTOBUF2JSON_ERR_TODO;
-    } else { // primitive field
-      if (field_descriptor->type == PROTOBUF_C_TYPE_INT32) {
-        if (!json_is_integer(json_value)) {
-          return PROTOBUF2JSON_ERR_TODO;
-        }
-
-        int32_t protobuf_value = (int32_t)json_integer_value(json_value);
-
-        memcpy(member, &protobuf_value, sizeof(protobuf_value));
-      } else if (field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
-        if (!json_is_string(json_value)) {
-         return PROTOBUF2JSON_ERR_TODO;
-        }
-
-        const char* protobuf_value = json_string_value(json_value);
-
-        memcpy(member, &protobuf_value, sizeof(protobuf_value));
+    } else {
+      int result = json2protobuf_process_field(protobuf_message, field_descriptor, json_value);
+      if (result) {
+        return result;
       }
     }
   }

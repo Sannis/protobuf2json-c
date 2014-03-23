@@ -9,24 +9,22 @@
 TEST_DECLARE(protobuf2json_string__person__required)
 TEST_DECLARE(protobuf2json_string__person__optional)
 TEST_DECLARE(protobuf2json_string__person__repeated_message)
-
 TEST_DECLARE(protobuf2json_string__bar__default_values)
 
 TEST_DECLARE(json2protobuf_string__person__required)
 TEST_DECLARE(json2protobuf_string__person__optional)
-
-TEST_DECLARE(json2protobuf_string__bar__default_values_1)
+TEST_DECLARE(json2protobuf_string__person__unknown_field)
+TEST_DECLARE(json2protobuf_string__bar__default_values)
 
 
 TASK_LIST_START
   TEST_ENTRY(protobuf2json_string__person__required)
   TEST_ENTRY(protobuf2json_string__person__optional)
   TEST_ENTRY(protobuf2json_string__person__repeated_message)
-
   TEST_ENTRY(protobuf2json_string__bar__default_values)
 
   TEST_ENTRY(json2protobuf_string__person__required)
   TEST_ENTRY(json2protobuf_string__person__optional)
-
-  TEST_ENTRY(json2protobuf_string__bar__default_values_1)
+  TEST_ENTRY(json2protobuf_string__person__unknown_field)
+  TEST_ENTRY(json2protobuf_string__bar__default_values)
 TASK_LIST_END
