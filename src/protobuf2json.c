@@ -213,32 +213,41 @@ int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char 
   return 0;
 }
 
-/* === JSON -> Protobuf === Public === */
+/* === JSON -> Protobuf === Private === */
 
 int json2protobuf_process_field(
-  ProtobufCMessage **protobuf_message,
   const ProtobufCFieldDescriptor *field_descriptor,
-  json_t *json_value
+  json_t *json_value,
+  void *protobuf_value
 ) {
-  void *member = ((char *)*protobuf_message) + field_descriptor->offset;
-  void *quantifier_member = ((char *)*protobuf_message) + field_descriptor->quantifier_offset;
 
-  if (field_descriptor->type == PROTOBUF_C_TYPE_INT32) {
+  if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
+    return PROTOBUF2JSON_ERR_TODO;
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_ENUM) {
+    /*const ProtobufCEnumValue *enum_value;
+
+    enum_value = protobuf_c_enum_descriptor_get_value_by_name((const ProtobufCEnumDescriptor *)field_descriptor, json_key);
+    if (!enum_value) {
+      return PROTOBUF2JSON_ERR_TODO;
+    }*/
+
+    return PROTOBUF2JSON_ERR_TODO;
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_INT32) {
     if (!json_is_integer(json_value)) {
       return PROTOBUF2JSON_ERR_TODO;
     }
 
-    int32_t protobuf_value = (int32_t)json_integer_value(json_value);
+    int32_t value = (int32_t)json_integer_value(json_value);
 
-    memcpy(member, &protobuf_value, sizeof(protobuf_value));
+    memcpy(protobuf_value, &value, sizeof(value));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
     if (!json_is_string(json_value)) {
      return PROTOBUF2JSON_ERR_TODO;
     }
 
-    const char* protobuf_value = json_string_value(json_value);
+    const char* value = json_string_value(json_value);
 
-    memcpy(member, &protobuf_value, sizeof(protobuf_value));
+    memcpy(protobuf_value, &value, sizeof(value));
   }
 
   return 0;
@@ -257,35 +266,71 @@ int json2protobuf_process_message(
   protobuf_c_message_init(protobuf_message_descriptor, *protobuf_message);
 
   const char *json_key;
-  json_t *json_value;
-  json_object_foreach(json_object, json_key, json_value) {
+  json_t *json_object_value;
+  json_object_foreach(json_object, json_key, json_object_value) {
     const ProtobufCFieldDescriptor *field_descriptor = protobuf_c_message_descriptor_get_field_by_name(protobuf_message_descriptor, json_key);
     if (!field_descriptor) {
       // Unknown field
       return PROTOBUF2JSON_ERR_UNKNOWN_FIELD;
     }
 
-    if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
-      return PROTOBUF2JSON_ERR_TODO;
-    } else if (field_descriptor->type == PROTOBUF_C_TYPE_ENUM) {
-      const ProtobufCEnumValue *enum_value;
+    void *protobuf_value = ((char *)*protobuf_message) + field_descriptor->offset;
+    void *protobuf_value_quantifier = ((char *)*protobuf_message) + field_descriptor->quantifier_offset;
 
-      enum_value = protobuf_c_enum_descriptor_get_value_by_name((const ProtobufCEnumDescriptor *)field_descriptor, json_key);
-      if (!enum_value) {
-        return PROTOBUF2JSON_ERR_TODO;
-      }
-
-      return PROTOBUF2JSON_ERR_TODO;
-    } else {
-      int result = json2protobuf_process_field(protobuf_message, field_descriptor, json_value);
+    if (field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) {
+      int result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value);
       if (result) {
         return result;
+      }
+    } else if (field_descriptor->label == PROTOBUF_C_LABEL_OPTIONAL) {
+      if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE || field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
+        // Do nothing
+      } else {
+        *(protobuf_c_boolean *)protobuf_value_quantifier = 1;
+      }
+
+      int result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value);
+      if (result) {
+        return result;
+      }
+    } else { // PROTOBUF_C_LABEL_REPEATED
+      if (!json_is_array(json_object_value)) {
+        return PROTOBUF2JSON_ERR_IS_NOT_ARRAY;
+      }
+
+      size_t *protobuf_values_count = (size_t *)protobuf_value_quantifier;
+
+      *protobuf_values_count = json_array_size(json_object_value);
+
+      if (*protobuf_values_count) {
+        size_t value_size = protobuf2json_value_size_by_type(field_descriptor->type);
+        if (!value_size) {
+          return PROTOBUF2JSON_ERR_TODO;
+        }
+
+        protobuf_value = calloc(*protobuf_values_count, value_size);
+        if (!protobuf_value) {
+          return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+        }
+
+        size_t json_index;
+        json_t *json_array_value;
+        json_array_foreach(json_object_value, json_index, json_array_value) {
+          const char *protobuf_value_repeated = (*(char * const *)protobuf_value) + json_index * value_size;
+
+          int result = json2protobuf_process_field(field_descriptor, json_object_value, (void *)protobuf_value_repeated);
+          if (result) {
+            return result;
+          }
+        }
       }
     }
   }
 
   return 0;
 }
+
+/* === JSON -> Protobuf === Public === */
 
 int json2protobuf_object(
   json_t *json_object,
