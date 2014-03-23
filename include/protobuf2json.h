@@ -66,4 +66,4 @@ int json2protobuf_file(
 }
 #endif
 
-#endif
+#endif /* PROTOBUF2JSON_H */

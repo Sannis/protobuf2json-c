@@ -53,12 +53,6 @@
 #define container_of(ptr, type, member) \
   ((type *) ((char *) (ptr) - offsetof(type, member)))
 
-typedef enum {
-  TCP = 0,
-  UDP,
-  PIPE
-} stream_type;
-
 /* Log to stderr. */
 #define LOG(...)                        \
   do {                                  \
@@ -129,9 +123,6 @@ typedef enum {
 /* Pause the calling thread for a number of milliseconds. */
 void runner_sleep(int msec);
 
-/* Format big numbers nicely. WARNING: leaks memory. */
-const char* fmt(double d);
-
 /* Reserved test exit codes. */
 enum test_status {
   TEST_OK = 0,
@@ -155,24 +146,6 @@ enum test_status {
     LOGF("%s\n", explanation);                                                \
     return TEST_SKIP;                                                         \
   } while (0)
-
-#if !defined(_WIN32)
-
-# define TEST_FILE_LIMIT(num)                                                 \
-    do {                                                                      \
-      struct rlimit lim;                                                      \
-      lim.rlim_cur = (num);                                                   \
-      lim.rlim_max = lim.rlim_cur;                                            \
-      if (setrlimit(RLIMIT_NOFILE, &lim))                                     \
-        RETURN_SKIP("File descriptor limit too low.");                        \
-    } while (0)
-
-#else  /* defined(_WIN32) */
-
-# define TEST_FILE_LIMIT(num) do {} while (0)
-
-#endif
-
 
 #if defined _WIN32 && ! defined __GNUC__
 

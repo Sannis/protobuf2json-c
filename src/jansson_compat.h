@@ -12,11 +12,11 @@
 #include <jansson.h>
 
 #ifndef json_boolean
-#define json_boolean(val)      ((val) ? json_true() : json_false())
+# define json_boolean(val) ((val) ? json_true() : json_false())
 #endif
 
 #ifndef json_object_foreach
-#define json_object_foreach(object, key, value) \
+# define json_object_foreach(object, key, value) \
   void *iter; for (iter = json_object_iter(object); \
        iter && (key = json_object_iter_key(iter)) && (value = json_object_iter_value(iter)); \
        iter = json_object_iter_next(object, iter) \
@@ -24,11 +24,11 @@
 #endif
 
 #ifndef json_array_foreach
-#define json_array_foreach(array, index, value) \
+# define json_array_foreach(array, index, value) \
   for (index = 0; \
        index < json_array_size(array) && (value = json_array_get(array, index)); \
        index++ \
   )
 #endif
 
-#endif
+#endif /* JANSSON_COMPAT_H */
