@@ -14,7 +14,7 @@
 TEST_IMPL(json2protobuf_string__person__required) {
   int result;
 
-  const char *expected_json_string = \
+  const char *initial_json_string = \
     "{\n"
     "  \"name\": \"John Doe\",\n"
     "  \"id\": 42\n"
@@ -23,7 +23,7 @@ TEST_IMPL(json2protobuf_string__person__required) {
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)expected_json_string, 0, &foo__person__descriptor, &protobuf_message);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message);
   ASSERT(result == 0);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
@@ -34,6 +34,13 @@ TEST_IMPL(json2protobuf_string__person__required) {
   result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string);
   ASSERT(result == 0);
   ASSERT(json_string);
+
+  const char *expected_json_string = \
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42\n"
+    "}"
+  ;
 
   ASSERT_STRCMP(
     json_string,
@@ -46,7 +53,7 @@ TEST_IMPL(json2protobuf_string__person__required) {
 TEST_IMPL(json2protobuf_string__person__optional) {
   int result;
 
-  const char *expected_json_string = \
+  const char *initial_json_string = \
     "{\n"
     "  \"name\": \"John Doe\",\n"
     "  \"id\": 42,\n"
@@ -56,7 +63,7 @@ TEST_IMPL(json2protobuf_string__person__optional) {
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)expected_json_string, 0, &foo__person__descriptor, &protobuf_message);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message);
   ASSERT(result == 0);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
@@ -69,6 +76,53 @@ TEST_IMPL(json2protobuf_string__person__optional) {
   result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string);
   ASSERT(result == 0);
   ASSERT(json_string);
+
+  const char *expected_json_string = \
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42,\n"
+    "  \"email\": \"john@doe.name\"\n"
+    "}"
+  ;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__bar__default_values_1) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"string_required\": \"required\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message);
+  ASSERT(result == 0);
+
+  Foo__Bar *bar = (Foo__Bar *)protobuf_message;
+  ASSERT_STRCMP(bar->string_required, "required");
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string);
+  ASSERT(result == 0);
+  ASSERT(json_string);
+
+  const char *expected_json_string = \
+    "{\n"
+    "  \"string_required\": \"required\",\n"
+    "  \"string_required_default\": \"default value 1\",\n"
+    "  \"enum_optional_default\": \"FIZZBUZZ\",\n"
+    "  \"string_optional_default\": \"default value 2\"\n"
+    "}"
+  ;
 
   ASSERT_STRCMP(
     json_string,
