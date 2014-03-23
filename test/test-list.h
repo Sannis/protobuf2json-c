@@ -12,7 +12,7 @@ TEST_DECLARE(protobuf2json_string__person__repeated_message)
 
 TEST_DECLARE(protobuf2json_string__bar__default_values)
 
-TEST_DECLARE(json2protobuf_string__person)
+TEST_DECLARE(json2protobuf_string__person__required)
 
 
 TASK_LIST_START
@@ -22,5 +22,5 @@ TASK_LIST_START
 
   TEST_ENTRY(protobuf2json_string__bar__default_values)
 
-  TEST_ENTRY(json2protobuf_string__person)
+  TEST_ENTRY(json2protobuf_string__person__required)
 TASK_LIST_END

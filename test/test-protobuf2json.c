@@ -8,6 +8,7 @@
 
 #include "task.h"
 #include "person.pb-c.h"
+#include "bar.pb-c.h"
 #include "protobuf2json.h"
 
 TEST_IMPL(protobuf2json_string__person__required) {
@@ -117,6 +118,32 @@ TEST_IMPL(protobuf2json_string__person__repeated_message) {
     "      \"type\": \"HOME\"\n"
     "    }\n"
     "  ]\n"
+    "}"
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(protobuf2json_string__bar__default_values) {
+  int result;
+
+  Foo__Bar bar = FOO__BAR__INIT;
+
+  bar.string_required = "required";
+
+  char *json_string;
+  result = protobuf2json_string(&bar.base, JSON_INDENT(2), &json_string);
+  ASSERT(result == 0);
+  ASSERT(json_string);
+
+  /* Notice strange fields order here */
+  ASSERT_STRCMP(
+    json_string,
+    "{\n"
+    "  \"string_required\": \"required\",\n"
+    "  \"string_required_default\": \"default value 1\",\n"
+    "  \"enum_optional_default\": \"FIZZBUZZ\",\n"
+    "  \"string_optional_default\": \"default value 2\"\n"
     "}"
   );
 

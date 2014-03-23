@@ -37,9 +37,8 @@ LDADD += $(top_srcdir)/src/libprotobuf2json.la
 
 run_tests_SOURCES = run-tests.c \
                     test-list.h \
-                    test-protobuf2json-person.c \
-                    test-protobuf2json-bar.c \
-                    test-json2protobuf-person.c \
+                    test-protobuf2json.c \
+                    test-json2protobuf.c \
                     runner.c \
                     runner.h \
                     task.h \
@@ -63,6 +62,8 @@ run_benchmarks_SOURCES = run-benchmarks.c \
                          runner.c \
                          runner.h \
                          task.h \
+                         person.pb-c.c \
+                         bar.pb-c.c \
                          getrusage-helper.h
 
 if WINNT
