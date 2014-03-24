@@ -48,7 +48,61 @@ static size_t protobuf2json_value_size_by_type(ProtobufCType type) {
   }
 }
 
-static json_t* protobuf2json_process_field(const ProtobufCFieldDescriptor *field_descriptor, const void *protobuf_value);
+static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_message);
+
+static json_t* protobuf2json_process_field(const ProtobufCFieldDescriptor *field_descriptor, const void *protobuf_value) {
+  switch (field_descriptor->type) {
+    case PROTOBUF_C_TYPE_INT32:
+    case PROTOBUF_C_TYPE_SINT32:
+    case PROTOBUF_C_TYPE_SFIXED32:
+      return json_integer(*(int32_t *)protobuf_value);
+    case PROTOBUF_C_TYPE_UINT32:
+    case PROTOBUF_C_TYPE_FIXED32:
+      return json_integer(*(uint32_t *)protobuf_value);
+    case PROTOBUF_C_TYPE_INT64:
+    case PROTOBUF_C_TYPE_SINT64:
+    case PROTOBUF_C_TYPE_SFIXED64:
+      return json_integer(*(int64_t *)protobuf_value);
+    case PROTOBUF_C_TYPE_UINT64:
+    case PROTOBUF_C_TYPE_FIXED64:
+      return json_integer(*(uint64_t *)protobuf_value);
+    case PROTOBUF_C_TYPE_DOUBLE:
+      return json_real(*(double *)protobuf_value);
+    case PROTOBUF_C_TYPE_FLOAT:
+      return json_real(*(float *)protobuf_value);
+    case PROTOBUF_C_TYPE_BOOL:
+      return json_boolean(*(protobuf_c_boolean *)protobuf_value);
+    case PROTOBUF_C_TYPE_ENUM:
+    {
+      const ProtobufCEnumValue *protobuf_enum_value = protobuf_c_enum_descriptor_get_value(
+        field_descriptor->descriptor,
+        *(int *)protobuf_value
+      );
+
+      if (protobuf_enum_value) {
+        return json_string((char *)protobuf_enum_value->name);
+      } else {
+        return json_string((char *)"unknown enum value");
+      }
+    }
+    case PROTOBUF_C_TYPE_STRING:
+      return json_string(*(char **)protobuf_value);
+    /*case PROTOBUF_C_TYPE_BYTES:
+    {
+      const ProtobufCBinaryData *protobuf_binary_data = (const ProtobufCBinaryData *)protobuf_value;
+      return json_stringn(protobuf_binary_data->data, protobuf_binary_data->len);
+    }*/
+    case PROTOBUF_C_TYPE_MESSAGE:
+    {
+      const ProtobufCMessage **protobuf_message = (const ProtobufCMessage **)protobuf_value;
+      return protobuf2json_process_message(*protobuf_message);
+    }
+    /* case PROTOBUF_C_TYPE_GROUP: - NOT SUPPORTED */
+    default:
+      assert(0);
+      return NULL;
+  }
+}
 
 static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_message) {
   json_t *json_message = json_object();
@@ -127,60 +181,6 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
   }
 
   return json_message;
-}
-
-static json_t* protobuf2json_process_field(const ProtobufCFieldDescriptor *field_descriptor, const void *protobuf_value) {
-  switch (field_descriptor->type) {
-    case PROTOBUF_C_TYPE_INT32:
-    case PROTOBUF_C_TYPE_SINT32:
-    case PROTOBUF_C_TYPE_SFIXED32:
-      return json_integer(*(int32_t *)protobuf_value);
-    case PROTOBUF_C_TYPE_UINT32:
-    case PROTOBUF_C_TYPE_FIXED32:
-      return json_integer(*(uint32_t *)protobuf_value);
-    case PROTOBUF_C_TYPE_INT64:
-    case PROTOBUF_C_TYPE_SINT64:
-    case PROTOBUF_C_TYPE_SFIXED64:
-      return json_integer(*(int64_t *)protobuf_value);
-    case PROTOBUF_C_TYPE_UINT64:
-    case PROTOBUF_C_TYPE_FIXED64:
-      return json_integer(*(uint64_t *)protobuf_value);
-    case PROTOBUF_C_TYPE_DOUBLE:
-      return json_real(*(double *)protobuf_value);
-    case PROTOBUF_C_TYPE_FLOAT:
-      return json_real(*(float *)protobuf_value);
-    case PROTOBUF_C_TYPE_BOOL:
-      return json_boolean(*(protobuf_c_boolean *)protobuf_value);
-    case PROTOBUF_C_TYPE_ENUM:
-    {
-      const ProtobufCEnumValue *protobuf_enum_value = protobuf_c_enum_descriptor_get_value(
-        field_descriptor->descriptor,
-        *(int *)protobuf_value
-      );
-
-      if (protobuf_enum_value) {
-        return json_string((char *)protobuf_enum_value->name);
-      } else {
-        return json_string((char *)"unknown enum value");
-      }
-    }
-    case PROTOBUF_C_TYPE_STRING:
-      return json_string(*(char **)protobuf_value);
-    /*case PROTOBUF_C_TYPE_BYTES:
-    {
-      const ProtobufCBinaryData *protobuf_binary_data = (const ProtobufCBinaryData *)protobuf_value;
-      return json_stringn(protobuf_binary_data->data, protobuf_binary_data->len);
-    }*/
-    case PROTOBUF_C_TYPE_MESSAGE:
-    {
-      const ProtobufCMessage **protobuf_message = (const ProtobufCMessage **)protobuf_value;
-      return protobuf2json_process_message(*protobuf_message);
-    }
-    /* case PROTOBUF_C_TYPE_GROUP: - NOT SUPPORTED */
-    default:
-      assert(0);
-      return NULL;
-  }
 }
 
 /* === Protobuf -> JSON === Public === */
