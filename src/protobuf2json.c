@@ -225,14 +225,22 @@ int json2protobuf_process_field(
   if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
     return PROTOBUF2JSON_ERR_TODO;
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_ENUM) {
-    /*const ProtobufCEnumValue *enum_value;
+    if (!json_is_string(json_value)) {
+     return PROTOBUF2JSON_ERR_TODO;
+    }
 
-    enum_value = protobuf_c_enum_descriptor_get_value_by_name((const ProtobufCEnumDescriptor *)field_descriptor, json_key);
+    const char* enum_value_name = json_string_value(json_value);
+
+    const ProtobufCEnumValue *enum_value;
+
+    enum_value = protobuf_c_enum_descriptor_get_value_by_name(field_descriptor->descriptor, enum_value_name);
     if (!enum_value) {
       return PROTOBUF2JSON_ERR_TODO;
-    }*/
+    }
 
-    return PROTOBUF2JSON_ERR_TODO;
+    int32_t value = (int32_t)enum_value->value;
+
+    memcpy(protobuf_value, &value, sizeof(value));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_INT32) {
     if (!json_is_integer(json_value)) {
       return PROTOBUF2JSON_ERR_TODO;
