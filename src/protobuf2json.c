@@ -216,14 +216,26 @@ int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char 
 
 /* === JSON -> Protobuf === Private === */
 
+int json2protobuf_process_message(
+  json_t *json_object,
+  const ProtobufCMessageDescriptor *protobuf_message_descriptor,
+  ProtobufCMessage **protobuf_message
+);
+
 int json2protobuf_process_field(
   const ProtobufCFieldDescriptor *field_descriptor,
   json_t *json_value,
   void *protobuf_value
 ) {
-
   if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
-    return PROTOBUF2JSON_ERR_TODO;
+    ProtobufCMessage *protobuf_message;
+
+    int result = json2protobuf_process_message(json_value, field_descriptor->descriptor, &protobuf_message);
+    if (result) {
+      return result;
+    }
+
+    memcpy(protobuf_value, &protobuf_message, sizeof(protobuf_message));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_ENUM) {
     if (!json_is_string(json_value)) {
      return PROTOBUF2JSON_ERR_TODO;
@@ -272,7 +284,7 @@ int json2protobuf_process_message(
   }
 
   *protobuf_message = calloc(1, protobuf_message_descriptor->sizeof_message);
-  if (!protobuf_message) {
+  if (!*protobuf_message) {
     return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
   }
 
@@ -329,9 +341,9 @@ int json2protobuf_process_message(
         size_t json_index;
         json_t *json_array_value;
         json_array_foreach(json_object_value, json_index, json_array_value) {
-          const char *protobuf_value_repeated = (*(char * const *)protobuf_value) + json_index * value_size;
+          char *protobuf_value_repeated = (char *)protobuf_value + json_index * value_size;
 
-          int result = json2protobuf_process_field(field_descriptor, json_object_value, (void *)protobuf_value_repeated);
+          int result = json2protobuf_process_field(field_descriptor, json_array_value, (void *)protobuf_value_repeated);
           if (result) {
             return result;
           }
