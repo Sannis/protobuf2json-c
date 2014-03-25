@@ -24,6 +24,7 @@ static size_t protobuf2json_value_size_by_type(ProtobufCType type) {
     case PROTOBUF_C_TYPE_UINT32:
     case PROTOBUF_C_TYPE_FIXED32:
     case PROTOBUF_C_TYPE_FLOAT:
+      return 4;
     case PROTOBUF_C_TYPE_ENUM:
       return 4;
     case PROTOBUF_C_TYPE_INT64:
