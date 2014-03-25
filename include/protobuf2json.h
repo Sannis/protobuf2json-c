@@ -24,10 +24,6 @@
 
 #define PROTOBUF2JSON_ERR_TODO -333
 
-#ifndef json_boolean
-#define json_boolean(val)      ((val) ? json_true() : json_false())
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
