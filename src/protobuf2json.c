@@ -259,6 +259,10 @@ int json2protobuf_process_message(
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message
 ) {
+  if (!json_is_object(json_object)) {
+    return PROTOBUF2JSON_ERR_IS_NOT_OBJECT;
+  }
+
   *protobuf_message = calloc(1, protobuf_message_descriptor->sizeof_message);
   if (!protobuf_message) {
     return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
@@ -338,10 +342,6 @@ int json2protobuf_object(
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message
 ) {
-  if (!json_is_object(json_object)) {
-    return PROTOBUF2JSON_ERR_IS_NOT_OBJECT;
-  }
-
   int result = json2protobuf_process_message(json_object, protobuf_message_descriptor, protobuf_message);
   if (result) {
     return result;
