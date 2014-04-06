@@ -7,10 +7,66 @@
  */
 
 #include "task.h"
+#include "list.pb-c.h"
 #include "person.pb-c.h"
 #include "protobuf2json.h"
 
-int main(int argc, char **argv) {
+int list(void) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"numbers\": [\n"
+    "    12,\n"
+    "    34,\n"
+    "    56\n"
+    "  ]\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__list__descriptor, &protobuf_message);
+  ASSERT(result == 0);
+
+  Foo__List *list = (Foo__List *)protobuf_message;
+
+  //asm volatile ("int $3");
+
+  printf("list->n_numbers: %zu\n", list->n_numbers);
+  printf("list->numbers[0]: %d\n", list->numbers[0]);
+  printf("list->numbers[1]: %d\n", list->numbers[1]);
+  printf("list->numbers[2]: %d\n", list->numbers[2]);
+
+  ASSERT(list->n_numbers == 3);
+  ASSERT(list->numbers[0] == 12);
+  ASSERT(list->numbers[1] == 34);
+  ASSERT(list->numbers[2] == 56);
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string);
+  ASSERT(result == 0);
+  ASSERT(json_string);
+
+  const char *expected_json_string = \
+    "{\n"
+    "  \"numbers\": [\n"
+    "    12,\n"
+    "    34,\n"
+    "    56\n"
+    "  ]\n"
+    "}"
+  ;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  return 0;
+}
+
+int person(void) {
   int result;
 
   const char *initial_json_string = \
@@ -33,20 +89,24 @@ int main(int argc, char **argv) {
     "}"
   ;
 
-  ProtobufCMessage *protobuf_message;
+  ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message);
-  LOGF("%d\n",result);
   ASSERT(result == 0);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
 
-  asm volatile ("int $3");
+  //asm volatile ("int $3");
 
   printf("person->id: %d\n", person->id);
   printf("person->name: %s\n", person->name);
   printf("person->n_phone: %zu\n", person->n_phone);
   printf("person->phone[0]->number: %s\n", person->phone[0]->number);
+  printf("person->phone[0]->type: %d\n", person->phone[0]->type);
+  printf("person->phone[1]->number: %s\n", person->phone[1]->number);
+  printf("person->phone[1]->type: %d\n", person->phone[1]->type);
+  printf("person->phone[2]->number: %s\n", person->phone[2]->number);
+  printf("person->phone[2]->type: %d\n", person->phone[2]->type);
 
   ASSERT(person->id == 42);
   ASSERT_STRCMP(person->name, "John Doe");
@@ -83,4 +143,10 @@ int main(int argc, char **argv) {
   );
 
   return 0;
+}
+
+int main(int argc, char **argv) {
+  list();
+
+  person();
 }

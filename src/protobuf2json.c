@@ -333,21 +333,23 @@ int json2protobuf_process_message(
           return PROTOBUF2JSON_ERR_TODO;
         }
 
-        protobuf_value = calloc(*protobuf_values_count, value_size);
-        if (!protobuf_value) {
+        void *protobuf_value_repeated = calloc(*protobuf_values_count, value_size);
+        if (!protobuf_value_repeated) {
           return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
         }
 
         size_t json_index;
         json_t *json_array_value;
         json_array_foreach(json_object_value, json_index, json_array_value) {
-          char *protobuf_value_repeated = (char *)protobuf_value + json_index * value_size;
+          char *protobuf_value_repeated_value = (char *)protobuf_value_repeated + json_index * value_size;
 
-          int result = json2protobuf_process_field(field_descriptor, json_array_value, (void *)protobuf_value_repeated);
+          int result = json2protobuf_process_field(field_descriptor, json_array_value, (void *)protobuf_value_repeated_value);
           if (result) {
             return result;
           }
         }
+
+        memcpy(protobuf_value, &protobuf_value_repeated, sizeof(protobuf_value_repeated));
       }
     }
   }

@@ -1,0 +1,5 @@
+package Foo;
+
+message List {
+  repeated int32 numbers = 1;
+}

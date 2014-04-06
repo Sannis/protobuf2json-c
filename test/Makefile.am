@@ -7,7 +7,7 @@
 # protoc
 
 BUILT_SOURCES =
-BUILT_SOURCES += person.pb-c.c bar.pb-c.c
+BUILT_SOURCES += person.pb-c.c bar.pb-c.c list.pb-c.c
 
 CLEANFILES =
 CLEANFILES += *.pb-c.[ch]
@@ -77,5 +77,5 @@ endif
 # run-tmp
 
 run_tmp_SOURCES = run-tmp.c \
-                  person.pb-c.c \
-                  bar.pb-c.c
+                  list.pb-c.c \
+                  person.pb-c.c
