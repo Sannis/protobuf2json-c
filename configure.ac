@@ -5,7 +5,7 @@ dnl and/or modify it under the terms of the MIT license.
 dnl See LICENSE for details.
 
 AC_PREREQ([2.59])
-AC_INIT([libprotobuf2json], [0.0.1], [efimovov@gmail.com])
+AC_INIT([libprotobuf2json], [0.0.2], [efimovov@gmail.com])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([foreign -Wall])
