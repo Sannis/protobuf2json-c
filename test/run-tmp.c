@@ -26,7 +26,7 @@ int list(void) {
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__list__descriptor, &protobuf_message);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__list__descriptor, &protobuf_message, NULL, 0);
   ASSERT(result == 0);
 
   Foo__List *list = (Foo__List *)protobuf_message;
@@ -91,7 +91,7 @@ int person(void) {
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
   ASSERT(result == 0);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
@@ -145,8 +145,36 @@ int person(void) {
   return 0;
 }
 
+int list__bad_json_string(void) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = "...";
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__list__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING);
+
+  const char *expected_error_string = \
+    "JSON parsing error at line 1 column 1 (position 1): "
+    "'[' or '{' expected near '.'"
+  ;
+
+  printf("Error: %s\n", error_string);
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  return 0;
+}
+
 int main(int argc, char **argv) {
   list();
 
   person();
+
+  list__bad_json_string();
 }

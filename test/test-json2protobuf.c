@@ -23,7 +23,7 @@ TEST_IMPL(json2protobuf_string__person__required) {
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
   ASSERT(result == 0);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
@@ -65,7 +65,7 @@ TEST_IMPL(json2protobuf_string__person__optional) {
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
   ASSERT(result == 0);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
@@ -121,7 +121,7 @@ TEST_IMPL(json2protobuf_string__person__repeated_message) {
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
   ASSERT(result == 0);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
@@ -177,7 +177,7 @@ TEST_IMPL(json2protobuf_string__person__unknown_field) {
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
   ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
 
   RETURN_OK();
@@ -194,7 +194,7 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, NULL, 0);
   ASSERT(result == 0);
 
   Foo__Bar *bar = (Foo__Bar *)protobuf_message;
@@ -217,6 +217,30 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
   ASSERT_STRCMP(
     json_string,
     expected_json_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__bar__bad_json_string) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = "...";
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING);
+
+  const char *expected_error_string = \
+    "JSON parsing error at line 1 column 1 (position 1): "
+    "'[' or '{' expected near '.'"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
   );
 
   RETURN_OK();

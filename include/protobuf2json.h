@@ -46,16 +46,18 @@ int json2protobuf_string(
   char *json_string,
   size_t flags,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
-  ProtobufCMessage **protobuf_message
-  /*, json_error_t *json_error*/
+  ProtobufCMessage **protobuf_message,
+  char *error_string,
+  size_t error_size
 );
 
 int json2protobuf_file(
   char *json_file,
   size_t flags,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
-  ProtobufCMessage **protobuf_message
-  /*, json_error_t *json_error*/
+  ProtobufCMessage **protobuf_message,
+  char *error_string,
+  size_t error_size
 );
 
 /* === END === */

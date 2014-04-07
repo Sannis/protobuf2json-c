@@ -376,13 +376,23 @@ int json2protobuf_string(
   char *json_string,
   size_t flags,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
-  ProtobufCMessage **protobuf_message
-  /*, json_error_t *json_error*/
+  ProtobufCMessage **protobuf_message,
+  char *error_string,
+  size_t error_size
 ) {
   json_t *json_object = NULL;
+  json_error_t error;
 
-  json_object = json_loads(json_string, flags, NULL);
+  json_object = json_loads(json_string, flags, &error);
   if (!json_object) {
+    if (error_string && error_size) {
+      snprintf(
+        error_string, error_size,
+        "JSON parsing error at line %d column %d (position %d): %s",
+        error.line, error.column, error.position, error.text
+      );
+    }
+
     json_decref(json_object);
     return PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING;
   }
@@ -400,13 +410,23 @@ int json2protobuf_file(
   char *json_file,
   size_t flags,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
-  ProtobufCMessage **protobuf_message
-  /*, json_error_t *json_error*/
+  ProtobufCMessage **protobuf_message,
+  char *error_string,
+  size_t error_size
 ) {
   json_t *json_object = NULL;
+  json_error_t error;
 
-  json_object = json_load_file(json_file, flags, NULL);
+  json_object = json_load_file(json_file, flags, &error);
   if (!json_object) {
+    if (error_string && error_size) {
+      snprintf(
+        error_string, error_size,
+        "JSON parsing error at line %d column %d (position %d): %s",
+        error.line, error.column, error.position, error.text
+      );
+    }
+
     json_decref(json_object);
     return PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE;
   }
