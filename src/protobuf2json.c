@@ -365,7 +365,15 @@ int json2protobuf_process_message(
       if (*protobuf_values_count) {
         size_t value_size = protobuf2json_value_size_by_type(field_descriptor->type);
         if (!value_size) {
-          return PROTOBUF2JSON_ERR_TODO;
+          if (error_string && error_size) {
+            snprintf(
+              error_string, error_size,
+              "Cannot calculate value size for %d using protobuf2json_value_size_by_type()",
+              field_descriptor->type
+            );
+          }
+
+          return PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE;
         }
 
         void *protobuf_value_repeated = calloc(*protobuf_values_count, value_size);

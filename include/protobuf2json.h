@@ -12,6 +12,8 @@
 #include <google/protobuf-c/protobuf-c.h>
 #include <jansson.h>
 
+#define PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE -001
+
 #define PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING     -101
 #define PROTOBUF2JSON_ERR_CANNOT_PROCESS_MESSAGE -102
 
