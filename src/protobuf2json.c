@@ -284,6 +284,13 @@ int json2protobuf_process_message(
   size_t error_size
 ) {
   if (!json_is_object(json_object)) {
+    if (error_string && error_size) {
+      snprintf(
+        error_string, error_size,
+        "JSON is not an object required for GPB message"
+      );
+    }
+
     return PROTOBUF2JSON_ERR_IS_NOT_OBJECT;
   }
 
@@ -307,7 +314,14 @@ int json2protobuf_process_message(
   json_object_foreach(json_object, json_key, json_object_value) {
     const ProtobufCFieldDescriptor *field_descriptor = protobuf_c_message_descriptor_get_field_by_name(protobuf_message_descriptor, json_key);
     if (!field_descriptor) {
-      // Unknown field
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "Unknown field '%s' for message '%s'",
+          json_key, protobuf_message_descriptor->name
+        );
+      }
+
       return PROTOBUF2JSON_ERR_UNKNOWN_FIELD;
     }
 
@@ -332,6 +346,13 @@ int json2protobuf_process_message(
       }
     } else { // PROTOBUF_C_LABEL_REPEATED
       if (!json_is_array(json_object_value)) {
+        if (error_string && error_size) {
+          snprintf(
+            error_string, error_size,
+            "JSON is not an array required for repeatable GPB field"
+          );
+        }
+
         return PROTOBUF2JSON_ERR_IS_NOT_ARRAY;
       }
 

@@ -222,7 +222,7 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__bar__bad_json_string) {
+TEST_IMPL(json2protobuf_string__person__error_cannot_parse_string) {
   int result;
   char error_string[256] = {0};
 
@@ -236,6 +236,83 @@ TEST_IMPL(json2protobuf_string__bar__bad_json_string) {
   const char *expected_error_string = \
     "JSON parsing error at line 1 column 1 (position 1): "
     "'[' or '{' expected near '.'"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__person__error_is_not_object) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = "[]";
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_OBJECT);
+
+  const char *expected_error_string = \
+    "JSON is not an object required for GPB message"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__person__error_unknown_field) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"unknown_filed\": \"unknown_filed_value\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
+
+  const char *expected_error_string = \
+    "Unknown field 'unknown_filed' for message 'Foo.Bar'"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__person__error_is_not_array) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"phone\": {}\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_ARRAY);
+
+  const char *expected_error_string = \
+    "JSON is not an array required for repeatable GPB field"
   ;
 
   ASSERT_STRCMP(

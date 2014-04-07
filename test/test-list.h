@@ -16,7 +16,10 @@ TEST_DECLARE(json2protobuf_string__person__optional)
 TEST_DECLARE(json2protobuf_string__person__repeated_message)
 TEST_DECLARE(json2protobuf_string__person__unknown_field)
 TEST_DECLARE(json2protobuf_string__bar__default_values)
-TEST_DECLARE(json2protobuf_string__bar__bad_json_string)
+TEST_DECLARE(json2protobuf_string__person__error_cannot_parse_string)
+TEST_DECLARE(json2protobuf_string__person__error_is_not_object)
+TEST_DECLARE(json2protobuf_string__person__error_unknown_field)
+TEST_DECLARE(json2protobuf_string__person__error_is_not_array)
 
 
 TASK_LIST_START
@@ -30,5 +33,8 @@ TASK_LIST_START
   TEST_ENTRY(json2protobuf_string__person__repeated_message)
   TEST_ENTRY(json2protobuf_string__person__unknown_field)
   TEST_ENTRY(json2protobuf_string__bar__default_values)
-  TEST_ENTRY(json2protobuf_string__bar__bad_json_string)
+  TEST_ENTRY(json2protobuf_string__person__error_cannot_parse_string)
+  TEST_ENTRY(json2protobuf_string__person__error_is_not_object)
+  TEST_ENTRY(json2protobuf_string__person__error_unknown_field)
+  TEST_ENTRY(json2protobuf_string__person__error_is_not_array)
 TASK_LIST_END

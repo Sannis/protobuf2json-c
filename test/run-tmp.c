@@ -171,10 +171,43 @@ int list__bad_json_string(void) {
   return 0;
 }
 
+int person__error_is_not_array(void) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"phone\": {}\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  //asm volatile ("int $3");
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_ARRAY);
+
+  const char *expected_error_string = \
+    "JSON is not an array required for repeatable GPB field"
+  ;
+
+  printf("Error: %s\n", error_string);
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  return 0;
+}
+
 int main(int argc, char **argv) {
   list();
 
   person();
 
   list__bad_json_string();
+
+  person__error_is_not_array();
 }
