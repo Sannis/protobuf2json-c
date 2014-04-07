@@ -39,7 +39,9 @@ int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char 
 int json2protobuf_object(
   json_t *json_object,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
-  ProtobufCMessage **protobuf_message
+  ProtobufCMessage **protobuf_message,
+  char *error_string,
+  size_t error_size
 );
 
 int json2protobuf_string(

@@ -219,7 +219,9 @@ int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char 
 int json2protobuf_process_message(
   json_t *json_object,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
-  ProtobufCMessage **protobuf_message
+  ProtobufCMessage **protobuf_message,
+  char *error_string,
+  size_t error_size
 );
 
 int json2protobuf_process_field(
@@ -230,7 +232,7 @@ int json2protobuf_process_field(
   if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
     ProtobufCMessage *protobuf_message;
 
-    int result = json2protobuf_process_message(json_value, field_descriptor->descriptor, &protobuf_message);
+    int result = json2protobuf_process_message(json_value, field_descriptor->descriptor, &protobuf_message, NULL, 0);
     if (result) {
       return result;
     }
@@ -277,7 +279,9 @@ int json2protobuf_process_field(
 int json2protobuf_process_message(
   json_t *json_object,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
-  ProtobufCMessage **protobuf_message
+  ProtobufCMessage **protobuf_message,
+  char *error_string,
+  size_t error_size
 ) {
   if (!json_is_object(json_object)) {
     return PROTOBUF2JSON_ERR_IS_NOT_OBJECT;
@@ -285,6 +289,14 @@ int json2protobuf_process_message(
 
   *protobuf_message = calloc(1, protobuf_message_descriptor->sizeof_message);
   if (!*protobuf_message) {
+    if (error_string && error_size) {
+      snprintf(
+        error_string, error_size,
+        "Cannot allocate %zu bytes using calloc(3)",
+        protobuf_message_descriptor->sizeof_message
+      );
+    }
+
     return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
   }
 
@@ -335,6 +347,14 @@ int json2protobuf_process_message(
 
         void *protobuf_value_repeated = calloc(*protobuf_values_count, value_size);
         if (!protobuf_value_repeated) {
+          if (error_string && error_size) {
+            snprintf(
+              error_string, error_size,
+              "Cannot allocate %zu bytes using calloc(3)",
+              (size_t)*protobuf_values_count * value_size
+            );
+          }
+
           return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
         }
 
@@ -362,9 +382,11 @@ int json2protobuf_process_message(
 int json2protobuf_object(
   json_t *json_object,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
-  ProtobufCMessage **protobuf_message
+  ProtobufCMessage **protobuf_message,
+  char *error_string,
+  size_t error_size
 ) {
-  int result = json2protobuf_process_message(json_object, protobuf_message_descriptor, protobuf_message);
+  int result = json2protobuf_process_message(json_object, protobuf_message_descriptor, protobuf_message, error_string, error_size);
   if (result) {
     return result;
   }
@@ -397,7 +419,7 @@ int json2protobuf_string(
     return PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING;
   }
 
-  int result = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message);
+  int result = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message, error_string, error_size);
   if (result) {
     json_decref(json_object);
     return result;
@@ -431,7 +453,7 @@ int json2protobuf_file(
     return PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE;
   }
 
-  int result = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message);
+  int result = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message, error_string, error_size);
   if (result) {
     json_decref(json_object);
     return result;
