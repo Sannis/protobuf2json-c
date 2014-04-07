@@ -227,7 +227,9 @@ int json2protobuf_process_message(
 int json2protobuf_process_field(
   const ProtobufCFieldDescriptor *field_descriptor,
   json_t *json_value,
-  void *protobuf_value
+  void *protobuf_value,
+  char *error_string,
+  size_t error_size
 ) {
   if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
     ProtobufCMessage *protobuf_message;
@@ -329,7 +331,7 @@ int json2protobuf_process_message(
     void *protobuf_value_quantifier = ((char *)*protobuf_message) + field_descriptor->quantifier_offset;
 
     if (field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) {
-      int result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value);
+      int result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value, error_string, error_size);
       if (result) {
         return result;
       }
@@ -340,7 +342,7 @@ int json2protobuf_process_message(
         *(protobuf_c_boolean *)protobuf_value_quantifier = 1;
       }
 
-      int result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value);
+      int result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value, error_string, error_size);
       if (result) {
         return result;
       }
@@ -384,7 +386,7 @@ int json2protobuf_process_message(
         json_array_foreach(json_object_value, json_index, json_array_value) {
           char *protobuf_value_repeated_value = (char *)protobuf_value_repeated + json_index * value_size;
 
-          int result = json2protobuf_process_field(field_descriptor, json_array_value, (void *)protobuf_value_repeated_value);
+          int result = json2protobuf_process_field(field_descriptor, json_array_value, (void *)protobuf_value_repeated_value, error_string, error_size);
           if (result) {
             return result;
           }
