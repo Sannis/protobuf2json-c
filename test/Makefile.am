@@ -7,7 +7,7 @@
 # protoc
 
 BUILT_SOURCES =
-BUILT_SOURCES += person.pb-c.c bar.pb-c.c list.pb-c.c
+BUILT_SOURCES += person.pb-c.c test.pb-c.c
 
 CLEANFILES =
 CLEANFILES += *.pb-c.[ch]
@@ -43,7 +43,7 @@ run_tests_SOURCES = run-tests.c \
                     runner.h \
                     task.h \
                     person.pb-c.c \
-                    bar.pb-c.c \
+                    test.pb-c.c \
                     getrusage-helper.h
 
 if WINNT
@@ -63,7 +63,7 @@ run_benchmarks_SOURCES = run-benchmarks.c \
                          runner.h \
                          task.h \
                          person.pb-c.c \
-                         bar.pb-c.c \
+                         test.pb-c.c \
                          getrusage-helper.h
 
 if WINNT
@@ -77,5 +77,5 @@ endif
 # run-tmp
 
 run_tmp_SOURCES = run-tmp.c \
-                  list.pb-c.c \
-                  person.pb-c.c
+                  person.pb-c.c \
+                  test.pb-c.c

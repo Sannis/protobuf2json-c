@@ -15,3 +15,7 @@ message Bar {
   optional FizzBuzzType enum_optional = 5;
   optional FizzBuzzType enum_optional_default = 6 [default = FIZZBUZZ];
 }
+
+message List {
+  repeated int32 numbers = 1;
+}

@@ -8,7 +8,7 @@
 
 #include "task.h"
 #include "person.pb-c.h"
-#include "bar.pb-c.h"
+#include "test.pb-c.h"
 #include "protobuf2json.h"
 
 TEST_IMPL(protobuf2json_string__person__required) {

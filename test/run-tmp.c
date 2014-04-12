@@ -7,8 +7,8 @@
  */
 
 #include "task.h"
-#include "list.pb-c.h"
 #include "person.pb-c.h"
+#include "test.pb-c.h"
 #include "protobuf2json.h"
 
 int list(void) {
