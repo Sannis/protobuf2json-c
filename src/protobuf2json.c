@@ -242,7 +242,14 @@ int json2protobuf_process_field(
     memcpy(protobuf_value, &protobuf_message, sizeof(protobuf_message));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_ENUM) {
     if (!json_is_string(json_value)) {
-     return PROTOBUF2JSON_ERR_TODO;
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "JSON value is not a string required for GPB enum"
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_IS_NOT_STRING;
     }
 
     const char* enum_value_name = json_string_value(json_value);
@@ -267,7 +274,14 @@ int json2protobuf_process_field(
     memcpy(protobuf_value, &value, sizeof(value));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
     if (!json_is_string(json_value)) {
-     return PROTOBUF2JSON_ERR_TODO;
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "JSON value is not a string required for GPB string"
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_IS_NOT_STRING;
     }
 
     const char* value = json_string_value(json_value);
