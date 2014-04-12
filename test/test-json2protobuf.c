@@ -377,3 +377,30 @@ TEST_IMPL(json2protobuf_string__bar__error_enum_is_not_string) {
 
   RETURN_OK();
 }
+
+TEST_IMPL(json2protobuf_string__bar__error_int32_is_not_integer) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"value_int32\": \"string\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__types__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_INTEGER);
+
+  const char *expected_error_string = \
+    "JSON value is not an integer required for GPB int32"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}

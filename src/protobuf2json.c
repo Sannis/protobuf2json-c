@@ -266,7 +266,14 @@ int json2protobuf_process_field(
     memcpy(protobuf_value, &value, sizeof(value));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_INT32) {
     if (!json_is_integer(json_value)) {
-      return PROTOBUF2JSON_ERR_TODO;
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "JSON value is not an integer required for GPB int32"
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_IS_NOT_INTEGER;
     }
 
     int32_t value = (int32_t)json_integer_value(json_value);

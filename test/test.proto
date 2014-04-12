@@ -19,3 +19,7 @@ message Bar {
 message List {
   repeated int32 numbers = 1;
 }
+
+message Types {
+  optional int32 value_int32 = 1;
+}

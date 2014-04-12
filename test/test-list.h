@@ -22,6 +22,7 @@ TEST_DECLARE(json2protobuf_string__person__error_unknown_field)
 TEST_DECLARE(json2protobuf_string__person__error_is_not_array)
 TEST_DECLARE(json2protobuf_string__bar__error_string_is_not_string)
 TEST_DECLARE(json2protobuf_string__bar__error_enum_is_not_string)
+TEST_DECLARE(json2protobuf_string__bar__error_int32_is_not_integer)
 
 
 TASK_LIST_START
@@ -41,4 +42,5 @@ TASK_LIST_START
   TEST_ENTRY(json2protobuf_string__person__error_is_not_array)
   TEST_ENTRY(json2protobuf_string__bar__error_string_is_not_string)
   TEST_ENTRY(json2protobuf_string__bar__error_enum_is_not_string)
+  TEST_ENTRY(json2protobuf_string__bar__error_int32_is_not_integer)
 TASK_LIST_END
