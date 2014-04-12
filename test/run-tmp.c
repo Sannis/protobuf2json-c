@@ -11,6 +11,44 @@
 #include "test.pb-c.h"
 #include "protobuf2json.h"
 
+int person__error_unknown_enum_value(void) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42,\n"
+    "  \"phone\": [\n"
+    "    {\n"
+    "      \"number\": \"+123456789\",\n"
+    "      \"type\": \"UNKNOWN\"\n"
+    "    }\n"
+    "  ]\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  //asm volatile ("int $3");
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE);
+
+  const char *expected_error_string = \
+    "Unknown value 'UNKNOWN' for enum 'Foo.Person.PhoneType'"
+  ;
+
+  printf("Error: %s\n", error_string);
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  return 0;
+}
+
 int list(void) {
   int result;
 
@@ -203,6 +241,8 @@ int person__error_is_not_array(void) {
 }
 
 int main(int argc, char **argv) {
+  person__error_unknown_enum_value();
+
   list();
 
   person();

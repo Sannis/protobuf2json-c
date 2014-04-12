@@ -25,8 +25,7 @@
 #define PROTOBUF2JSON_ERR_IS_NOT_ARRAY           -206
 #define PROTOBUF2JSON_ERR_IS_NOT_STRING          -207
 #define PROTOBUF2JSON_ERR_IS_NOT_INTEGER         -208
-
-#define PROTOBUF2JSON_ERR_TODO -333
+#define PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE     -209
 
 #ifdef __cplusplus
 extern "C" {

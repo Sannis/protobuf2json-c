@@ -165,24 +165,6 @@ TEST_IMPL(json2protobuf_string__person__repeated_message) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__person__unknown_field) {
-  int result;
-
-  const char *initial_json_string = \
-    "{\n"
-    "  \"name\": \"John Doe\",\n"
-    "  \"unknown\": 42\n"
-    "}"
-  ;
-
-  ProtobufCMessage *protobuf_message;
-
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
-  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
-
-  RETURN_OK();
-}
-
 TEST_IMPL(json2protobuf_string__bar__default_values) {
   int result;
 
@@ -281,11 +263,45 @@ TEST_IMPL(json2protobuf_string__person__error_unknown_field) {
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
   ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
 
   const char *expected_error_string = \
-    "Unknown field 'unknown_filed' for message 'Foo.Bar'"
+    "Unknown field 'unknown_filed' for message 'Foo.Person'"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__person__error_unknown_enum_value) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42,\n"
+    "  \"phone\": [\n"
+    "    {\n"
+    "      \"number\": \"+123456789\",\n"
+    "      \"type\": \"UNKNOWN\"\n"
+    "    }\n"
+    "  ]\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE);
+
+  const char *expected_error_string = \
+    "Unknown value 'UNKNOWN' for enum 'Foo.Person.PhoneType'"
   ;
 
   ASSERT_STRCMP(

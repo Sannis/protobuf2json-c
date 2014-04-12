@@ -234,7 +234,7 @@ int json2protobuf_process_field(
   if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
     ProtobufCMessage *protobuf_message;
 
-    int result = json2protobuf_process_message(json_value, field_descriptor->descriptor, &protobuf_message, NULL, 0);
+    int result = json2protobuf_process_message(json_value, field_descriptor->descriptor, &protobuf_message, error_string, error_size);
     if (result) {
       return result;
     }
@@ -258,7 +258,15 @@ int json2protobuf_process_field(
 
     enum_value = protobuf_c_enum_descriptor_get_value_by_name(field_descriptor->descriptor, enum_value_name);
     if (!enum_value) {
-      return PROTOBUF2JSON_ERR_TODO;
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "Unknown value '%s' for enum '%s'",
+          enum_value_name, ((ProtobufCEnumDescriptor *)field_descriptor->descriptor)->name
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE;
     }
 
     int32_t value = (int32_t)enum_value->value;
