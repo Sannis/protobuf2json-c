@@ -1,4 +1,4 @@
-# libprotobuf2json Copyright (c) 2014 Oleg Efimov <efimovov@gmail.com>
+# libprotobuf2json-c Copyright (c) 2014 Oleg Efimov <efimovov@gmail.com>
 #
 # protobuf2json-c is free software; you can redistribute it
 # and/or modify it under the terms of the MIT license.
@@ -31,7 +31,7 @@ LDADD =
 LDADD += $(PROTOBUF_C_LIBS)
 LDADD += $(LIBJANSSON_LIBS)
 LDADD += $(SANITIZE_LIBS)
-LDADD += $(top_srcdir)/src/libprotobuf2json.la
+LDADD += $(top_srcdir)/src/libprotobuf2json-c.la
 
 # run-tests
 
