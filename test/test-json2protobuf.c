@@ -6,10 +6,88 @@
  * See LICENSE for details.
  */
 
+#include <libgen.h>
+
 #include "task.h"
 #include "person.pb-c.h"
 #include "test.pb-c.h"
 #include "protobuf2json.h"
+
+#define PATHMAX 1024
+extern char executable_path[];
+
+TEST_IMPL(json2protobuf_file__person__error_cannot_parse_wrong_file) {
+  int result;
+  char file_name[256] = {0};
+  char error_string[256] = {0};
+
+  result = snprintf(file_name, 256, "%s/wrong.json", realpath(dirname(executable_path), 0));
+  ASSERT(result > 0);
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_file((char *)file_name, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE);
+
+  const char *expected_error_string = \
+    "JSON parsing error at line 1 column 1 (position 1): "
+    "'[' or '{' expected near '.'"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_file__person__error_cannot_parse_unexistent_file) {
+  int result;
+  char file_name[256] = {0};
+  char error_string[256] = {0};
+
+  result = snprintf(file_name, 256, "%s/unexistent.json", realpath(dirname(executable_path), 0));
+  ASSERT(result > 0);
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_file((char *)file_name, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE);
+
+  const char *expected_error_string_beginning = \
+    "JSON parsing error at line -1 column -1 (position 0): "
+    "unable to open"
+  ;
+
+  ASSERT(strstr(error_string, expected_error_string_beginning) == error_string);
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__person__error_cannot_parse_wrong_string) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = "...";
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING);
+
+  const char *expected_error_string = \
+    "JSON parsing error at line 1 column 1 (position 1): "
+    "'[' or '{' expected near '.'"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
 
 TEST_IMPL(json2protobuf_string__person__required) {
   int result;
@@ -199,30 +277,6 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
   ASSERT_STRCMP(
     json_string,
     expected_json_string
-  );
-
-  RETURN_OK();
-}
-
-TEST_IMPL(json2protobuf_string__person__error_cannot_parse_string) {
-  int result;
-  char error_string[256] = {0};
-
-  const char *initial_json_string = "...";
-
-  ProtobufCMessage *protobuf_message = NULL;
-
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING);
-
-  const char *expected_error_string = \
-    "JSON parsing error at line 1 column 1 (position 1): "
-    "'[' or '{' expected near '.'"
-  ;
-
-  ASSERT_STRCMP(
-    error_string,
-    expected_error_string
   );
 
   RETURN_OK();
