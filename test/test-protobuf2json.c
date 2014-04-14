@@ -20,7 +20,7 @@ TEST_IMPL(protobuf2json_string__person__required) {
   person.id = 42;
 
   char *json_string;
-  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
+  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -46,7 +46,7 @@ TEST_IMPL(protobuf2json_string__person__optional) {
   person.email = "john@doe.name";
 
   char *json_string;
-  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
+  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -95,7 +95,7 @@ TEST_IMPL(protobuf2json_string__person__repeated_message) {
   person.phone[2] = (Foo__Person__PhoneNumber*)&person_phonenumber3;
 
   char *json_string;
-  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string);
+  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -132,7 +132,7 @@ TEST_IMPL(protobuf2json_string__bar__default_values) {
   bar.string_required = "required";
 
   char *json_string;
-  result = protobuf2json_string(&bar.base, JSON_INDENT(2), &json_string);
+  result = protobuf2json_string(&bar.base, JSON_INDENT(2), &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -145,6 +145,38 @@ TEST_IMPL(protobuf2json_string__bar__default_values) {
     "  \"enum_optional_default\": \"FIZZBUZZ\",\n"
     "  \"string_optional_default\": \"default value 2\"\n"
     "}"
+  );
+
+  RETURN_OK();
+}
+
+#define STRBUFFER_MIN_SIZE 16
+void* failed_malloc(size_t size) {
+  return (size == STRBUFFER_MIN_SIZE) ? NULL : malloc(size);
+}
+
+TEST_IMPL(protobuf2json_string__person__error_cannot_dump_string) {
+  int result;
+  char error_string[256] = {0};
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  char *json_string;
+  json_set_alloc_funcs(failed_malloc, free);
+  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, error_string, sizeof(error_string));
+  json_set_alloc_funcs(malloc, free);
+  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING);
+
+  const char *expected_error_string = \
+    "Cannot dump JSON object to string using json_dumps()"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
   );
 
   RETURN_OK();

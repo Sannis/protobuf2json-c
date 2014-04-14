@@ -10,6 +10,7 @@ TEST_DECLARE(protobuf2json_string__person__required)
 TEST_DECLARE(protobuf2json_string__person__optional)
 TEST_DECLARE(protobuf2json_string__person__repeated_message)
 TEST_DECLARE(protobuf2json_string__bar__default_values)
+TEST_DECLARE(protobuf2json_string__person__error_cannot_dump_string)
 
 TEST_DECLARE(json2protobuf_file__person__error_cannot_parse_wrong_file)
 TEST_DECLARE(json2protobuf_file__person__error_cannot_parse_unexistent_file)
@@ -32,6 +33,7 @@ TASK_LIST_START
   TEST_ENTRY(protobuf2json_string__person__optional)
   TEST_ENTRY(protobuf2json_string__person__repeated_message)
   TEST_ENTRY(protobuf2json_string__bar__default_values)
+  TEST_ENTRY(protobuf2json_string__person__error_cannot_dump_string)
 
   TEST_ENTRY(json2protobuf_file__person__error_cannot_parse_wrong_file)
   TEST_ENTRY(json2protobuf_file__person__error_cannot_parse_unexistent_file)

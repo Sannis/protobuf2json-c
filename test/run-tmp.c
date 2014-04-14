@@ -82,7 +82,7 @@ int list(void) {
   ASSERT(list->numbers[2] == 56);
 
   char *json_string;
-  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string);
+  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -150,7 +150,7 @@ int person(void) {
   ASSERT_STRCMP(person->name, "John Doe");
 
   char *json_string;
-  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string);
+  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 

@@ -186,7 +186,12 @@ static json_t* protobuf2json_process_message(const ProtobufCMessage *protobuf_me
 
 /* === Protobuf -> JSON === Public === */
 
-int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json_object) {
+int protobuf2json_object(
+  ProtobufCMessage *protobuf_message,
+  json_t **json_object,
+  char *error_string,
+  size_t error_size
+) {
   *json_object = protobuf2json_process_message(protobuf_message);
   if (!*json_object) {
     return PROTOBUF2JSON_ERR_CANNOT_PROCESS_MESSAGE;
@@ -195,10 +200,16 @@ int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json_objec
   return 0;
 }
 
-int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char **json_string) {
+int protobuf2json_string(
+  ProtobufCMessage *protobuf_message,
+  size_t flags,
+  char **json_string,
+  char *error_string,
+  size_t error_size
+) {
   json_t *json_object = NULL;
 
-  int ret = protobuf2json_object(protobuf_message, &json_object);
+  int ret = protobuf2json_object(protobuf_message, &json_object, error_string, error_size);
   if (ret) {
     json_decref(json_object);
     return ret;
@@ -207,6 +218,13 @@ int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char 
   // NOTICE: Should be freed by caller
   *json_string = json_dumps(json_object, flags);
   if (!*json_string) {
+    if (error_string && error_size) {
+      snprintf(
+        error_string, error_size,
+        "Cannot dump JSON object to string using json_dumps()"
+      );
+    }
+
     json_decref(json_object);
     return PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING;
   }

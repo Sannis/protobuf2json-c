@@ -34,9 +34,20 @@ extern "C" {
 
 /* === Protobuf -> JSON === */
 
-int protobuf2json_object(ProtobufCMessage *protobuf_message, json_t **json_object);
+int protobuf2json_object(
+  ProtobufCMessage *protobuf_message,
+  json_t **json_object,
+  char *error_string,
+  size_t error_size
+);
 
-int protobuf2json_string(ProtobufCMessage *protobuf_message, size_t flags, char **json_string);
+int protobuf2json_string(
+  ProtobufCMessage *protobuf_message,
+  size_t flags,
+  char **json_string,
+  char *error_string,
+  size_t error_size
+);
 
 /* === JSON -> Protobuf === */
 
