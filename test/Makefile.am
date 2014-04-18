@@ -13,7 +13,7 @@ CLEANFILES =
 CLEANFILES += *.pb-c.[ch]
 
 %.pb-c.c %.pb-c.h: %.proto
-	$(PROTOBUF_C_COMPILER) --c_out=$(top_srcdir)/test $<
+	$(PROTOBUF_C_COMPILER) --c_out=$(abs_builddir)/ -I`dirname $<` $<
 
 # check
 
