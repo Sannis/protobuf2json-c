@@ -51,7 +51,7 @@ AC_DEFUN([AX_PROTOBUF_C],
 
 AC_DEFUN([AX_LIBJANSSON],
 [
-  AC_ARG_WITH([libjanson], AC_HELP_STRING([--with-libjansson=DIR], [libjansson install directory]))
+  AC_ARG_WITH([libjansson], AC_HELP_STRING([--with-libjansson=DIR], [libjansson install directory]))
 
   LIBJANSSON_INCLUDES=""
   LIBJANSSON_LIBS=""
