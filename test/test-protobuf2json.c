@@ -150,6 +150,43 @@ TEST_IMPL(protobuf2json_string__bar__default_values) {
   RETURN_OK();
 }
 
+TEST_IMPL(protobuf2json_string__person__error_in_nested_message) {
+  int result;
+  char error_string[256] = {0};
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  Foo__Person__PhoneNumber person_phonenumber1 = FOO__PERSON__PHONE_NUMBER__INIT;
+
+  person_phonenumber1.number = "+123456789";
+  person_phonenumber1.has_type = 1;
+  person_phonenumber1.type = 777; // Unknown enum value
+
+  person.n_phone = 1;
+  person.phone = calloc(person.n_phone, sizeof(Foo__Person__PhoneNumber*));
+  ASSERT(person.phone);
+
+  person.phone[0] = (Foo__Person__PhoneNumber*)&person_phonenumber1;
+
+  char *json_string;
+  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE);
+
+  const char *expected_error_string = \
+    "Unknown value 777 for enum 'Foo.Person.PhoneType'"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
 #define STRBUFFER_MIN_SIZE 16
 void* failed_malloc(size_t size) {
   return (size == STRBUFFER_MIN_SIZE) ? NULL : malloc(size);

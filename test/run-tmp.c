@@ -11,6 +11,30 @@
 #include "test.pb-c.h"
 #include "protobuf2json.h"
 
+int person__debug(void) {
+  int result;
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  char *json_string;
+  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, NULL, 0);
+  ASSERT(result == 0);
+  ASSERT(json_string);
+
+  ASSERT_STRCMP(
+    json_string,
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42\n"
+    "}"
+  );
+
+  RETURN_OK();
+}
+
 int person__error_unknown_enum_value(void) {
   int result;
   char error_string[256] = {0};
@@ -241,6 +265,8 @@ int person__error_is_not_array(void) {
 }
 
 int main(int argc, char **argv) {
+  person__debug();
+
   person__error_unknown_enum_value();
 
   list();
