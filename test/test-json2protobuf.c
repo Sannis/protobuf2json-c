@@ -460,7 +460,7 @@ TEST_IMPL(json2protobuf_string__bar__error_int32_is_not_integer) {
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__types__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_types__descriptor, &protobuf_message, error_string, sizeof(error_string));
   ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_INTEGER);
 
   const char *expected_error_string = \

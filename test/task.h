@@ -94,17 +94,17 @@
  } while (0)
 
 /* Assert that string are equal */
-#define ASSERT_STRCMP(actual, expected)                                                \
- do {                                                                                  \
-  if (strcmp(actual, expected)) {                                                      \
-    fprintf(stderr,                                                                    \
-            "Assertion failed in %s on line %d:\n%s\n --- not equal to --- \n%s\n",    \
-            __FILE__,                                                                  \
-            __LINE__,                                                                  \
-            actual,                                                                    \
-            expected);                                                                 \
-    abort();                                                                           \
-  }                                                                                    \
+#define ASSERT_STRCMP(actual, expected)                                                         \
+ do {                                                                                           \
+  if (strcmp(actual, expected)) {                                                               \
+    fprintf(stderr,                                                                             \
+            "Assertion failed in %s on line %d:\n%s\n --- not equal to expected --- \n%s\n",    \
+            __FILE__,                                                                           \
+            __LINE__,                                                                           \
+            actual,                                                                             \
+            expected);                                                                          \
+    abort();                                                                                    \
+  }                                                                                             \
  } while (0)
 
 /* Just sugar for wrapping the main() for a task or helper. */

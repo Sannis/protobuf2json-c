@@ -23,26 +23,28 @@ static size_t protobuf2json_value_size_by_type(ProtobufCType type) {
     case PROTOBUF_C_TYPE_SFIXED32:
     case PROTOBUF_C_TYPE_UINT32:
     case PROTOBUF_C_TYPE_FIXED32:
-    case PROTOBUF_C_TYPE_FLOAT:
-      return 4;
-    case PROTOBUF_C_TYPE_ENUM:
       return 4;
     case PROTOBUF_C_TYPE_INT64:
     case PROTOBUF_C_TYPE_SINT64:
     case PROTOBUF_C_TYPE_SFIXED64:
     case PROTOBUF_C_TYPE_UINT64:
     case PROTOBUF_C_TYPE_FIXED64:
+      return 8;
+    case PROTOBUF_C_TYPE_FLOAT:
+      return 4;
     case PROTOBUF_C_TYPE_DOUBLE:
       return 8;
+    case PROTOBUF_C_TYPE_ENUM:
+      return 4;
     case PROTOBUF_C_TYPE_BOOL:
       return sizeof(protobuf_c_boolean);
     case PROTOBUF_C_TYPE_STRING:
       return sizeof(char *);
-    case PROTOBUF_C_TYPE_MESSAGE:
-      return sizeof(ProtobufCMessage *);
     case PROTOBUF_C_TYPE_BYTES:
       return sizeof(ProtobufCBinaryData);
     /* case PROTOBUF_C_TYPE_GROUP: - NOT SUPPORTED */
+    case PROTOBUF_C_TYPE_MESSAGE:
+      return sizeof(ProtobufCMessage *);
     default:
       assert(0);
       return 0;
@@ -82,14 +84,11 @@ int protobuf2json_process_field(
     case PROTOBUF_C_TYPE_FIXED64:
       *json_value = json_integer(*(uint64_t *)protobuf_value);
       break;
-    case PROTOBUF_C_TYPE_DOUBLE:
-      *json_value = json_real(*(double *)protobuf_value);
-      break;
     case PROTOBUF_C_TYPE_FLOAT:
       *json_value = json_real(*(float *)protobuf_value);
       break;
-    case PROTOBUF_C_TYPE_BOOL:
-      *json_value = json_boolean(*(protobuf_c_boolean *)protobuf_value);
+    case PROTOBUF_C_TYPE_DOUBLE:
+      *json_value = json_real(*(double *)protobuf_value);
       break;
     case PROTOBUF_C_TYPE_ENUM:
     {
@@ -114,6 +113,9 @@ int protobuf2json_process_field(
 
       break;
     }
+    case PROTOBUF_C_TYPE_BOOL:
+      *json_value = json_boolean(*(protobuf_c_boolean *)protobuf_value);
+      break;
     case PROTOBUF_C_TYPE_STRING:
       *json_value = json_string(*(char **)protobuf_value);
       break;
@@ -125,6 +127,7 @@ int protobuf2json_process_field(
 
       break;
     }*/
+    /* case PROTOBUF_C_TYPE_GROUP: - NOT SUPPORTED */
     case PROTOBUF_C_TYPE_MESSAGE:
     {
       const ProtobufCMessage **protobuf_message = (const ProtobufCMessage **)protobuf_value;
@@ -136,7 +139,6 @@ int protobuf2json_process_field(
 
       break;
     }
-    /* case PROTOBUF_C_TYPE_GROUP: - NOT SUPPORTED */
     default:
       assert(0);
   }
