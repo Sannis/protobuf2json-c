@@ -448,7 +448,7 @@ TEST_IMPL(json2protobuf_string__bar__error_enum_is_not_string) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__bar__error_int32_is_not_integer) {
+TEST_IMPL(json2protobuf_string__numeric_types__error_int32_is_not_integer) {
   int result;
   char error_string[256] = {0};
 
