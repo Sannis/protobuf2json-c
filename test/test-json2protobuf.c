@@ -282,6 +282,65 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
   RETURN_OK();
 }
 
+TEST_IMPL(json2protobuf_string__numeric_types__values) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"value_int32\": 2147483647,\n"
+    "  \"value_sint32\": -2147483648,\n"
+    "  \"value_sfixed32\": -2147483648,\n"
+    "  \"value_uint32\": 4294967295,\n"\
+    "  \"value_fixed32\": 4294967295,\n"
+    "  \"value_int64\": 9223372036854775807,\n"
+    "  \"value_sint64\": -9223372036854775808,\n"
+    "  \"value_sfixed64\": -9223372036854775808,\n"
+    /* JSON does not support max(unsigned long long) */
+    "  \"value_uint64\": 9223372036854775807,\n"
+    "  \"value_fixed64\": 9223372036854775807,\n"
+    "  \"value_float\": 0.33000001311302185,\n"
+    "  \"value_double\": 0.0077705550333011103\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_types__descriptor, &protobuf_message, NULL, 0);
+  ASSERT(result == 0);
+
+  /* Foo__Bar *bar = (Foo__Bar *)protobuf_message; */
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, JSON_INDENT(2) | JSON_PRESERVE_ORDER, &json_string, NULL, 0);
+  ASSERT(result == 0);
+  ASSERT(json_string);
+
+  const char *expected_json_string = \
+    "{\n"
+    "  \"value_int32\": 2147483647,\n"
+    "  \"value_sint32\": -2147483648,\n"
+    "  \"value_sfixed32\": -2147483648,\n"
+    "  \"value_uint32\": 4294967295,\n"\
+    "  \"value_fixed32\": 4294967295,\n"
+    "  \"value_int64\": 9223372036854775807,\n"
+    "  \"value_sint64\": -9223372036854775808,\n"
+    "  \"value_sfixed64\": -9223372036854775808,\n"
+    /* JSON does not support max(unsigned long long) */
+    "  \"value_uint64\": 9223372036854775807,\n"
+    "  \"value_fixed64\": 9223372036854775807,\n"
+    "  \"value_float\": 0.33000001311302185,\n"
+    "  \"value_double\": 0.0077705550333011103\n"
+    "}"
+  ;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  RETURN_OK();
+}
+
 TEST_IMPL(json2protobuf_string__person__error_is_not_object) {
   int result;
   char error_string[256] = {0};

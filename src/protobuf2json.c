@@ -34,10 +34,10 @@ static size_t protobuf2json_value_size_by_type(ProtobufCType type) {
       return 4;
     case PROTOBUF_C_TYPE_DOUBLE:
       return 8;
-    case PROTOBUF_C_TYPE_ENUM:
-      return 4;
     case PROTOBUF_C_TYPE_BOOL:
       return sizeof(protobuf_c_boolean);
+    case PROTOBUF_C_TYPE_ENUM:
+      return 4;
     case PROTOBUF_C_TYPE_STRING:
       return sizeof(char *);
     case PROTOBUF_C_TYPE_BYTES:
@@ -90,6 +90,9 @@ int protobuf2json_process_field(
     case PROTOBUF_C_TYPE_DOUBLE:
       *json_value = json_real(*(double *)protobuf_value);
       break;
+    case PROTOBUF_C_TYPE_BOOL:
+      *json_value = json_boolean(*(protobuf_c_boolean *)protobuf_value);
+      break;
     case PROTOBUF_C_TYPE_ENUM:
     {
       const ProtobufCEnumValue *protobuf_enum_value = protobuf_c_enum_descriptor_get_value(
@@ -113,9 +116,6 @@ int protobuf2json_process_field(
 
       break;
     }
-    case PROTOBUF_C_TYPE_BOOL:
-      *json_value = json_boolean(*(protobuf_c_boolean *)protobuf_value);
-      break;
     case PROTOBUF_C_TYPE_STRING:
       *json_value = json_string(*(char **)protobuf_value);
       break;
@@ -127,7 +127,7 @@ int protobuf2json_process_field(
 
       break;
     }*/
-    /* case PROTOBUF_C_TYPE_GROUP: - NOT SUPPORTED */
+    /* PROTOBUF_C_TYPE_GROUP - NOT SUPPORTED */
     case PROTOBUF_C_TYPE_MESSAGE:
     {
       const ProtobufCMessage **protobuf_message = (const ProtobufCMessage **)protobuf_value;
@@ -361,6 +361,34 @@ int json2protobuf_process_message(
   size_t error_size
 );
 
+static const char* json2protobuf_integer_name_by_c_type(ProtobufCType type) {
+  switch (type) {
+    case PROTOBUF_C_TYPE_INT32:
+      return "int32";
+    case PROTOBUF_C_TYPE_SINT32:
+      return "sint32";
+    case PROTOBUF_C_TYPE_SFIXED32:
+      return "sfixed32";
+    case PROTOBUF_C_TYPE_UINT32:
+      return "uint32";
+    case PROTOBUF_C_TYPE_FIXED32:
+      return "sfixed32";
+    case PROTOBUF_C_TYPE_INT64:
+      return "int64";
+    case PROTOBUF_C_TYPE_SINT64:
+      return "sint64";
+    case PROTOBUF_C_TYPE_SFIXED64:
+      return "sfixed64";
+    case PROTOBUF_C_TYPE_UINT64:
+      return "uint64";
+    case PROTOBUF_C_TYPE_FIXED64:
+      return "sfixed64";
+    default:
+      assert(0);
+      return "unknown";
+  }
+}
+
 int json2protobuf_process_field(
   const ProtobufCFieldDescriptor *field_descriptor,
   json_t *json_value,
@@ -368,15 +396,125 @@ int json2protobuf_process_field(
   char *error_string,
   size_t error_size
 ) {
-  if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
-    ProtobufCMessage *protobuf_message;
+  if (field_descriptor->type == PROTOBUF_C_TYPE_INT32
+   || field_descriptor->type == PROTOBUF_C_TYPE_SINT32
+   || field_descriptor->type == PROTOBUF_C_TYPE_SFIXED32
+  ) {
+    if (!json_is_integer(json_value)) {
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "JSON value is not an integer required for GPB %s",
+          json2protobuf_integer_name_by_c_type(field_descriptor->type)
+        );
+      }
 
-    int result = json2protobuf_process_message(json_value, field_descriptor->descriptor, &protobuf_message, error_string, error_size);
-    if (result) {
-      return result;
+      return PROTOBUF2JSON_ERR_IS_NOT_INTEGER;
     }
 
-    memcpy(protobuf_value, &protobuf_message, sizeof(protobuf_message));
+    int32_t value_int32_t = (int32_t)json_integer_value(json_value);
+
+    memcpy(protobuf_value, &value_int32_t, sizeof(value_int32_t));
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_UINT32
+          || field_descriptor->type == PROTOBUF_C_TYPE_FIXED32
+  ) {
+    if (!json_is_integer(json_value)) {
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "JSON value is not an integer required for GPB %s",
+          json2protobuf_integer_name_by_c_type(field_descriptor->type)
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_IS_NOT_INTEGER;
+    }
+
+    uint32_t value_uint32_t = (uint32_t)json_integer_value(json_value);
+
+    memcpy(protobuf_value, &value_uint32_t, sizeof(value_uint32_t));
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_INT64
+          || field_descriptor->type == PROTOBUF_C_TYPE_SINT64
+          || field_descriptor->type == PROTOBUF_C_TYPE_SFIXED64
+  ) {
+    if (!json_is_integer(json_value)) {
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "JSON value is not an integer required for GPB %s",
+          json2protobuf_integer_name_by_c_type(field_descriptor->type)
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_IS_NOT_INTEGER;
+    }
+
+    int64_t value_int64_t = (int64_t)json_integer_value(json_value);
+
+    memcpy(protobuf_value, &value_int64_t, sizeof(value_int64_t));
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_UINT64
+          || field_descriptor->type == PROTOBUF_C_TYPE_FIXED64
+  ) {
+    if (!json_is_integer(json_value)) {
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "JSON value is not an integer required for GPB %s",
+          json2protobuf_integer_name_by_c_type(field_descriptor->type)
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_IS_NOT_INTEGER;
+    }
+
+    uint64_t value_uint64_t = (uint64_t)json_integer_value(json_value);
+
+    memcpy(protobuf_value, &value_uint64_t, sizeof(value_uint64_t));
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_FLOAT) {
+    if (!json_is_real(json_value)) {
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "JSON value is not a real required for GPB float"
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_IS_NOT_REAL;
+    }
+
+    float value_float = (float)json_real_value(json_value);
+
+    memcpy(protobuf_value, &value_float, sizeof(value_float));
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_DOUBLE) {
+    if (!json_is_real(json_value)) {
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "JSON value is not a real required for GPB double"
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_IS_NOT_REAL;
+    }
+
+    double value_double = (double)json_real_value(json_value);
+
+    memcpy(protobuf_value, &value_double, sizeof(value_double));
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_BOOL) {
+    if (!json_is_boolean(json_value)) {
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "JSON value is not a bool required for GPB bool"
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_IS_NOT_REAL;
+    }
+
+    protobuf_c_boolean value_boolean = (protobuf_c_boolean)json_boolean(json_value);
+
+    memcpy(protobuf_value, &value_boolean, sizeof(value_boolean));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_ENUM) {
     if (!json_is_string(json_value)) {
       if (error_string && error_size) {
@@ -406,24 +544,9 @@ int json2protobuf_process_field(
       return PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE;
     }
 
-    int32_t value = (int32_t)enum_value->value;
+    int32_t value_enum = (int32_t)enum_value->value;
 
-    memcpy(protobuf_value, &value, sizeof(value));
-  } else if (field_descriptor->type == PROTOBUF_C_TYPE_INT32) {
-    if (!json_is_integer(json_value)) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "JSON value is not an integer required for GPB int32"
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_IS_NOT_INTEGER;
-    }
-
-    int32_t value = (int32_t)json_integer_value(json_value);
-
-    memcpy(protobuf_value, &value, sizeof(value));
+    memcpy(protobuf_value, &value_enum, sizeof(value_enum));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
     if (!json_is_string(json_value)) {
       if (error_string && error_size) {
@@ -436,9 +559,30 @@ int json2protobuf_process_field(
       return PROTOBUF2JSON_ERR_IS_NOT_STRING;
     }
 
-    const char* value = json_string_value(json_value);
+    const char* value_string = json_string_value(json_value);
 
-    memcpy(protobuf_value, &value, sizeof(value));
+    memcpy(protobuf_value, &value_string, sizeof(value_string));
+  /*} else if (field_descriptor->type == PROTOBUF_C_TYPE_BYTES) {*/
+  /* PROTOBUF_C_TYPE_GROUP - NOT SUPPORTED */
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
+    ProtobufCMessage *protobuf_message;
+
+    int result = json2protobuf_process_message(json_value, field_descriptor->descriptor, &protobuf_message, error_string, error_size);
+    if (result) {
+      return result;
+    }
+
+    memcpy(protobuf_value, &protobuf_message, sizeof(protobuf_message));
+   } else {
+    if (error_string && error_size) {
+      snprintf(
+        error_string, error_size,
+        "Cannot process unsupported field type %d in json2protobuf_process_field()",
+        field_descriptor->type
+      );
+    }
+
+    return PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE;
   }
 
   return 0;

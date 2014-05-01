@@ -171,7 +171,7 @@ TEST_IMPL(protobuf2json_string__numeric_types__values) {
   numeric_types.value_sint64 = -9223372036854775807 - 1;
   numeric_types.has_value_sfixed64 = 1;
   numeric_types.value_sfixed64 = -9223372036854775807 - 1;
-  // JSON does not support max(unsigned long long)
+  /* JSON does not support max(unsigned long long) */
   numeric_types.has_value_uint64 = 1;
   numeric_types.value_uint64 = 9223372036854775807;
   numeric_types.has_value_fixed64 = 1;
@@ -198,6 +198,7 @@ TEST_IMPL(protobuf2json_string__numeric_types__values) {
     "  \"value_int64\": 9223372036854775807,\n"
     "  \"value_sint64\": -9223372036854775808,\n"
     "  \"value_sfixed64\": -9223372036854775808,\n"
+    /* JSON does not support max(unsigned long long) */
     "  \"value_uint64\": 9223372036854775807,\n"
     "  \"value_fixed64\": 9223372036854775807,\n"
     "  \"value_float\": 0.33000001311302185,\n"

@@ -27,11 +27,13 @@
 /* json2protobuf_file */
 #define PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE      -302
 /* json2protobuf */
-#define PROTOBUF2JSON_ERR_IS_NOT_OBJECT          -401
-#define PROTOBUF2JSON_ERR_IS_NOT_ARRAY           -402
-#define PROTOBUF2JSON_ERR_IS_NOT_STRING          -403
+#define PROTOBUF2JSON_ERR_UNKNOWN_FIELD          -401
+#define PROTOBUF2JSON_ERR_IS_NOT_OBJECT          -402
+#define PROTOBUF2JSON_ERR_IS_NOT_ARRAY           -403
 #define PROTOBUF2JSON_ERR_IS_NOT_INTEGER         -404
-#define PROTOBUF2JSON_ERR_UNKNOWN_FIELD          -405
+#define PROTOBUF2JSON_ERR_IS_NOT_REAL            -405
+#define PROTOBUF2JSON_ERR_IS_NOT_BOOLEAN         -406
+#define PROTOBUF2JSON_ERR_IS_NOT_STRING          -407
 
 #ifdef __cplusplus
 extern "C" {
