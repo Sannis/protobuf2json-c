@@ -251,6 +251,14 @@ int protobuf2json_process_message(
 
         size_t value_size = protobuf2json_value_size_by_type(field_descriptor->type);
         if (!value_size) {
+          if (error_string && error_size) {
+            snprintf(
+              error_string, error_size,
+              "Cannot calculate value size for %d using protobuf2json_value_size_by_type()",
+              field_descriptor->type
+            );
+          }
+
           return PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE;
         }
 
