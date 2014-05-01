@@ -127,6 +127,7 @@ TEST_IMPL(json2protobuf_string__person__required) {
     expected_json_string
   );
 
+  protobuf_c_message_free_unpacked(protobuf_message, &protobuf_c_default_allocator);
   free(json_string);
 
   RETURN_OK();
@@ -173,6 +174,7 @@ TEST_IMPL(json2protobuf_string__person__optional) {
     expected_json_string
   );
 
+  protobuf_c_message_free_unpacked(protobuf_message, &protobuf_c_default_allocator);
   free(json_string);
 
   RETURN_OK();
@@ -244,6 +246,7 @@ TEST_IMPL(json2protobuf_string__person__repeated_message) {
     expected_json_string
   );
 
+  protobuf_c_message_free_unpacked(protobuf_message, &protobuf_c_default_allocator);
   free(json_string);
 
   RETURN_OK();
@@ -285,6 +288,7 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
     expected_json_string
   );
 
+  protobuf_c_message_free_unpacked(protobuf_message, &protobuf_c_default_allocator);
   free(json_string);
 
   RETURN_OK();
@@ -346,6 +350,7 @@ TEST_IMPL(json2protobuf_string__numeric_types__values) {
     expected_json_string
   );
 
+  protobuf_c_message_free_unpacked(protobuf_message, &protobuf_c_default_allocator);
   free(json_string);
 
   RETURN_OK();
@@ -397,6 +402,8 @@ TEST_IMPL(json2protobuf_string__person__error_unknown_field) {
     error_string,
     expected_error_string
   );
+
+  protobuf_c_message_free_unpacked(protobuf_message, &protobuf_c_default_allocator);
 
   RETURN_OK();
 }
@@ -459,6 +466,8 @@ TEST_IMPL(json2protobuf_string__person__error_is_not_array) {
     expected_error_string
   );
 
+  protobuf_c_message_free_unpacked(protobuf_message, &protobuf_c_default_allocator);
+
   RETURN_OK();
 }
 
@@ -485,6 +494,8 @@ TEST_IMPL(json2protobuf_string__bar__error_string_is_not_string) {
     error_string,
     expected_error_string
   );
+
+  protobuf_c_message_free_unpacked(protobuf_message, &protobuf_c_default_allocator);
 
   RETURN_OK();
 }
@@ -540,6 +551,8 @@ TEST_IMPL(json2protobuf_string__numeric_types__error_int32_is_not_integer) {
     error_string,
     expected_error_string
   );
+
+  protobuf_c_message_free_unpacked(protobuf_message, &protobuf_c_default_allocator);
 
   RETURN_OK();
 }
