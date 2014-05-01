@@ -127,6 +127,8 @@ TEST_IMPL(json2protobuf_string__person__required) {
     expected_json_string
   );
 
+  free(json_string);
+
   RETURN_OK();
 }
 
@@ -170,6 +172,8 @@ TEST_IMPL(json2protobuf_string__person__optional) {
     json_string,
     expected_json_string
   );
+
+  free(json_string);
 
   RETURN_OK();
 }
@@ -240,6 +244,8 @@ TEST_IMPL(json2protobuf_string__person__repeated_message) {
     expected_json_string
   );
 
+  free(json_string);
+
   RETURN_OK();
 }
 
@@ -278,6 +284,8 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
     json_string,
     expected_json_string
   );
+
+  free(json_string);
 
   RETURN_OK();
 }
@@ -337,6 +345,8 @@ TEST_IMPL(json2protobuf_string__numeric_types__values) {
     json_string,
     expected_json_string
   );
+
+  free(json_string);
 
   RETURN_OK();
 }

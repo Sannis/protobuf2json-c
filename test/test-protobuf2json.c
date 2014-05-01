@@ -32,6 +32,8 @@ TEST_IMPL(protobuf2json_string__person__required) {
     "}"
   );
 
+  free(json_string);
+
   RETURN_OK();
 }
 
@@ -58,6 +60,8 @@ TEST_IMPL(protobuf2json_string__person__optional) {
     "  \"email\": \"john@doe.name\"\n"
     "}"
   );
+
+  free(json_string);
 
   RETURN_OK();
 }
@@ -121,6 +125,8 @@ TEST_IMPL(protobuf2json_string__person__repeated_message) {
     "}"
   );
 
+  free(json_string);
+
   RETURN_OK();
 }
 
@@ -145,6 +151,8 @@ TEST_IMPL(protobuf2json_string__bar__default_values) {
     "  \"enum_optional_default\": \"FIZZBUZZ\"\n"
     "}"
   );
+
+  free(json_string);
 
   RETURN_OK();
 }
@@ -205,6 +213,8 @@ TEST_IMPL(protobuf2json_string__numeric_types__values) {
     "  \"value_double\": 0.0077705550333011103\n"
     "}"
   );
+
+  free(json_string);
 
   RETURN_OK();
 }
