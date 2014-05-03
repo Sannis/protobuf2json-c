@@ -20,7 +20,7 @@ int person__debug(void) {
   person.id = 42;
 
   char *json_string;
-  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, NULL, 0);
+  result = protobuf2json_string(&person.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -106,7 +106,7 @@ int list(void) {
   ASSERT(list->numbers[2] == 56);
 
   char *json_string;
-  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string, NULL, 0);
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -174,7 +174,7 @@ int person(void) {
   ASSERT_STRCMP(person->name, "John Doe");
 
   char *json_string;
-  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string, NULL, 0);
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 

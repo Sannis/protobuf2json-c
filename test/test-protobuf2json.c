@@ -20,7 +20,7 @@ TEST_IMPL(protobuf2json_string__person__required) {
   person.id = 42;
 
   char *json_string;
-  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, NULL, 0);
+  result = protobuf2json_string(&person.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -48,7 +48,7 @@ TEST_IMPL(protobuf2json_string__person__optional) {
   person.email = "john@doe.name";
 
   char *json_string;
-  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, NULL, 0);
+  result = protobuf2json_string(&person.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -99,7 +99,7 @@ TEST_IMPL(protobuf2json_string__person__repeated_message) {
   person.phone[2] = (Foo__Person__PhoneNumber*)&person_phonenumber3;
 
   char *json_string;
-  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, NULL, 0);
+  result = protobuf2json_string(&person.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -138,7 +138,7 @@ TEST_IMPL(protobuf2json_string__bar__default_values) {
   bar.string_required = "required";
 
   char *json_string;
-  result = protobuf2json_string(&bar.base, JSON_INDENT(2) | JSON_PRESERVE_ORDER, &json_string, NULL, 0);
+  result = protobuf2json_string(&bar.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -191,7 +191,7 @@ TEST_IMPL(protobuf2json_string__numeric_types__values) {
   numeric_types.value_double = 0.00777055503330111;
 
   char *json_string;
-  result = protobuf2json_string(&numeric_types.base, JSON_INDENT(2) | JSON_PRESERVE_ORDER, &json_string, NULL, 0);
+  result = protobuf2json_string(&numeric_types.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -241,7 +241,7 @@ TEST_IMPL(protobuf2json_string__person__error_in_nested_message) {
   person.phone[0] = (Foo__Person__PhoneNumber*)&person_phonenumber1;
 
   char *json_string;
-  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, error_string, sizeof(error_string));
+  result = protobuf2json_string(&person.base, 0, &json_string, error_string, sizeof(error_string));
   ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE);
 
   const char *expected_error_string = \
@@ -272,7 +272,7 @@ TEST_IMPL(protobuf2json_string__person__error_cannot_dump_string) {
 
   char *json_string;
   json_set_alloc_funcs(failed_malloc, free);
-  result = protobuf2json_string(&person.base, JSON_INDENT(2), &json_string, error_string, sizeof(error_string));
+  result = protobuf2json_string(&person.base, 0, &json_string, error_string, sizeof(error_string));
   json_set_alloc_funcs(malloc, free);
   ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING);
 

@@ -111,7 +111,7 @@ TEST_IMPL(json2protobuf_string__person__required) {
   ASSERT(!person->email);
 
   char *json_string;
-  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string, NULL, 0);
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -157,7 +157,7 @@ TEST_IMPL(json2protobuf_string__person__optional) {
   ASSERT_STRCMP(person->email, "john@doe.name");
 
   char *json_string;
-  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string, NULL, 0);
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -216,7 +216,7 @@ TEST_IMPL(json2protobuf_string__person__repeated_message) {
   ASSERT(person->n_phone == 3);
 
   char *json_string;
-  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string, NULL, 0);
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -270,7 +270,7 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
   ASSERT_STRCMP(bar->string_required, "required");
 
   char *json_string;
-  result = protobuf2json_string(protobuf_message, JSON_INDENT(2), &json_string, NULL, 0);
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
@@ -278,8 +278,8 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
     "{\n"
     "  \"string_required\": \"required\",\n"
     "  \"string_required_default\": \"default value 1\",\n"
-    "  \"enum_optional_default\": \"FIZZBUZZ\",\n"
-    "  \"string_optional_default\": \"default value 2\"\n"
+    "  \"string_optional_default\": \"default value 2\",\n"
+    "  \"enum_optional_default\": \"FIZZBUZZ\"\n"
     "}"
   ;
 
@@ -323,7 +323,7 @@ TEST_IMPL(json2protobuf_string__numeric_types__values) {
   /* Foo__Bar *bar = (Foo__Bar *)protobuf_message; */
 
   char *json_string;
-  result = protobuf2json_string(protobuf_message, JSON_INDENT(2) | JSON_PRESERVE_ORDER, &json_string, NULL, 0);
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT(result == 0);
   ASSERT(json_string);
 
