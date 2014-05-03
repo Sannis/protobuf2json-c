@@ -39,3 +39,8 @@ message NumericTypes {
   // skip bytes
   // skip message
 }
+
+message BooleanValues {
+  required bool value_true = 1;
+  required bool value_false = 2;
+}

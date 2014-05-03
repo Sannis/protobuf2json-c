@@ -356,6 +356,46 @@ TEST_IMPL(json2protobuf_string__numeric_types__values) {
   RETURN_OK();
 }
 
+TEST_IMPL(json2protobuf_string__boolean_values__values) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"value_true\": true,\n"
+    "  \"value_false\": false\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__boolean_values__descriptor, &protobuf_message, NULL, 0);
+  ASSERT(result == 0);
+
+  /* Foo__BooleanValues *boolean_values = (Foo__BooleanValues *)protobuf_message; */
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT(result == 0);
+  ASSERT(json_string);
+
+  const char *expected_json_string = \
+    "{\n"
+    "  \"value_true\": true,\n"
+    "  \"value_false\": false\n"
+    "}"
+  ;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, &protobuf_c_default_allocator);
+  free(json_string);
+
+  RETURN_OK();
+}
+
 TEST_IMPL(json2protobuf_string__person__error_is_not_object) {
   int result;
   char error_string[256] = {0};

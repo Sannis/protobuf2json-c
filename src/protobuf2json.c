@@ -512,7 +512,7 @@ int json2protobuf_process_field(
       return PROTOBUF2JSON_ERR_IS_NOT_REAL;
     }
 
-    protobuf_c_boolean value_boolean = (protobuf_c_boolean)json_boolean(json_value);
+    protobuf_c_boolean value_boolean = (protobuf_c_boolean)json_boolean_value(json_value);
 
     memcpy(protobuf_value, &value_boolean, sizeof(value_boolean));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_ENUM) {

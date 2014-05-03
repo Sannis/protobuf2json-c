@@ -11,6 +11,10 @@
 
 #include <jansson.h>
 
+#ifndef json_boolean_value
+# define json_boolean_value(json) ((json) && json_typeof(json) == JSON_TRUE)
+#endif
+
 #ifndef json_boolean
 # define json_boolean(val) ((val) ? json_true() : json_false())
 #endif
