@@ -330,7 +330,6 @@ int protobuf2json_string(
 
   int ret = protobuf2json_object(protobuf_message, &json_object, error_string, error_size);
   if (ret) {
-    json_decref(json_object);
     return ret;
   }
 
