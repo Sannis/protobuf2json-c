@@ -4,10 +4,6 @@ protobuf2json-c releases
 master - UNRELEASED
 -------------------
 
- * New features:
-
-   - protobuf2json: add missed error string setting for unsupported field type
-
  * Fixes:
 
    - protobuf2json: remove unnecessary json_decref
@@ -18,6 +14,14 @@ master - UNRELEASED
    - api: change error constants values
    - test: free json_string and protobuf_message
    - test: use TEST_JSON_FLAGS in all positive tests
+
+
+v0.1.0 - 02 May 2014
+--------------------
+
+ * New features:
+
+   - json2protobuf: support for all numeric types and boolean
 
 
 v0.0.5 - 01 May 2014
