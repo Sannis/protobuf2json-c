@@ -95,7 +95,7 @@ AC_DEFUN([AX_SANITIZE],
   SANITIZE_CFLAGS=""
   SANITIZE_LIBS=""
 
-  # ASAN
+  # AddressSanitizer
   if test "x$SANITIZE" = "xaddress" ; then
     SANITIZE_CFLAGS+="-fsanitize=address"
     SANITIZE_LIBS+="-fsanitize=address"
@@ -103,15 +103,28 @@ AC_DEFUN([AX_SANITIZE],
     AC_MSG_RESULT([sanitize: -fsanitize=address])
   fi
 
-  # TSAN (not now)
-  if test "x$SANITIZE" = "xthread" ; then
-    SANITIZE_CFLAGS+="-fsanitize=thread"
-    SANITIZE_LIBS+="-fsanitize=thread"
+  # -fsanitize=undefined
+  if test "x$SANITIZE" = "xundefined" ; then
+    SANITIZE_CFLAGS+="-fsanitize=undefined"
+    SANITIZE_LIBS+="-fsanitize=undefined"
 
-    AC_MSG_RESULT([sanitize: -fsanitize=thread])
+    AC_MSG_RESULT([sanitize: -fsanitize=undefined])
   fi
 
-  # MSAN
+  # -fsanitize=integer
+  # -fsanitize=integer-divide-by-zero
+  # -fsanitize=signed-integer-overflow
+  if test "x$SANITIZE" = "xinteger" ; then
+    SANITIZE_CFLAGS+="-fsanitize=integer -fsanitize=integer-divide-by-zero -fsanitize=signed-integer-overflow"
+    SANITIZE_LIBS+="-fsanitize=integer -fsanitize=integer-divide-by-zero -fsanitize=signed-integer-overflow"
+
+    AC_MSG_RESULT([sanitize: -fsanitize=integer -fsanitize=integer-divide-by-zero -fsanitize=signed-integer-overflow])
+  fi
+
+  # MemorySanitizer (not now)
+  # MemorySanitizer requires that all program code is instrumented.
+  # This also includes any libraries that the program depends on, even libc.
+  # Failing to achieve this may result in false reports.
   if test "x$SANITIZE" = "xmemory" ; then
     SANITIZE_CFLAGS+="-fsanitize=memory -fsanitize-memory-track-origins"
     SANITIZE_LIBS+="-fsanitize=memory -fsanitize-memory-track-origins"
@@ -119,12 +132,12 @@ AC_DEFUN([AX_SANITIZE],
     AC_MSG_RESULT([sanitize: -fsanitize=memory])
   fi
 
-  # UBSAN
-  if test "x$SANITIZE" = "xundefined" ; then
-    SANITIZE_CFLAGS+="-fsanitize=undefined"
-    SANITIZE_LIBS+="-fsanitize=undefined"
+  # ThreadSanitizer (not now)
+  if test "x$SANITIZE" = "xthread" ; then
+    SANITIZE_CFLAGS+="-fsanitize=thread"
+    SANITIZE_LIBS+="-fsanitize=thread"
 
-    AC_MSG_RESULT([sanitize: -fsanitize=undefined])
+    AC_MSG_RESULT([sanitize: -fsanitize=thread])
   fi
 
   if test -n "$SANITIZE"; then

@@ -6,17 +6,22 @@ env:
   -
   - SANITIZE=address
   - SANITIZE=undefined
+  - SANITIZE=integer
 matrix:
   exclude:
     - compiler: gcc
       env: SANITIZE=address
     - compiler: gcc
       env: SANITIZE=undefined
+    - compiler: gcc
+      env: SANITIZE=integer
   allow_failures:
     - compiler: clang
       env: SANITIZE=address
     - compiler: clang
       env: SANITIZE=undefined
+    - compiler: clang
+      env: SANITIZE=integer
 before_install:
   - sudo apt-get install libprotobuf-c0-dev libprotobuf-c0 protobuf-c-compiler
   - sudo apt-get install libjansson-dev libjansson4

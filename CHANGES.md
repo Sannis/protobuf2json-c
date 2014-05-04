@@ -23,6 +23,10 @@ v0.1.0 - 02 May 2014
 
    - json2protobuf: support for all numeric types and boolean
 
+ * Other:
+
+   - build: sanitizing integer errors
+
 
 v0.0.5 - 01 May 2014
 --------------------
