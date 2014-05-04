@@ -1,7 +1,7 @@
 protobuf2json-c releases
 ========================
 
-master - UNRELEASED
+v0.1.1 - 04 May 2014
 -------------------
 
  * Fixes:
@@ -12,7 +12,7 @@ master - UNRELEASED
 
  * Other:
 
-   - api: change error constants values
+   - build: sanitizing integer errors
    - test: free json_string and protobuf_message
    - test: use TEST_JSON_FLAGS in all positive tests
 
@@ -26,7 +26,7 @@ v0.1.0 - 02 May 2014
 
  * Other:
 
-   - build: sanitizing integer errors
+   - api: change error constants values
 
 
 v0.0.5 - 01 May 2014
