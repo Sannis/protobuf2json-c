@@ -15,6 +15,42 @@
 
 extern char executable_path[MAXPATHLEN];
 
+TEST_IMPL(json2protobuf_file__person__success) {
+  int result;
+  char error_string[256] = {0};
+
+  char file_path[MAXPATHLEN] = {0};
+  char file_name[MAXPATHLEN] = {0};
+
+  result = realpath(dirname(executable_path), file_path) ? 1 : 0;
+  ASSERT(result > 0);
+
+  result = snprintf(file_name, sizeof(file_name) - 1, "%s/good.json", file_path);
+  ASSERT(result > 0);
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_file((char *)file_name, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == 0);
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT(result == 0);
+  ASSERT(json_string);
+
+  ASSERT_STRCMP(
+    json_string,
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42\n"
+    "}"
+  );
+
+  free(json_string);
+
+  RETURN_OK();
+}
+
 TEST_IMPL(json2protobuf_file__person__error_cannot_parse_wrong_file) {
   int result;
   char error_string[256] = {0};
@@ -25,12 +61,12 @@ TEST_IMPL(json2protobuf_file__person__error_cannot_parse_wrong_file) {
   result = realpath(dirname(executable_path), file_path) ? 1 : 0;
   ASSERT(result > 0);
 
-  result = snprintf(file_name, sizeof(file_name) - 1, "%s/wrong.json", file_path);
+  result = snprintf(file_name, sizeof(file_name) - 1, "%s/bad.json", file_path);
   ASSERT(result > 0);
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_file((char *)file_name, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  result = json2protobuf_file((char *)file_name, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
   ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE);
 
   const char *expected_error_string = \
@@ -61,7 +97,7 @@ TEST_IMPL(json2protobuf_file__person__error_cannot_parse_unexistent_file) {
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_file((char *)file_name, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  result = json2protobuf_file((char *)file_name, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
   ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE);
 
   const char *expected_error_string_beginning = \
