@@ -8,6 +8,7 @@ master - UNRELEASED
 
    - protobuf2json: remove unnecessary json_decref
    - json2protobuf: fix boolean values converting
+   - test: allocate test file path in heap
 
  * Other:
 

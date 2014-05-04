@@ -26,6 +26,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #if defined(_MSC_VER) && _MSC_VER < 1600
 # include "stdint-msvc2008.h"
@@ -45,6 +46,18 @@
 # endif
 # ifndef S_IWUSR
 #  define S_IWUSR _S_IWRITE
+# endif
+#endif
+
+#ifndef MAXPATHLEN
+# ifdef PATH_MAX
+#  define MAXPATHLEN PATH_MAX
+# elif defined(_MAX_PATH)
+#  define MAXPATHLEN _MAX_PATH
+# elif defined(CCHMAXPATH)
+#  define MAXPATHLEN CCHMAXPATH
+# else
+#  define MAXPATHLEN 1024
 # endif
 #endif
 

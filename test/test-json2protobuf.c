@@ -13,15 +13,19 @@
 #include "test.pb-c.h"
 #include "protobuf2json.h"
 
-#define PATHMAX 1024
-extern char executable_path[];
+extern char executable_path[MAXPATHLEN];
 
 TEST_IMPL(json2protobuf_file__person__error_cannot_parse_wrong_file) {
   int result;
-  char file_name[256] = {0};
   char error_string[256] = {0};
 
-  result = snprintf(file_name, 256, "%s/wrong.json", realpath(dirname(executable_path), 0));
+  char file_path[MAXPATHLEN] = {0};
+  char file_name[MAXPATHLEN] = {0};
+
+  result = realpath(dirname(executable_path), file_path) ? 1 : 0;
+  ASSERT(result > 0);
+
+  result = snprintf(file_name, sizeof(file_name) - 1, "%s/wrong.json", file_path);
   ASSERT(result > 0);
 
   ProtobufCMessage *protobuf_message = NULL;
@@ -44,10 +48,15 @@ TEST_IMPL(json2protobuf_file__person__error_cannot_parse_wrong_file) {
 
 TEST_IMPL(json2protobuf_file__person__error_cannot_parse_unexistent_file) {
   int result;
-  char file_name[256] = {0};
   char error_string[256] = {0};
 
-  result = snprintf(file_name, 256, "%s/unexistent.json", realpath(dirname(executable_path), 0));
+  char file_path[MAXPATHLEN] = {0};
+  char file_name[MAXPATHLEN] = {0};
+
+  result = realpath(dirname(executable_path), file_path) ? 1 : 0;
+  ASSERT(result > 0);
+
+  result = snprintf(file_name, sizeof(file_name) - 1, "%s/unexistent.json", file_path);
   ASSERT(result > 0);
 
   ProtobufCMessage *protobuf_message = NULL;

@@ -25,7 +25,7 @@
 #include "runner.h"
 #include "task.h"
 
-char executable_path[PATHMAX] = { '\0' };
+char executable_path[MAXPATHLEN] = {0};
 
 int tap_output = 0;
 

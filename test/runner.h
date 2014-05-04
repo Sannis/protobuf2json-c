@@ -24,6 +24,8 @@
 
 #include <stdio.h> /* FILE */
 
+#include "task.h"
+
 
 /*
  * The maximum number of processes (main + helpers) that a test / benchmark
@@ -83,8 +85,7 @@ typedef struct {
 #define TEST_HELPER       HELPER_ENTRY
 #define BENCHMARK_HELPER  HELPER_ENTRY
 
-#define PATHMAX 1024
-extern char executable_path[PATHMAX];
+extern char executable_path[MAXPATHLEN];
 
 /*
  * Include platform-dependent definitions
