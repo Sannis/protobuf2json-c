@@ -19,6 +19,8 @@
 
 /* protobuf2json_string */
 #define PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING     -101
+/* protobuf2json_file */
+#define PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE       -102
 /* protobuf2json */
 #define PROTOBUF2JSON_ERR_JANSSON_INTERNAL       -201
 
@@ -52,6 +54,15 @@ int protobuf2json_string(
   ProtobufCMessage *protobuf_message,
   size_t flags,
   char **json_string,
+  char *error_string,
+  size_t error_size
+);
+
+int protobuf2json_file(
+  ProtobufCMessage *protobuf_message,
+  size_t flags,
+  char *json_file,
+  char *fopen_mode,
   char *error_string,
   size_t error_size
 );

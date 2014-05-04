@@ -6,6 +6,7 @@
  * See LICENSE for details.
  */
 
+TEST_DECLARE(protobuf2json_file__person__success)
 TEST_DECLARE(protobuf2json_string__person__required)
 TEST_DECLARE(protobuf2json_string__person__optional)
 TEST_DECLARE(protobuf2json_string__person__repeated_message)
@@ -33,6 +34,7 @@ TEST_DECLARE(json2protobuf_string__numeric_types__error_int32_is_not_integer)
 
 
 TASK_LIST_START
+  TEST_ENTRY(protobuf2json_file__person__success)
   TEST_ENTRY(protobuf2json_string__person__required)
   TEST_ENTRY(protobuf2json_string__person__optional)
   TEST_ENTRY(protobuf2json_string__person__repeated_message)

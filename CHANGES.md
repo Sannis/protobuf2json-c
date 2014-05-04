@@ -1,8 +1,16 @@
 protobuf2json-c releases
 ========================
 
-v0.1.1 - 04 May 2014
+master - UNRELEASED
 -------------------
+
+ * New features:
+
+   - protobuf2json: implement protobuf2json_file() function
+
+
+v0.1.1 - 04 May 2014
+--------------------
 
  * Fixes:
 

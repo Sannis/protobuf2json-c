@@ -6,10 +6,70 @@
  * See LICENSE for details.
  */
 
+#include <libgen.h>
+#include <stdio.h>
+#include <unistd.h>
+
 #include "task.h"
 #include "person.pb-c.h"
 #include "test.pb-c.h"
 #include "protobuf2json.h"
+
+extern char executable_path[MAXPATHLEN];
+
+TEST_IMPL(protobuf2json_file__person__success) {
+  int result;
+
+  char file_path[MAXPATHLEN] = {0};
+  char file_name[MAXPATHLEN] = {0};
+  long json_string_length = 0;
+
+  result = realpath(dirname(executable_path), file_path) ? 1 : 0;
+  ASSERT(result > 0);
+
+  result = snprintf(file_name, sizeof(file_name) - 1, "%s/existent.json", file_path);
+  ASSERT(result > 0);
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  result = protobuf2json_file(&person.base, TEST_JSON_FLAGS, file_name, "w", NULL, 0);
+  ASSERT(result == 0);
+
+  FILE *fd = fopen(file_name, "r");
+  ASSERT(fd);
+
+  result = fseek(fd, 0, SEEK_END);
+  ASSERT(result == 0);
+  json_string_length = ftell(fd);
+  ASSERT(json_string_length > 0);
+  rewind(fd);
+
+  char *json_string = (char *)calloc(sizeof(char), json_string_length + 1);
+  ASSERT(json_string);
+
+  result = fread(json_string, 1, json_string_length, fd);
+  ASSERT(result == json_string_length);
+  json_string[json_string_length] = '\0';
+
+  ASSERT_STRCMP(
+    json_string,
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42\n"
+    "}"
+  );
+
+  free(json_string);
+  fclose(fd);
+
+  result = unlink(file_name);
+  ASSERT(result == 0);
+
+  RETURN_OK();
+}
 
 TEST_IMPL(protobuf2json_string__person__required) {
   int result;

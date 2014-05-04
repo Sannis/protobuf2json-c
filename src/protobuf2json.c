@@ -8,6 +8,8 @@
 
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
+#include <errno.h>
 
 #include "protobuf2json.h"
 
@@ -347,6 +349,54 @@ int protobuf2json_string(
     return PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING;
   }
 
+  return 0;
+}
+
+int protobuf2json_file(
+  ProtobufCMessage *protobuf_message,
+  size_t flags,
+  char *json_file,
+  char *fopen_mode,
+  char *error_string,
+  size_t error_size
+) {
+  char *json_string = NULL;
+
+  int ret = protobuf2json_string(protobuf_message, flags, &json_string, error_string, error_size);
+  if (ret) {
+    return ret;
+  }
+
+  FILE *fd = fopen(json_file, fopen_mode);
+  if (!fd) {
+    if (error_string && error_size) {
+      snprintf(
+        error_string, error_size,
+        "Cannot open file '%s' with mode '%s' to dump JSON, errno=%d",
+        json_file, fopen_mode, errno
+      );
+    }
+
+    free(json_string);
+    return PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE;
+  }
+
+  if (fwrite(json_string, strlen(json_string), 1, fd) != 1) {
+    if (error_string && error_size) {
+      snprintf(
+        error_string, error_size,
+        "Cannot write JSON to file '%s' with mode '%s', errno=%d",
+        json_file, fopen_mode, errno
+      );
+    }
+
+    fclose(fd);
+    free(json_string);
+    return PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE;
+  }
+
+  fclose(fd);
+  free(json_string);
   return 0;
 }
 
