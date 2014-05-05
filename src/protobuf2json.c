@@ -323,7 +323,7 @@ int protobuf2json_object(
 
 int protobuf2json_string(
   ProtobufCMessage *protobuf_message,
-  size_t flags,
+  size_t json_flags,
   char **json_string,
   char *error_string,
   size_t error_size
@@ -336,7 +336,7 @@ int protobuf2json_string(
   }
 
   // NOTICE: Should be freed by caller
-  *json_string = json_dumps(json_object, flags);
+  *json_string = json_dumps(json_object, json_flags);
   if (!*json_string) {
     if (error_string && error_size) {
       snprintf(
@@ -354,7 +354,7 @@ int protobuf2json_string(
 
 int protobuf2json_file(
   ProtobufCMessage *protobuf_message,
-  size_t flags,
+  size_t json_flags,
   char *json_file,
   char *fopen_mode,
   char *error_string,
@@ -362,7 +362,7 @@ int protobuf2json_file(
 ) {
   char *json_string = NULL;
 
-  int ret = protobuf2json_string(protobuf_message, flags, &json_string, error_string, error_size);
+  int ret = protobuf2json_string(protobuf_message, json_flags, &json_string, error_string, error_size);
   if (ret) {
     return ret;
   }
@@ -786,7 +786,7 @@ int json2protobuf_object(
 
 int json2protobuf_string(
   char *json_string,
-  size_t flags,
+  size_t json_flags,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message,
   char *error_string,
@@ -795,7 +795,7 @@ int json2protobuf_string(
   json_t *json_object = NULL;
   json_error_t error;
 
-  json_object = json_loads(json_string, flags, &error);
+  json_object = json_loads(json_string, json_flags, &error);
   if (!json_object) {
     if (error_string && error_size) {
       snprintf(
@@ -820,7 +820,7 @@ int json2protobuf_string(
 
 int json2protobuf_file(
   char *json_file,
-  size_t flags,
+  size_t json_flags,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message,
   char *error_string,
@@ -829,7 +829,7 @@ int json2protobuf_file(
   json_t *json_object = NULL;
   json_error_t error;
 
-  json_object = json_load_file(json_file, flags, &error);
+  json_object = json_load_file(json_file, json_flags, &error);
   if (!json_object) {
     if (error_string && error_size) {
       snprintf(

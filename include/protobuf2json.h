@@ -52,7 +52,7 @@ int protobuf2json_object(
 
 int protobuf2json_string(
   ProtobufCMessage *protobuf_message,
-  size_t flags,
+  size_t json_flags,
   char **json_string,
   char *error_string,
   size_t error_size
@@ -60,7 +60,7 @@ int protobuf2json_string(
 
 int protobuf2json_file(
   ProtobufCMessage *protobuf_message,
-  size_t flags,
+  size_t json_flags,
   char *json_file,
   char *fopen_mode,
   char *error_string,
@@ -79,7 +79,7 @@ int json2protobuf_object(
 
 int json2protobuf_string(
   char *json_string,
-  size_t flags,
+  size_t json_flags,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message,
   char *error_string,
@@ -88,7 +88,7 @@ int json2protobuf_string(
 
 int json2protobuf_file(
   char *json_file,
-  size_t flags,
+  size_t json_flags,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message,
   char *error_string,
