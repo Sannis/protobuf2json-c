@@ -7,6 +7,7 @@ env:
   - SANITIZE=address
   - SANITIZE=undefined
   - SANITIZE=integer
+  - USE_GYP=1
 matrix:
   exclude:
     - compiler: gcc
@@ -25,7 +26,9 @@ matrix:
 before_install:
   - sudo apt-get install libprotobuf-c0-dev libprotobuf-c0 protobuf-c-compiler
   - sudo apt-get install libjansson-dev libjansson4
-install: ./autogen.sh && ./configure && make
+install:
+  - ./autogen.sh && ./configure && make check
+  -  if [ "$USE_GYP" = "1" ]; then make gyp; fi
 script:
   - make test
   - make benchmark

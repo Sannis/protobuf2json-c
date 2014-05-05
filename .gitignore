@@ -38,3 +38,6 @@ Makefile.in
 
 # Dummy
 *.Plo
+
+# GYP
+/gyp
