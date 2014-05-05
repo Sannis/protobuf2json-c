@@ -8,6 +8,10 @@ master - UNRELEASED
 
    - protobuf2json: implement protobuf2json_file() function
 
+ * Other
+
+   - docs: API documentation
+
 
 v0.1.1 - 04 May 2014
 --------------------
