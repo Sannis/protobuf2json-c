@@ -11,7 +11,6 @@ master - UNRELEASED
  * Other
 
    - docs: API documentation
-   - build: GYP support
 
 
 v0.1.1 - 04 May 2014
