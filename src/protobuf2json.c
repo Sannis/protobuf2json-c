@@ -166,7 +166,7 @@ int protobuf2json_process_message(
   size_t error_size
 ) {
   *json_message = json_object();
-  if (!json_message) {
+  if (!*json_message) {
     if (error_string && error_size) {
       snprintf(
         error_string, error_size,
