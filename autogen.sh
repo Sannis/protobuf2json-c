@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd `dirname "$0"`
+
 if [ "$LIBTOOLIZE" = "" ] && [ "`uname`" = "Darwin" ]; then
   LIBTOOLIZE=glibtoolize
 fi
