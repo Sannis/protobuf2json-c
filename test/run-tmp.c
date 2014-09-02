@@ -95,10 +95,10 @@ int list(void) {
 
   //asm volatile ("int $3");
 
-  printf("list->n_numbers: %zu\n", list->n_numbers);
-  printf("list->numbers[0]: %d\n", list->numbers[0]);
-  printf("list->numbers[1]: %d\n", list->numbers[1]);
-  printf("list->numbers[2]: %d\n", list->numbers[2]);
+  printf("Debug: list->n_numbers: %zu\n", list->n_numbers);
+  printf("Debug: list->numbers[0]: %d\n", list->numbers[0]);
+  printf("Debug: list->numbers[1]: %d\n", list->numbers[1]);
+  printf("Debug: list->numbers[2]: %d\n", list->numbers[2]);
 
   ASSERT(list->n_numbers == 3);
   ASSERT(list->numbers[0] == 12);
@@ -160,15 +160,15 @@ int person(void) {
 
   //asm volatile ("int $3");
 
-  printf("person->id: %d\n", person->id);
-  printf("person->name: %s\n", person->name);
-  printf("person->n_phone: %zu\n", person->n_phone);
-  printf("person->phone[0]->number: %s\n", person->phone[0]->number);
-  printf("person->phone[0]->type: %d\n", person->phone[0]->type);
-  printf("person->phone[1]->number: %s\n", person->phone[1]->number);
-  printf("person->phone[1]->type: %d\n", person->phone[1]->type);
-  printf("person->phone[2]->number: %s\n", person->phone[2]->number);
-  printf("person->phone[2]->type: %d\n", person->phone[2]->type);
+  printf("Debug: person->id: %d\n", person->id);
+  printf("Debug: person->name: %s\n", person->name);
+  printf("Debug: person->n_phone: %zu\n", person->n_phone);
+  printf("Debug: person->phone[0]->number: %s\n", person->phone[0]->number);
+  printf("Debug: person->phone[0]->type: %d\n", person->phone[0]->type);
+  printf("Debug: person->phone[1]->number: %s\n", person->phone[1]->number);
+  printf("Debug: person->phone[1]->type: %d\n", person->phone[1]->type);
+  printf("Debug: person->phone[2]->number: %s\n", person->phone[2]->number);
+  printf("Debug: person->phone[2]->type: %d\n", person->phone[2]->type);
 
   ASSERT(person->id == 42);
   ASSERT_STRCMP(person->name, "John Doe");
@@ -264,6 +264,74 @@ int person__error_is_not_array(void) {
   return 0;
 }
 
+int person__error_unknown_field(void) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"unknown_field\": \"unknown value\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  //asm volatile ("int $3");
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
+
+  const char *expected_error_string = \
+    "Unknown field 'unknown_field' for message 'Foo.Person'"
+  ;
+
+  printf("Error: %s\n", error_string);
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  return 0;
+}
+
+int person__error_unknown_field_nested(void) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42,\n"
+    "  \"phone\": [\n"
+    "    {\n"
+    "      \"unknown_field\": \"unknown value\"\n"
+    "    }\n"
+    "  ]\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  //asm volatile ("int $3");
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
+
+  const char *expected_error_string = \
+    "Unknown field 'unknown_field' for message 'Foo.Person.PhoneNumber'"
+  ;
+
+  printf("Error: %s\n", error_string);
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  return 0;
+}
+
 int main(int argc, char **argv) {
   person__debug();
 
@@ -276,4 +344,8 @@ int main(int argc, char **argv) {
   list__bad_json_string();
 
   person__error_is_not_array();
+
+  person__error_unknown_field();
+
+  person__error_unknown_field_nested();
 }
