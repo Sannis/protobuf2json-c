@@ -349,6 +349,7 @@ int protobuf2json_string(
     return PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING;
   }
 
+  json_decref(json_object);
   return 0;
 }
 

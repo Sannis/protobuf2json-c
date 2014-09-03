@@ -86,6 +86,8 @@ int person__debug(void) {
     expected_json_string
   );
 
+  free(json_string);
+
   printf("Debug: OK\n");
 
   return 0;
