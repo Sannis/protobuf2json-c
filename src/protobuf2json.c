@@ -610,8 +610,24 @@ int json2protobuf_process_field(
     }
 
     const char* value_string = json_string_value(json_value);
+    size_t value_string_length = strlen(value_string);
 
-    memcpy(protobuf_value, &value_string, sizeof(value_string));
+    char* value_string_copy = calloc(value_string_length, sizeof(char));
+    if (!value_string_copy) {
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "Cannot allocate %zu bytes using calloc(3)",
+          value_string_length * sizeof(char)
+        );
+      }
+
+      return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+    }
+
+    memcpy(value_string_copy, value_string, value_string_length);
+
+    *(char **)(protobuf_value) = value_string_copy;
   /*} else if (field_descriptor->type == PROTOBUF_C_TYPE_BYTES) {*/
   /* PROTOBUF_C_TYPE_GROUP - NOT SUPPORTED */
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
@@ -816,6 +832,7 @@ int json2protobuf_string(
     return result;
   }
 
+  json_decref(json_object);
   return 0;
 }
 

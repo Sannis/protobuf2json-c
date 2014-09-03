@@ -254,11 +254,16 @@ TEST_IMPL(json2protobuf_string__person__repeated_message) {
   ASSERT(result == 0);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
+
   ASSERT(person->id == 42);
   ASSERT(person->name);
   ASSERT_STRCMP(person->name, "John Doe");
 
   ASSERT(person->n_phone == 3);
+
+  ASSERT(person->phone[1]->number);
+  ASSERT_STRCMP(person->phone[1]->number, "+987654321");
+  ASSERT(person->phone[1]->type == FOO__PERSON__PHONE_TYPE__MOBILE);
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
