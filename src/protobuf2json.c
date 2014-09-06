@@ -53,14 +53,14 @@ static size_t protobuf2json_value_size_by_type(ProtobufCType type) {
   }
 }
 
-int protobuf2json_process_message(
+static int protobuf2json_process_message(
   const ProtobufCMessage *protobuf_message,
   json_t **json_message,
   char *error_string,
   size_t error_size
 );
 
-int protobuf2json_process_field(
+static int protobuf2json_process_field(
   const ProtobufCFieldDescriptor *field_descriptor,
   const void *protobuf_value,
   json_t **json_value,
@@ -159,7 +159,7 @@ int protobuf2json_process_field(
   return 0;
 }
 
-int protobuf2json_process_message(
+static int protobuf2json_process_message(
   const ProtobufCMessage *protobuf_message,
   json_t **json_message,
   char *error_string,
@@ -403,7 +403,7 @@ int protobuf2json_file(
 
 /* === JSON -> Protobuf === Private === */
 
-int json2protobuf_process_message(
+static int json2protobuf_process_message(
   json_t *json_object,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message,
@@ -439,7 +439,7 @@ static const char* json2protobuf_integer_name_by_c_type(ProtobufCType type) {
   }
 }
 
-int json2protobuf_process_field(
+static int json2protobuf_process_field(
   const ProtobufCFieldDescriptor *field_descriptor,
   json_t *json_value,
   void *protobuf_value,
@@ -654,7 +654,7 @@ int json2protobuf_process_field(
   return 0;
 }
 
-int json2protobuf_process_message(
+static int json2protobuf_process_message(
   json_t *json_object,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
   ProtobufCMessage **protobuf_message,
