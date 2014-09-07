@@ -17,6 +17,8 @@ AC_ENABLE_STATIC
 AC_PROG_CC
 AC_PROG_MAKE_SET
 
+AM_SILENT_RULES([yes])
+
 LT_INIT
 
 AC_CHECK_LIB([pthread], [pthread_create])
