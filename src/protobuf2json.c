@@ -612,7 +612,7 @@ static int json2protobuf_process_field(
     const char* value_string = json_string_value(json_value);
     size_t value_string_length = strlen(value_string);
 
-    char* value_string_copy = calloc(value_string_length, sizeof(char));
+    char* value_string_copy = calloc(value_string_length + 1, sizeof(char));
     if (!value_string_copy) {
       if (error_string && error_size) {
         snprintf(
@@ -625,7 +625,7 @@ static int json2protobuf_process_field(
       return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
     }
 
-    memcpy(value_string_copy, value_string, value_string_length);
+    memcpy(value_string_copy, value_string, value_string_length + 1);
 
     *(char **)(protobuf_value) = value_string_copy;
   /*} else if (field_descriptor->type == PROTOBUF_C_TYPE_BYTES) {*/
