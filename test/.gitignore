@@ -6,4 +6,3 @@ Makefile.in
 run-tests
 run-tmp
 run-benchmarks
-existent.json

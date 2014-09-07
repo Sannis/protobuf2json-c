@@ -38,3 +38,9 @@ Makefile.in
 
 # Dummy
 *.Plo
+
+# Coverage
+*.gcda
+*.gcno
+/coverage.info
+/coverage/

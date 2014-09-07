@@ -1,10 +1,13 @@
-protobuf2json-c [![Build status][Build status image]][Build status URL]
-=======================================================================
+protobuf2json-c [![BS][BSI]][BSURL] [![CS][CSI]][CSURL]
+=======================================================
 
 This is `protobuf2json-c`, pure C implementation of the [Google Protocol Buffers] to/from JSON converter.
 
-[Build status image]: https://secure.travis-ci.org/Sannis/protobuf2json-c.png?branch=master
-[Build status URL]: http://travis-ci.org/Sannis/protobuf2json-c
+[BSI]: https://secure.travis-ci.org/Sannis/protobuf2json-c.png?branch=master
+[BSURL]: http://travis-ci.org/Sannis/protobuf2json-c
+
+[CSI]: https://coveralls.io/repos/Sannis/protobuf2json-c/badge.png
+[CSURL]: https://coveralls.io/r/Sannis/protobuf2json-c
 
 [Google Protocol Buffers]: https://developers.google.com/protocol-buffers/
 

@@ -37,6 +37,10 @@ AX_SANITIZE
 
 AC_MSG_RESULT([])
 
+AX_TDD_GCOV
+
+AC_MSG_RESULT([])
+
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])
 
 AC_OUTPUT
