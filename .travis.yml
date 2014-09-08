@@ -7,7 +7,7 @@ env:
   - SANITIZE=address
   - SANITIZE=undefined
   - SANITIZE=integer
-  - COVERAGE_BUILD=1
+  - MY_COVERAGE=1
 matrix:
   exclude:
     - compiler: gcc
@@ -17,21 +17,21 @@ matrix:
     - compiler: gcc
       env: SANITIZE=integer
     - compiler: clang
-      env: COVERAGE_BUILD=1
+      env: MY_COVERAGE=1
 before_install:
   - sudo apt-get install libprotobuf-c0-dev libprotobuf-c0 protobuf-c-compiler
   - sudo apt-get install libjansson-dev libjansson4
   - sudo apt-get install cppcheck
-  - if [ "x$COVERAGE_BUILD" = "x1" ]; then sudo apt-get install lcov; fi
-  - if [ "x$COVERAGE_BUILD" = "x1" ]; then sudo pip install cpp-coveralls; fi
+  - if [ "x$MY_COVERAGE" = "x1" ]; then sudo apt-get install lcov; fi
+  - if [ "x$MY_COVERAGE" = "x1" ]; then sudo pip install cpp-coveralls; fi
 install:
   - ./autogen.sh
   - ./configure
-  - if [ "x$COVERAGE_BUILD" = "x1" ]; then ./configure --enable-gcov; fi
+  - if [ "x$MY_COVERAGE" = "x1" ]; then ./configure --enable-my-coverage; fi
   - make
 script:
   - make cppcheck
   - make test
   - make benchmark
 after_success:
-  - if [ "x$COVERAGE_BUILD" = "x1" ]; then cpp-coveralls --build-root src --exclude test/ --exclude src/.libs --gcov-options '\-lp'; fi
+  - if [ "x$MY_COVERAGE" = "x1" ]; then cpp-coveralls --build-root src --exclude test/ --exclude src/.libs --gcov-options '\-lp'; fi

@@ -22,5 +22,5 @@ libprotobuf2json_c_la_LIBADD += $(LIBJANSSON_LIBS)
 AM_CFLAGS += $(SANITIZE_CFLAGS)
 libprotobuf2json_c_la_LIBADD += $(SANITIZE_LIBS)
 
-AM_CFLAGS += $(COVERAGE_CFLAGS)
-libprotobuf2json_c_la_LIBADD += $(COVERAGE_LDFLAGS)
+AM_CFLAGS += $(MY_COVERAGE_CFLAGS)
+libprotobuf2json_c_la_LIBADD += $(MY_COVERAGE_LDFLAGS)

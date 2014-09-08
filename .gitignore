@@ -42,5 +42,6 @@ Makefile.in
 # Coverage
 *.gcda
 *.gcno
-/coverage.info
-/coverage/
+*.gcov
+/*-coverage.info
+/*-coverage/
