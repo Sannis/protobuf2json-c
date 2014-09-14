@@ -44,7 +44,6 @@ static size_t protobuf2json_value_size_by_type(ProtobufCType type) {
       return sizeof(char *);
     case PROTOBUF_C_TYPE_BYTES:
       return sizeof(ProtobufCBinaryData);
-    /* case PROTOBUF_C_TYPE_GROUP: - NOT SUPPORTED */
     case PROTOBUF_C_TYPE_MESSAGE:
       return sizeof(ProtobufCMessage *);
     default:
@@ -121,15 +120,11 @@ static int protobuf2json_process_field(
     case PROTOBUF_C_TYPE_STRING:
       *json_value = json_string(*(char **)protobuf_value);
       break;
-    /*case PROTOBUF_C_TYPE_BYTES:
+    case PROTOBUF_C_TYPE_BYTES:
     {
-      const ProtobufCBinaryData *protobuf_binary_data = (const ProtobufCBinaryData *)protobuf_value;
-
-      *json_value = json_stringn(protobuf_binary_data->data, protobuf_binary_data->len);
-
-      break;
-    }*/
-    /* PROTOBUF_C_TYPE_GROUP - NOT SUPPORTED */
+      // TODO: implement
+      assert(0);
+    }
     case PROTOBUF_C_TYPE_MESSAGE:
     {
       const ProtobufCMessage **protobuf_message = (const ProtobufCMessage **)protobuf_value;
@@ -628,8 +623,9 @@ static int json2protobuf_process_field(
     memcpy(value_string_copy, value_string, value_string_length + 1);
 
     *(char **)(protobuf_value) = value_string_copy;
-  /*} else if (field_descriptor->type == PROTOBUF_C_TYPE_BYTES) {*/
-  /* PROTOBUF_C_TYPE_GROUP - NOT SUPPORTED */
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_BYTES) {
+    // TODO: implement
+    assert(0);
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
     ProtobufCMessage *protobuf_message;
 
