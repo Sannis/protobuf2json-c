@@ -633,15 +633,7 @@ static int json2protobuf_process_field(
 
     memcpy(protobuf_value, &protobuf_message, sizeof(protobuf_message));
    } else {
-    if (error_string && error_size) {
-      snprintf(
-        error_string, error_size,
-        "Cannot process unsupported field type %d in json2protobuf_process_field()",
-        field_descriptor->type
-      );
-    }
-
-    return PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE;
+    assert(0);
   }
 
   return 0;
