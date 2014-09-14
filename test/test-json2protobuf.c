@@ -375,7 +375,7 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__numeric_types__values) {
+TEST_IMPL(json2protobuf_string__numeric_values__values) {
   int result;
 
   const char *initial_json_string = \
@@ -403,28 +403,28 @@ TEST_IMPL(json2protobuf_string__numeric_types__values) {
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_types__descriptor, &protobuf_message, NULL, 0);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, NULL, 0);
   ASSERT(result == 0);
 
-  Foo__NumericTypes *numeric_types = (Foo__NumericTypes *)protobuf_message;
+  Foo__NumericValues *numeric_values = (Foo__NumericValues *)protobuf_message;
 
-  ASSERT(numeric_types->value_int32 == 2147483647);
-  ASSERT(numeric_types->value_sint32 == -2147483647 - 1);
-  ASSERT(numeric_types->value_sfixed32 == -2147483647 - 1);
+  ASSERT(numeric_values->value_int32 == 2147483647);
+  ASSERT(numeric_values->value_sint32 == -2147483647 - 1);
+  ASSERT(numeric_values->value_sfixed32 == -2147483647 - 1);
   
-  ASSERT(numeric_types->value_uint32 == 4294967295);
-  ASSERT(numeric_types->value_fixed32 == 4294967295);
+  ASSERT(numeric_values->value_uint32 == 4294967295);
+  ASSERT(numeric_values->value_fixed32 == 4294967295);
   
-  ASSERT(numeric_types->value_int64 == 9223372036854775807);
-  ASSERT(numeric_types->value_sint64 == -9223372036854775807 - 1);
-  ASSERT(numeric_types->value_sfixed64 == -9223372036854775807 - 1);
+  ASSERT(numeric_values->value_int64 == 9223372036854775807);
+  ASSERT(numeric_values->value_sint64 == -9223372036854775807 - 1);
+  ASSERT(numeric_values->value_sfixed64 == -9223372036854775807 - 1);
   
   /* JSON does not support max(unsigned long long) */
-  ASSERT(numeric_types->value_uint64 == 9223372036854775807);
-  ASSERT(numeric_types->value_fixed64 == 9223372036854775807);
+  ASSERT(numeric_values->value_uint64 == 9223372036854775807);
+  ASSERT(numeric_values->value_fixed64 == 9223372036854775807);
   
-  ASSERT(fabs(numeric_types->value_float - 0.33000001311302185) < 1e-10);
-  ASSERT(fabs(numeric_types->value_double - 0.0077705550333011103) < 1e-10);
+  ASSERT(fabs(numeric_values->value_float - 0.33000001311302185) < 1e-10);
+  ASSERT(fabs(numeric_values->value_double - 0.0077705550333011103) < 1e-10);
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
@@ -681,7 +681,7 @@ TEST_IMPL(json2protobuf_string__bar__error_enum_is_not_string) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__numeric_types__error_int32_is_not_integer) {
+TEST_IMPL(json2protobuf_string__numeric_values__error_int32_is_not_integer) {
   int result;
   char error_string[256] = {0};
 
@@ -693,7 +693,7 @@ TEST_IMPL(json2protobuf_string__numeric_types__error_int32_is_not_integer) {
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_types__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
   ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_INTEGER);
 
   const char *expected_error_string = \

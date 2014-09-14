@@ -20,7 +20,7 @@ message List {
   repeated int32 numbers = 1;
 }
 
-message NumericTypes {
+message NumericValues {
   required int32    value_int32 = 1;
   required sint32   value_sint32 = 2;
   required sfixed32 value_sfixed32 = 3;
