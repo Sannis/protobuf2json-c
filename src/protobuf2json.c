@@ -94,8 +94,7 @@ static int protobuf2json_process_field(
     case PROTOBUF_C_TYPE_BOOL:
       *json_value = json_boolean(*(protobuf_c_boolean *)protobuf_value);
       break;
-    case PROTOBUF_C_TYPE_ENUM:
-    {
+    case PROTOBUF_C_TYPE_ENUM: {
       const ProtobufCEnumValue *protobuf_enum_value = protobuf_c_enum_descriptor_get_value(
         field_descriptor->descriptor,
         *(int *)protobuf_value
@@ -120,13 +119,11 @@ static int protobuf2json_process_field(
     case PROTOBUF_C_TYPE_STRING:
       *json_value = json_string(*(char **)protobuf_value);
       break;
-    case PROTOBUF_C_TYPE_BYTES:
-    {
+    case PROTOBUF_C_TYPE_BYTES: {
       // TODO: implement
       assert(0);
     }
-    case PROTOBUF_C_TYPE_MESSAGE:
-    {
+    case PROTOBUF_C_TYPE_MESSAGE: {
       const ProtobufCMessage **protobuf_message = (const ProtobufCMessage **)protobuf_value;
 
       int result = protobuf2json_process_message(*protobuf_message, json_value, error_string, error_size);
