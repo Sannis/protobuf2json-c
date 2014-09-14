@@ -44,3 +44,10 @@ message BooleanValues {
   required bool value_true = 1;
   required bool value_false = 2;
 }
+
+message RepeatedThings {
+  repeated int32  values_int32 = 1;
+  repeated int64  values_int64 = 2;
+  repeated float  values_float = 3;
+  repeated double values_double = 4;
+}

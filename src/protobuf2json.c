@@ -417,7 +417,7 @@ static const char* json2protobuf_integer_name_by_c_type(ProtobufCType type) {
     case PROTOBUF_C_TYPE_UINT32:
       return "uint32";
     case PROTOBUF_C_TYPE_FIXED32:
-      return "sfixed32";
+      return "fixed32";
     case PROTOBUF_C_TYPE_INT64:
       return "int64";
     case PROTOBUF_C_TYPE_SINT64:
@@ -427,7 +427,7 @@ static const char* json2protobuf_integer_name_by_c_type(ProtobufCType type) {
     case PROTOBUF_C_TYPE_UINT64:
       return "uint64";
     case PROTOBUF_C_TYPE_FIXED64:
-      return "sfixed64";
+      return "fixed64";
     default:
       assert(0);
       return "unknown";
@@ -520,7 +520,7 @@ static int json2protobuf_process_field(
       if (error_string && error_size) {
         snprintf(
           error_string, error_size,
-          "JSON value is not a real required for GPB float"
+          "JSON value is not a real number required for GPB float"
         );
       }
 
@@ -535,7 +535,7 @@ static int json2protobuf_process_field(
       if (error_string && error_size) {
         snprintf(
           error_string, error_size,
-          "JSON value is not a real required for GPB double"
+          "JSON value is not a real number required for GPB double"
         );
       }
 
@@ -550,11 +550,11 @@ static int json2protobuf_process_field(
       if (error_string && error_size) {
         snprintf(
           error_string, error_size,
-          "JSON value is not a bool required for GPB bool"
+          "JSON value is not a boolean required for GPB bool"
         );
       }
 
-      return PROTOBUF2JSON_ERR_IS_NOT_REAL;
+      return PROTOBUF2JSON_ERR_IS_NOT_BOOLEAN;
     }
 
     protobuf_c_boolean value_boolean = (protobuf_c_boolean)json_boolean_value(json_value);

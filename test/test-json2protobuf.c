@@ -624,7 +624,7 @@ TEST_IMPL(json2protobuf_string__person__error_is_not_array) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__bar__error_string_is_not_string) {
+TEST_IMPL(json2protobuf_string__bar__error_string_is_not_string_required_for_string) {
   int result;
   char error_string[256] = {0};
 
@@ -653,7 +653,7 @@ TEST_IMPL(json2protobuf_string__bar__error_string_is_not_string) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__bar__error_enum_is_not_string) {
+TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_enum) {
   int result;
   char error_string[256] = {0};
 
@@ -681,23 +681,106 @@ TEST_IMPL(json2protobuf_string__bar__error_enum_is_not_string) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__numeric_values__error_int32_is_not_integer) {
+#define TEST_IMPL_IS_NOT_INTEGER(type) \
+  TEST_IMPL(json2protobuf_string__numeric_values__error_is_not_integer_required_for_ ## type) { \
+    int result; \
+    char error_string[256] = {0}; \
+    const char *initial_json_string = "{\n  \"value_" #type "\": \"string\"\n}"; \
+    ProtobufCMessage *protobuf_message = NULL; \
+    result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, error_string, sizeof(error_string)); \
+    ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_INTEGER); \
+    const char *expected_error_string = "JSON value is not an integer required for GPB " #type; \
+    ASSERT_STRCMP(error_string, expected_error_string); \
+    protobuf_c_message_free_unpacked(protobuf_message, NULL); \
+    RETURN_OK(); \
+  }
+
+TEST_IMPL_IS_NOT_INTEGER(int32)
+TEST_IMPL_IS_NOT_INTEGER(sint32)
+TEST_IMPL_IS_NOT_INTEGER(sfixed32)
+TEST_IMPL_IS_NOT_INTEGER(uint32)
+TEST_IMPL_IS_NOT_INTEGER(fixed32)
+TEST_IMPL_IS_NOT_INTEGER(int64)
+TEST_IMPL_IS_NOT_INTEGER(sint64)
+TEST_IMPL_IS_NOT_INTEGER(sfixed64)
+TEST_IMPL_IS_NOT_INTEGER(uint64)
+TEST_IMPL_IS_NOT_INTEGER(fixed64)
+
+TEST_IMPL(json2protobuf_string__numeric_values__error_is_not_real_number_required_for_float) {
   int result;
   char error_string[256] = {0};
 
   const char *initial_json_string = \
     "{\n"
-    "  \"value_int32\": \"string\"\n"
+    "  \"value_float\": \"string\"\n"
     "}"
   ;
 
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_INTEGER);
+  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_REAL);
 
   const char *expected_error_string = \
-    "JSON value is not an integer required for GPB int32"
+    "JSON value is not a real number required for GPB float"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__numeric_values__error_is_not_real_number_required_for_double) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"value_double\": \"string\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_REAL);
+
+  const char *expected_error_string = \
+    "JSON value is not a real number required for GPB double"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__boolean_values__error_is_not_boolean_required_for_bool) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"value_true\": \"string\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__boolean_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_BOOLEAN);
+
+  const char *expected_error_string = \
+    "JSON value is not a boolean required for GPB bool"
   ;
 
   ASSERT_STRCMP(
