@@ -475,7 +475,7 @@ TEST_IMPL(json2protobuf_string__person__error_unknown_field) {
 
   const char *initial_json_string = \
     "{\n"
-    "  \"unknown_filed\": \"unknown_filed_value\"\n"
+    "  \"unknown_field\": \"unknown_field_value\"\n"
     "}"
   ;
 
@@ -485,7 +485,7 @@ TEST_IMPL(json2protobuf_string__person__error_unknown_field) {
   ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
 
   const char *expected_error_string = \
-    "Unknown field 'unknown_filed' for message 'Foo.Person'"
+    "Unknown field 'unknown_field' for message 'Foo.Person'"
   ;
 
   ASSERT_STRCMP(
