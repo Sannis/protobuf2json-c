@@ -36,7 +36,7 @@ int person__debug(void) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
 
@@ -57,7 +57,7 @@ int person__debug(void) {
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   const char *expected_json_string = \
@@ -115,7 +115,7 @@ int person__error_unknown_enum_value(void) {
   //asm volatile ("int $3");
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE);
 
   const char *expected_error_string = \
     "Unknown value 'UNKNOWN' for enum 'Foo.Person.PhoneType'"
@@ -140,7 +140,7 @@ int person__bad_json_string(void) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING);
 
   const char *expected_error_string = \
     "JSON parsing error at line 1 column 1 (position 1): "
@@ -172,7 +172,7 @@ int person__error_is_not_array(void) {
   //asm volatile ("int $3");
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_ARRAY);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_ARRAY);
 
   const char *expected_error_string = \
     "JSON is not an array required for repeatable GPB field"
@@ -203,7 +203,7 @@ int person__error_unknown_field(void) {
   //asm volatile ("int $3");
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
 
   const char *expected_error_string = \
     "Unknown field 'unknown_field' for message 'Foo.Person'"
@@ -240,7 +240,7 @@ int person__error_unknown_field_nested(void) {
   //asm volatile ("int $3");
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
 
   const char *expected_error_string = \
     "Unknown field 'unknown_field' for message 'Foo.Person.PhoneNumber'"

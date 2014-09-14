@@ -36,13 +36,13 @@ TEST_IMPL(protobuf2json_file__person__success) {
   person.id = 42;
 
   result = protobuf2json_file(&person.base, TEST_JSON_FLAGS, file_name, "w", NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
 
   FILE *fd = fopen(file_name, "r");
   ASSERT(fd);
 
   result = fseek(fd, 0, SEEK_END);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   json_string_length = ftell(fd);
   ASSERT(json_string_length > 0);
   rewind(fd);
@@ -66,7 +66,7 @@ TEST_IMPL(protobuf2json_file__person__success) {
   fclose(fd);
 
   result = unlink(file_name);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
 
   RETURN_OK();
 }
@@ -81,7 +81,7 @@ TEST_IMPL(protobuf2json_string__person__required) {
 
   char *json_string;
   result = protobuf2json_string(&person.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   ASSERT_STRCMP(
@@ -109,7 +109,7 @@ TEST_IMPL(protobuf2json_string__person__optional) {
 
   char *json_string;
   result = protobuf2json_string(&person.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   ASSERT_STRCMP(
@@ -160,7 +160,7 @@ TEST_IMPL(protobuf2json_string__person__repeated_message) {
 
   char *json_string;
   result = protobuf2json_string(&person.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   ASSERT_STRCMP(
@@ -199,7 +199,7 @@ TEST_IMPL(protobuf2json_string__bar__default_values) {
 
   char *json_string;
   result = protobuf2json_string(&bar.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   ASSERT_STRCMP(
@@ -240,7 +240,7 @@ TEST_IMPL(protobuf2json_string__person__error_in_nested_message) {
 
   char *json_string;
   result = protobuf2json_string(&person.base, 0, &json_string, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE);
 
   const char *expected_error_string = \
     "Unknown value 777 for enum 'Foo.Person.PhoneType'"
@@ -272,7 +272,7 @@ TEST_IMPL(protobuf2json_string__person__error_cannot_dump_string) {
   json_set_alloc_funcs(failed_malloc, free);
   result = protobuf2json_string(&person.base, 0, &json_string, error_string, sizeof(error_string));
   json_set_alloc_funcs(malloc, free);
-  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING);
 
   const char *expected_error_string = \
     "Cannot dump JSON object to string using json_dumps()"

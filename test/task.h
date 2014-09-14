@@ -106,6 +106,32 @@
   }                                                       \
  } while (0)
 
+#define ASSERT_ZERO(expr)                                 \
+ do {                                                     \
+  if (expr != 0) {                                        \
+    fprintf(stderr,                                       \
+            "Assertion failed in %s on line %d: "         \
+            "%s is not zero, but %d\n",                   \
+            __FILE__,                                     \
+            __LINE__,                                     \
+            #expr, expr);                                 \
+    abort();                                              \
+  }                                                       \
+ } while (0)
+
+#define ASSERT_EQUALS(actual, expected)                   \
+ do {                                                     \
+  if (actual != expected) {                               \
+    fprintf(stderr,                                       \
+            "Assertion failed in %s on line %d: "         \
+            "%s is not %d, but %d\n",                     \
+            __FILE__,                                     \
+            __LINE__,                                     \
+            #actual, expected, actual);                   \
+    abort();                                              \
+  }                                                       \
+ } while (0)
+
 /* Assert that string are equal */
 #define ASSERT_STRCMP(actual, expected)                                                         \
  do {                                                                                           \

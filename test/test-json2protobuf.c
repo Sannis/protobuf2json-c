@@ -32,11 +32,11 @@ TEST_IMPL(json2protobuf_file__person__success) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_file((char *)file_name, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   ASSERT_STRCMP(
@@ -68,7 +68,7 @@ TEST_IMPL(json2protobuf_file__person__error_cannot_parse_bad_message) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_file((char *)file_name, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
 
   const char *expected_error_string = \
     "Unknown field 'unknown_field' for message 'Foo.Person'"
@@ -98,7 +98,7 @@ TEST_IMPL(json2protobuf_file__person__error_cannot_parse_bad_json) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_file((char *)file_name, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE);
 
   const char *expected_error_string = \
     "JSON parsing error at line 1 column 1 (position 1): "
@@ -129,7 +129,7 @@ TEST_IMPL(json2protobuf_file__person__error_cannot_parse_unexistent_file) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_file((char *)file_name, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE);
 
   const char *expected_error_string_beginning = \
     "JSON parsing error at line -1 column -1 (position 0): "
@@ -150,7 +150,7 @@ TEST_IMPL(json2protobuf_string__person__error_cannot_parse_wrong_string) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING);
 
   const char *expected_error_string = \
     "JSON parsing error at line 1 column 1 (position 1): "
@@ -178,7 +178,7 @@ TEST_IMPL(json2protobuf_string__person__required) {
   ProtobufCMessage *protobuf_message;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
   ASSERT(person->id == 42);
@@ -188,7 +188,7 @@ TEST_IMPL(json2protobuf_string__person__required) {
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   const char *expected_json_string = \
@@ -223,7 +223,7 @@ TEST_IMPL(json2protobuf_string__person__optional) {
   ProtobufCMessage *protobuf_message;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
   ASSERT(person->id == 42);
@@ -234,7 +234,7 @@ TEST_IMPL(json2protobuf_string__person__optional) {
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   const char *expected_json_string = \
@@ -282,7 +282,7 @@ TEST_IMPL(json2protobuf_string__person__repeated_message) {
   ProtobufCMessage *protobuf_message;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
 
   Foo__Person *person = (Foo__Person *)protobuf_message;
 
@@ -298,7 +298,7 @@ TEST_IMPL(json2protobuf_string__person__repeated_message) {
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   const char *expected_json_string = \
@@ -345,14 +345,14 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
   ProtobufCMessage *protobuf_message;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
 
   Foo__Bar *bar = (Foo__Bar *)protobuf_message;
   ASSERT_STRCMP(bar->string_required, "required");
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   const char *expected_json_string = \
@@ -404,7 +404,7 @@ TEST_IMPL(json2protobuf_string__numeric_values__values) {
   ProtobufCMessage *protobuf_message;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
 
   Foo__NumericValues *numeric_values = (Foo__NumericValues *)protobuf_message;
 
@@ -428,7 +428,7 @@ TEST_IMPL(json2protobuf_string__numeric_values__values) {
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   const char *expected_json_string = \
@@ -479,7 +479,7 @@ TEST_IMPL(json2protobuf_string__boolean_values__values) {
   ProtobufCMessage *protobuf_message;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__boolean_values__descriptor, &protobuf_message, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
 
   Foo__BooleanValues *boolean_values = (Foo__BooleanValues *)protobuf_message;
 
@@ -488,7 +488,7 @@ TEST_IMPL(json2protobuf_string__boolean_values__values) {
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
+  ASSERT_ZERO(result);
   ASSERT(json_string);
 
   const char *expected_json_string = \
@@ -518,7 +518,7 @@ TEST_IMPL(json2protobuf_string__person__error_is_not_object) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_OBJECT);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_OBJECT);
 
   const char *expected_error_string = \
     "JSON is not an object required for GPB message"
@@ -545,7 +545,7 @@ TEST_IMPL(json2protobuf_string__person__error_unknown_field) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_UNKNOWN_FIELD);
 
   const char *expected_error_string = \
     "Unknown field 'unknown_field' for message 'Foo.Person'"
@@ -581,7 +581,7 @@ TEST_IMPL(json2protobuf_string__person__error_unknown_enum_value) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE);
 
   const char *expected_error_string = \
     "Unknown value 'UNKNOWN' for enum 'Foo.Person.PhoneType'"
@@ -608,7 +608,7 @@ TEST_IMPL(json2protobuf_string__person__error_is_not_array) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_ARRAY);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_ARRAY);
 
   const char *expected_error_string = \
     "JSON is not an array required for repeatable GPB field"
@@ -637,7 +637,7 @@ TEST_IMPL(json2protobuf_string__bar__error_string_is_not_string_required_for_str
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_STRING);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
 
   const char *expected_error_string = \
     "JSON value is not a string required for GPB string"
@@ -667,7 +667,7 @@ TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_enum) {
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_STRING);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
 
   const char *expected_error_string = \
     "JSON value is not a string required for GPB enum"
@@ -688,7 +688,7 @@ TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_enum) {
     const char *initial_json_string = "{\n  \"value_" #type "\": \"string\"\n}"; \
     ProtobufCMessage *protobuf_message = NULL; \
     result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, error_string, sizeof(error_string)); \
-    ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_INTEGER); \
+    ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_INTEGER); \
     const char *expected_error_string = "JSON value is not an integer required for GPB " #type; \
     ASSERT_STRCMP(error_string, expected_error_string); \
     protobuf_c_message_free_unpacked(protobuf_message, NULL); \
@@ -719,7 +719,7 @@ TEST_IMPL(json2protobuf_string__numeric_values__error_is_not_real_number_require
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_REAL);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_REAL);
 
   const char *expected_error_string = \
     "JSON value is not a real number required for GPB float"
@@ -748,7 +748,7 @@ TEST_IMPL(json2protobuf_string__numeric_values__error_is_not_real_number_require
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_REAL);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_REAL);
 
   const char *expected_error_string = \
     "JSON value is not a real number required for GPB double"
@@ -777,7 +777,7 @@ TEST_IMPL(json2protobuf_string__boolean_values__error_is_not_boolean_required_fo
   ProtobufCMessage *protobuf_message = NULL;
 
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__boolean_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT(result == PROTOBUF2JSON_ERR_IS_NOT_BOOLEAN);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_BOOLEAN);
 
   const char *expected_error_string = \
     "JSON value is not a boolean required for GPB bool"
