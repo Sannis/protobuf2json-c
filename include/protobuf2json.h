@@ -36,6 +36,8 @@
 #define PROTOBUF2JSON_ERR_IS_NOT_REAL            -405
 #define PROTOBUF2JSON_ERR_IS_NOT_BOOLEAN         -406
 #define PROTOBUF2JSON_ERR_IS_NOT_STRING          -407
+#define PROTOBUF2JSON_ERR_REQUIRED_IS_MISSING    -408
+/*#define PROTOBUF2JSON_ERR_DUPLICATE_FIELD      -???*/
 
 #ifdef __cplusplus
 extern "C" {

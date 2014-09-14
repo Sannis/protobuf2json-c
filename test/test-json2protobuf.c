@@ -149,7 +149,7 @@ TEST_IMPL(json2protobuf_string__person__error_cannot_parse_wrong_string) {
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  result = json2protobuf_string((char *)initial_json_string, TEST_JSON_FLAGS, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
   ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING);
 
   const char *expected_error_string = \
@@ -165,104 +165,44 @@ TEST_IMPL(json2protobuf_string__person__error_cannot_parse_wrong_string) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__person__required) {
+TEST_IMPL(json2protobuf_string__person__error_duplicate_field) {
   int result;
+  char error_string[256] = {0};
 
   const char *initial_json_string = \
     "{\n"
     "  \"name\": \"John Doe\",\n"
-    "  \"id\": 42\n"
+    "  \"id\": 42,\n"
+    "  \"name\": \"Jack Impostor\"\n"
     "}"
   ;
 
-  ProtobufCMessage *protobuf_message;
+  ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
-  ASSERT_ZERO(result);
+  result = json2protobuf_string((char *)initial_json_string, JSON_REJECT_DUPLICATES, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING);
 
-  Foo__Person *person = (Foo__Person *)protobuf_message;
-  ASSERT(person->id == 42);
-  ASSERT(person->name);
-  ASSERT_STRCMP(person->name, "John Doe");
-  ASSERT(!person->email);
-
-  char *json_string;
-  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT_ZERO(result);
-  ASSERT(json_string);
-
-  const char *expected_json_string = \
-    "{\n"
-    "  \"name\": \"John Doe\",\n"
-    "  \"id\": 42\n"
-    "}"
+  const char *expected_error_string = \
+    "JSON parsing error at line 4 column 8 (position 44): "
+    "duplicate object key near '\"name\"'"
   ;
 
   ASSERT_STRCMP(
-    json_string,
-    expected_json_string
+    error_string,
+    expected_error_string
   );
-
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-  free(json_string);
 
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__person__optional) {
+TEST_IMPL(json2protobuf_string__person) {
   int result;
 
   const char *initial_json_string = \
     "{\n"
     "  \"name\": \"John Doe\",\n"
     "  \"id\": 42,\n"
-    "  \"email\": \"john@doe.name\"\n"
-    "}"
-  ;
-
-  ProtobufCMessage *protobuf_message;
-
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
-  ASSERT_ZERO(result);
-
-  Foo__Person *person = (Foo__Person *)protobuf_message;
-  ASSERT(person->id == 42);
-  ASSERT(person->name);
-  ASSERT_STRCMP(person->name, "John Doe");
-  ASSERT(person->email);
-  ASSERT_STRCMP(person->email, "john@doe.name");
-
-  char *json_string;
-  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT_ZERO(result);
-  ASSERT(json_string);
-
-  const char *expected_json_string = \
-    "{\n"
-    "  \"name\": \"John Doe\",\n"
-    "  \"id\": 42,\n"
-    "  \"email\": \"john@doe.name\"\n"
-    "}"
-  ;
-
-  ASSERT_STRCMP(
-    json_string,
-    expected_json_string
-  );
-
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-  free(json_string);
-
-  RETURN_OK();
-}
-
-TEST_IMPL(json2protobuf_string__person__repeated_message) {
-  int result;
-
-  const char *initial_json_string = \
-    "{\n"
-    "  \"name\": \"John Doe\",\n"
-    "  \"id\": 42,\n"
+    "  \"email\": \"john@doe.name\",\n"
     "  \"phone\": [\n"
     "    {\n"
     "      \"number\": \"+123456789\",\n"
@@ -289,6 +229,8 @@ TEST_IMPL(json2protobuf_string__person__repeated_message) {
   ASSERT(person->id == 42);
   ASSERT(person->name);
   ASSERT_STRCMP(person->name, "John Doe");
+  ASSERT(person->email);
+  ASSERT_STRCMP(person->email, "john@doe.name");
 
   ASSERT(person->n_phone == 3);
 
@@ -305,6 +247,7 @@ TEST_IMPL(json2protobuf_string__person__repeated_message) {
     "{\n"
     "  \"name\": \"John Doe\",\n"
     "  \"id\": 42,\n"
+    "  \"email\": \"john@doe.name\",\n"
     "  \"phone\": [\n"
     "    {\n"
     "      \"number\": \"+123456789\",\n"
@@ -601,6 +544,8 @@ TEST_IMPL(json2protobuf_string__person__error_is_not_array) {
 
   const char *initial_json_string = \
     "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42,\n"
     "  \"phone\": {}\n"
     "}"
   ;
@@ -612,6 +557,35 @@ TEST_IMPL(json2protobuf_string__person__error_is_not_array) {
 
   const char *expected_error_string = \
     "JSON is not an array required for repeatable GPB field"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__person__error_required_is_missing) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"name\": \"John Doe\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_REQUIRED_IS_MISSING);
+
+  const char *expected_error_string = \
+    "Required field 'id' is missing in message 'Foo.Person'"
   ;
 
   ASSERT_STRCMP(

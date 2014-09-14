@@ -16,6 +16,9 @@
 /* For compatibility with old Jansson from repositories */
 #include "jansson_compat.h"
 
+/* Simple bitmap implementation */
+#include "bitmap.h"
+
 /* === Protobuf -> JSON === Private === */
 
 static size_t protobuf2json_value_size_by_type(ProtobufCType type) {
@@ -646,6 +649,10 @@ static int json2protobuf_process_message(
   char *error_string,
   size_t error_size
 ) {
+  bitmap_t presented_fields = NULL;
+
+  int result = 0;
+
   if (!json_is_object(json_object)) {
     if (error_string && error_size) {
       snprintf(
@@ -654,7 +661,8 @@ static int json2protobuf_process_message(
       );
     }
 
-    return PROTOBUF2JSON_ERR_IS_NOT_OBJECT;
+    result = PROTOBUF2JSON_ERR_IS_NOT_OBJECT;
+    goto error;
   }
 
   *protobuf_message = calloc(1, protobuf_message_descriptor->sizeof_message);
@@ -667,10 +675,24 @@ static int json2protobuf_process_message(
       );
     }
 
-    return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+    result = PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+    goto error;
   }
 
   protobuf_c_message_init(protobuf_message_descriptor, *protobuf_message);
+
+  presented_fields = bitmap_alloc(protobuf_message_descriptor->n_fields);
+  if (!presented_fields) {
+    if (error_string && error_size) {
+      snprintf(
+        error_string, error_size,
+        "Cannot allocate bitmap structure using bitmap_alloc()"
+      );
+    }
+
+    result = PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+    goto error;
+  }
 
   const char *json_key;
   json_t *json_object_value;
@@ -685,16 +707,34 @@ static int json2protobuf_process_message(
         );
       }
 
-      return PROTOBUF2JSON_ERR_UNKNOWN_FIELD;
+      result = PROTOBUF2JSON_ERR_UNKNOWN_FIELD;
+      goto error;
     }
+
+    unsigned int field_number = field_descriptor - protobuf_message_descriptor->fields;
+
+    // This cannot happen because Jansson handle this on his side
+    /*if (bitmap_get(presented_fields, field_number)) {
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "Duplicate field '%s' for message '%s'",
+          json_key, protobuf_message_descriptor->name
+        );
+      }
+
+      result = PROTOBUF2JSON_ERR_DUPLICATE_FIELD;
+      goto error;
+    }*/
+    bitmap_set(presented_fields, field_number);
 
     void *protobuf_value = ((char *)*protobuf_message) + field_descriptor->offset;
     void *protobuf_value_quantifier = ((char *)*protobuf_message) + field_descriptor->quantifier_offset;
 
     if (field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) {
-      int result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value, error_string, error_size);
+      result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value, error_string, error_size);
       if (result) {
-        return result;
+        goto error;
       }
     } else if (field_descriptor->label == PROTOBUF_C_LABEL_OPTIONAL) {
       if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE || field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
@@ -703,9 +743,9 @@ static int json2protobuf_process_message(
         *(protobuf_c_boolean *)protobuf_value_quantifier = 1;
       }
 
-      int result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value, error_string, error_size);
+      result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value, error_string, error_size);
       if (result) {
-        return result;
+        goto error;
       }
     } else { // PROTOBUF_C_LABEL_REPEATED
       if (!json_is_array(json_object_value)) {
@@ -716,7 +756,8 @@ static int json2protobuf_process_message(
           );
         }
 
-        return PROTOBUF2JSON_ERR_IS_NOT_ARRAY;
+        result = PROTOBUF2JSON_ERR_IS_NOT_ARRAY;
+        goto error;
       }
 
       size_t *protobuf_values_count = (size_t *)protobuf_value_quantifier;
@@ -734,7 +775,8 @@ static int json2protobuf_process_message(
             );
           }
 
-          return PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE;
+          result = PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE;
+          goto error;
         }
 
         void *protobuf_value_repeated = calloc(*protobuf_values_count, value_size);
@@ -747,7 +789,8 @@ static int json2protobuf_process_message(
             );
           }
 
-          return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+          result = PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+          goto error;
         }
 
         size_t json_index;
@@ -755,9 +798,9 @@ static int json2protobuf_process_message(
         json_array_foreach(json_object_value, json_index, json_array_value) {
           char *protobuf_value_repeated_value = (char *)protobuf_value_repeated + json_index * value_size;
 
-          int result = json2protobuf_process_field(field_descriptor, json_array_value, (void *)protobuf_value_repeated_value, error_string, error_size);
+          result = json2protobuf_process_field(field_descriptor, json_array_value, (void *)protobuf_value_repeated_value, error_string, error_size);
           if (result) {
-            return result;
+            goto error;
           }
         }
 
@@ -766,7 +809,32 @@ static int json2protobuf_process_message(
     }
   }
 
+  unsigned int i = 0;
+  for (i = 0; i < protobuf_message_descriptor->n_fields; i++) {
+    const ProtobufCFieldDescriptor *field_descriptor = protobuf_message_descriptor->fields + i;
+
+    if ((field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) && !field_descriptor->default_value && !bitmap_get(presented_fields, i)) {
+      if (error_string && error_size) {
+        snprintf(
+          error_string, error_size,
+          "Required field '%s' is missing in message '%s'",
+          field_descriptor->name, protobuf_message_descriptor->name
+        );
+      }
+
+      result = PROTOBUF2JSON_ERR_REQUIRED_IS_MISSING;
+      goto error;
+    }
+  }
+
+  bitmap_free(presented_fields);
+
   return 0;
+
+error:
+  bitmap_free(presented_fields);
+
+  return result;
 }
 
 /* === JSON -> Protobuf === Public === */
