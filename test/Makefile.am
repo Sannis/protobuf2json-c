@@ -9,8 +9,8 @@
 BUILT_SOURCES =
 BUILT_SOURCES += person.pb-c.c test.pb-c.c
 
-CLEANFILES =
-CLEANFILES += *.pb-c.[ch]
+MOSTLYCLEANFILES =
+MOSTLYCLEANFILES += *.pb-c.[ch]
 
 %.pb-c.c %.pb-c.h: %.proto
 	$(PROTOBUF_C_COMPILER) --c_out=$(abs_builddir)/ -I`dirname $<` $<
