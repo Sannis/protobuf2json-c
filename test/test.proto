@@ -21,18 +21,18 @@ message List {
 }
 
 message NumericTypes {
-  optional int32    value_int32 = 1;
-  optional sint32   value_sint32 = 2;
-  optional sfixed32 value_sfixed32 = 3;
-  optional uint32   value_uint32 = 4;
-  optional fixed32  value_fixed32 = 5;
-  optional int64    value_int64 = 6;
-  optional sint64   value_sint64 = 7;
-  optional sfixed64 value_sfixed64 = 8;
-  optional uint64   value_uint64 = 9;
-  optional fixed64  value_fixed64 = 10;
-  optional float    value_float = 11;
-  optional double   value_double = 12;
+  required int32    value_int32 = 1;
+  required sint32   value_sint32 = 2;
+  required sfixed32 value_sfixed32 = 3;
+  required uint32   value_uint32 = 4;
+  required fixed32  value_fixed32 = 5;
+  required int64    value_int64 = 6;
+  required sint64   value_sint64 = 7;
+  required sfixed64 value_sfixed64 = 8;
+  required uint64   value_uint64 = 9;
+  required fixed64  value_fixed64 = 10;
+  required float    value_float = 11;
+  required double   value_double = 12;
   // skip enum
   // skip bool
   // skip string

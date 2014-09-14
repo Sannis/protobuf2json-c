@@ -7,6 +7,7 @@
  */
 
 #include <libgen.h>
+#include <math.h>
 
 #include "task.h"
 #include "person.pb-c.h"
@@ -379,19 +380,24 @@ TEST_IMPL(json2protobuf_string__numeric_types__values) {
 
   const char *initial_json_string = \
     "{\n"
+
     "  \"value_int32\": 2147483647,\n"
     "  \"value_sint32\": -2147483648,\n"
     "  \"value_sfixed32\": -2147483648,\n"
+
     "  \"value_uint32\": 4294967295,\n"\
     "  \"value_fixed32\": 4294967295,\n"
+
     "  \"value_int64\": 9223372036854775807,\n"
     "  \"value_sint64\": -9223372036854775808,\n"
     "  \"value_sfixed64\": -9223372036854775808,\n"
     /* JSON does not support max(unsigned long long) */
     "  \"value_uint64\": 9223372036854775807,\n"
     "  \"value_fixed64\": 9223372036854775807,\n"
+
     "  \"value_float\": 0.33000001311302185,\n"
     "  \"value_double\": 0.0077705550333011103\n"
+
     "}"
   ;
 
@@ -400,7 +406,25 @@ TEST_IMPL(json2protobuf_string__numeric_types__values) {
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_types__descriptor, &protobuf_message, NULL, 0);
   ASSERT(result == 0);
 
-  /* Foo__Bar *bar = (Foo__Bar *)protobuf_message; */
+  Foo__NumericTypes *numeric_types = (Foo__NumericTypes *)protobuf_message;
+
+  ASSERT(numeric_types->value_int32 == 2147483647);
+  ASSERT(numeric_types->value_sint32 == -2147483647 - 1);
+  ASSERT(numeric_types->value_sfixed32 == -2147483647 - 1);
+  
+  ASSERT(numeric_types->value_uint32 == 4294967295);
+  ASSERT(numeric_types->value_fixed32 == 4294967295);
+  
+  ASSERT(numeric_types->value_int64 == 9223372036854775807);
+  ASSERT(numeric_types->value_sint64 == -9223372036854775807 - 1);
+  ASSERT(numeric_types->value_sfixed64 == -9223372036854775807 - 1);
+  
+  /* JSON does not support max(unsigned long long) */
+  ASSERT(numeric_types->value_uint64 == 9223372036854775807);
+  ASSERT(numeric_types->value_fixed64 == 9223372036854775807);
+  
+  ASSERT(fabs(numeric_types->value_float - 0.33000001311302185) < 1e-10);
+  ASSERT(fabs(numeric_types->value_double - 0.0077705550333011103) < 1e-10);
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
@@ -409,19 +433,25 @@ TEST_IMPL(json2protobuf_string__numeric_types__values) {
 
   const char *expected_json_string = \
     "{\n"
+
     "  \"value_int32\": 2147483647,\n"
     "  \"value_sint32\": -2147483648,\n"
     "  \"value_sfixed32\": -2147483648,\n"
+
     "  \"value_uint32\": 4294967295,\n"\
     "  \"value_fixed32\": 4294967295,\n"
+
     "  \"value_int64\": 9223372036854775807,\n"
     "  \"value_sint64\": -9223372036854775808,\n"
     "  \"value_sfixed64\": -9223372036854775808,\n"
+
     /* JSON does not support max(unsigned long long) */
     "  \"value_uint64\": 9223372036854775807,\n"
     "  \"value_fixed64\": 9223372036854775807,\n"
+
     "  \"value_float\": 0.33000001311302185,\n"
     "  \"value_double\": 0.0077705550333011103\n"
+
     "}"
   ;
 
@@ -451,7 +481,10 @@ TEST_IMPL(json2protobuf_string__boolean_values__values) {
   result = json2protobuf_string((char *)initial_json_string, 0, &foo__boolean_values__descriptor, &protobuf_message, NULL, 0);
   ASSERT(result == 0);
 
-  /* Foo__BooleanValues *boolean_values = (Foo__BooleanValues *)protobuf_message; */
+  Foo__BooleanValues *boolean_values = (Foo__BooleanValues *)protobuf_message;
+
+  ASSERT(boolean_values->value_true);
+  ASSERT(!boolean_values->value_false);
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);

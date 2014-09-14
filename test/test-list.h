@@ -12,7 +12,6 @@ TEST_DECLARE(protobuf2json_string__person__optional)
 TEST_DECLARE(protobuf2json_string__person__repeated_message)
 TEST_DECLARE(protobuf2json_string__bar__default_values)
 TEST_DECLARE(protobuf2json_string__person__error_in_nested_message)
-TEST_DECLARE(protobuf2json_string__numeric_types__values)
 TEST_DECLARE(protobuf2json_string__person__error_cannot_dump_string)
 
 TEST_DECLARE(json2protobuf_file__person__success)
@@ -41,7 +40,6 @@ TASK_LIST_START
   TEST_ENTRY(protobuf2json_string__person__optional)
   TEST_ENTRY(protobuf2json_string__person__repeated_message)
   TEST_ENTRY(protobuf2json_string__bar__default_values)
-  TEST_ENTRY(protobuf2json_string__numeric_types__values)
   TEST_ENTRY(protobuf2json_string__person__error_in_nested_message)
   TEST_ENTRY(protobuf2json_string__person__error_cannot_dump_string)
 

@@ -217,68 +217,6 @@ TEST_IMPL(protobuf2json_string__bar__default_values) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_string__numeric_types__values) {
-  int result;
-
-  Foo__NumericTypes numeric_types = FOO__NUMERIC_TYPES__INIT;
-
-  numeric_types.has_value_int32 = 1;
-  numeric_types.value_int32 = 2147483647;
-  numeric_types.has_value_sint32 = 1;
-  numeric_types.value_sint32 = -2147483647 - 1;
-  numeric_types.has_value_sfixed32 = 1;
-  numeric_types.value_sfixed32 = -2147483647 - 1;
-  numeric_types.has_value_uint32 = 1;
-  numeric_types.value_uint32 = 4294967295;
-  numeric_types.has_value_fixed32 = 1;
-  numeric_types.value_fixed32 = 4294967295;
-
-  numeric_types.has_value_int64 = 1;
-  numeric_types.value_int64 = 9223372036854775807;
-  numeric_types.has_value_sint64 = 1;
-  numeric_types.value_sint64 = -9223372036854775807 - 1;
-  numeric_types.has_value_sfixed64 = 1;
-  numeric_types.value_sfixed64 = -9223372036854775807 - 1;
-  /* JSON does not support max(unsigned long long) */
-  numeric_types.has_value_uint64 = 1;
-  numeric_types.value_uint64 = 9223372036854775807;
-  numeric_types.has_value_fixed64 = 1;
-  numeric_types.value_fixed64 = 9223372036854775807;
-
-  numeric_types.has_value_float = 1;
-  numeric_types.value_float = 0.33;
-  numeric_types.has_value_double = 1;
-  numeric_types.value_double = 0.00777055503330111;
-
-  char *json_string;
-  result = protobuf2json_string(&numeric_types.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT(result == 0);
-  ASSERT(json_string);
-
-  ASSERT_STRCMP(
-    json_string,
-    "{\n"
-    "  \"value_int32\": 2147483647,\n"
-    "  \"value_sint32\": -2147483648,\n"
-    "  \"value_sfixed32\": -2147483648,\n"
-    "  \"value_uint32\": 4294967295,\n"\
-    "  \"value_fixed32\": 4294967295,\n"
-    "  \"value_int64\": 9223372036854775807,\n"
-    "  \"value_sint64\": -9223372036854775808,\n"
-    "  \"value_sfixed64\": -9223372036854775808,\n"
-    /* JSON does not support max(unsigned long long) */
-    "  \"value_uint64\": 9223372036854775807,\n"
-    "  \"value_fixed64\": 9223372036854775807,\n"
-    "  \"value_float\": 0.33000001311302185,\n"
-    "  \"value_double\": 0.0077705550333011103\n"
-    "}"
-  );
-
-  free(json_string);
-
-  RETURN_OK();
-}
-
 TEST_IMPL(protobuf2json_string__person__error_in_nested_message) {
   int result;
   char error_string[256] = {0};
