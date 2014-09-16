@@ -208,11 +208,9 @@ int process_wait(process_info_t* vec, int n, int timeout) {
   if (r == -1) {
     perror("select()");
     retval = -1;
-
   } else if (r) {
     /* The thread completed successfully. */
     retval = 0;
-
   } else {
     /* Timeout. Kill all the children. */
     for (i = 0; i < n; i++) {
@@ -230,6 +228,13 @@ int process_wait(process_info_t* vec, int n, int timeout) {
   }
 
 terminate:
+
+  r = pthread_detach(tid);
+  if (r) {
+    perror("pthread_detach()");
+    return -1;
+  }
+
   close(args.pipe[0]);
   close(args.pipe[1]);
   return retval;
