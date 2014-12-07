@@ -19,6 +19,20 @@
 /* Simple bitmap implementation */
 #include "bitmap.h"
 
+/* === Defines === obviously private === */
+
+#define RETURN_AND_SET_ERROR_STRING(error, error_string_format, ...) \
+do {                                                                                           \
+  if (error_string && error_size) {                                                            \
+    snprintf(                                                                                  \
+      error_string, error_size,                                                                \
+      error_string_format,                                                                     \
+      ##__VA_ARGS__                                                                              \
+    );                                                                                         \
+  }                                                                                            \
+  return error;                                                                                \
+} while (0)
+
 /* === Protobuf -> JSON === Private === */
 
 static size_t protobuf2json_value_size_by_type(ProtobufCType type) {
@@ -104,15 +118,11 @@ static int protobuf2json_process_field(
       );
 
       if (!protobuf_enum_value) {
-        if (error_string && error_size) {
-          snprintf(
-            error_string, error_size,
-            "Unknown value %d for enum '%s'",
-            *(int *)protobuf_value, ((ProtobufCEnumDescriptor *)field_descriptor->descriptor)->name
-          );
-        }
-
-        return PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE;
+        RETURN_AND_SET_ERROR_STRING(
+          PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE,
+          "Unknown value %d for enum '%s'",
+          *(int *)protobuf_value, ((ProtobufCEnumDescriptor *)field_descriptor->descriptor)->name
+        );
       }
 
       *json_value = json_string((char *)protobuf_enum_value->name);
@@ -141,14 +151,10 @@ static int protobuf2json_process_field(
   }
 
   if (!*json_value) {
-    if (error_string && error_size) {
-      snprintf(
-        error_string, error_size,
-        "Cannot allocate JSON structure in protobuf2json_process_field()"
-      );
-    }
-
-    return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+    RETURN_AND_SET_ERROR_STRING(
+      PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
+      "Cannot allocate JSON structure in protobuf2json_process_field()"
+    );
   }
 
   return 0;
@@ -162,14 +168,10 @@ static int protobuf2json_process_message(
 ) {
   *json_message = json_object();
   if (!*json_message) {
-    if (error_string && error_size) {
-      snprintf(
-        error_string, error_size,
-        "Cannot allocate JSON structure using json_object()"
-      );
-    }
-
-    return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+    RETURN_AND_SET_ERROR_STRING(
+      PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
+      "Cannot allocate JSON structure using json_object()"
+    );
   }
 
   json_t *json_value = NULL;
@@ -189,14 +191,10 @@ static int protobuf2json_process_message(
       }
 
       if (json_object_set_new(*json_message, field_descriptor->name, json_value)) {
-        if (error_string && error_size) {
-          snprintf(
-            error_string, error_size,
-            "Error in json_object_set_new()"
-          );
-        }
-
-        return PROTOBUF2JSON_ERR_JANSSON_INTERNAL;
+        RETURN_AND_SET_ERROR_STRING(
+          PROTOBUF2JSON_ERR_JANSSON_INTERNAL,
+          "Error in json_object_set_new()"
+        );
       }
     } else if (field_descriptor->label == PROTOBUF_C_LABEL_OPTIONAL) {
       protobuf_c_boolean is_set = 0;
@@ -220,14 +218,10 @@ static int protobuf2json_process_message(
         }
 
         if (json_object_set_new(*json_message, field_descriptor->name, json_value)) {
-          if (error_string && error_size) {
-            snprintf(
-              error_string, error_size,
-              "Error in json_object_set_new()"
-            );
-          }
-
-          return PROTOBUF2JSON_ERR_JANSSON_INTERNAL;
+          RETURN_AND_SET_ERROR_STRING(
+            PROTOBUF2JSON_ERR_JANSSON_INTERNAL,
+            "Error in json_object_set_new()"
+          );
         }
       }
     } else { // PROTOBUF_C_LABEL_REPEATED
@@ -236,27 +230,19 @@ static int protobuf2json_process_message(
       if (*protobuf_values_count) {
         json_t *array = json_array();
         if (!array) {
-          if (error_string && error_size) {
-            snprintf(
-              error_string, error_size,
-              "Cannot allocate JSON structure using json_array()"
-            );
-          }
-
-          return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+          RETURN_AND_SET_ERROR_STRING(
+            PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
+            "Cannot allocate JSON structure using json_array()"
+          );
         }
 
         size_t value_size = protobuf2json_value_size_by_type(field_descriptor->type);
         if (!value_size) {
-          if (error_string && error_size) {
-            snprintf(
-              error_string, error_size,
-              "Cannot calculate value size for %d using protobuf2json_value_size_by_type()",
-              field_descriptor->type
-            );
-          }
-
-          return PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE;
+          RETURN_AND_SET_ERROR_STRING(
+            PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE,
+            "Cannot calculate value size for %d using protobuf2json_value_size_by_type()",
+            field_descriptor->type
+          );
         }
 
         unsigned j;
@@ -271,26 +257,18 @@ static int protobuf2json_process_message(
           }
 
           if (json_array_append_new(array, json_value)) {
-            if (error_string && error_size) {
-              snprintf(
-                error_string, error_size,
-                "Error in json_array_append_new()"
-              );
-            }
-
-            return PROTOBUF2JSON_ERR_JANSSON_INTERNAL;
+            RETURN_AND_SET_ERROR_STRING(
+              PROTOBUF2JSON_ERR_JANSSON_INTERNAL,
+              "Error in json_array_append_new()"
+            );
           }
         }
 
         if (json_object_set_new(*json_message, field_descriptor->name, array)) {
-          if (error_string && error_size) {
-            snprintf(
-              error_string, error_size,
-              "Error in json_object_set_new()"
-            );
-          }
-
-          return PROTOBUF2JSON_ERR_JANSSON_INTERNAL;
+          RETURN_AND_SET_ERROR_STRING(
+            PROTOBUF2JSON_ERR_JANSSON_INTERNAL,
+            "Error in json_object_set_new()"
+          );
         }
       }
     }
@@ -333,15 +311,12 @@ int protobuf2json_string(
   // NOTICE: Should be freed by caller
   *json_string = json_dumps(json_object, json_flags);
   if (!*json_string) {
-    if (error_string && error_size) {
-      snprintf(
-        error_string, error_size,
-        "Cannot dump JSON object to string using json_dumps()"
-      );
-    }
-
     json_decref(json_object);
-    return PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING;
+
+    RETURN_AND_SET_ERROR_STRING(
+      PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING,
+      "Cannot dump JSON object to string using json_dumps()"
+    );
   }
 
   json_decref(json_object);
@@ -365,30 +340,24 @@ int protobuf2json_file(
 
   FILE *fd = fopen(json_file, fopen_mode);
   if (!fd) {
-    if (error_string && error_size) {
-      snprintf(
-        error_string, error_size,
-        "Cannot open file '%s' with mode '%s' to dump JSON, errno=%d",
-        json_file, fopen_mode, errno
-      );
-    }
-
     free(json_string);
-    return PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE;
+
+    RETURN_AND_SET_ERROR_STRING(
+      PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE,
+      "Cannot open file '%s' with mode '%s' to dump JSON, errno=%d",
+      json_file, fopen_mode, errno
+    );
   }
 
   if (fwrite(json_string, strlen(json_string), 1, fd) != 1) {
-    if (error_string && error_size) {
-      snprintf(
-        error_string, error_size,
-        "Cannot write JSON to file '%s' with mode '%s', errno=%d",
-        json_file, fopen_mode, errno
-      );
-    }
-
     fclose(fd);
     free(json_string);
-    return PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE;
+
+    RETURN_AND_SET_ERROR_STRING(
+      PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE,
+      "Cannot write JSON to file '%s' with mode '%s', errno=%d",
+      json_file, fopen_mode, errno
+    );
   }
 
   fclose(fd);
@@ -446,15 +415,11 @@ static int json2protobuf_process_field(
    || field_descriptor->type == PROTOBUF_C_TYPE_SFIXED32
   ) {
     if (!json_is_integer(json_value)) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "JSON value is not an integer required for GPB %s",
-          json2protobuf_integer_name_by_c_type(field_descriptor->type)
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_IS_NOT_INTEGER;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
+        "JSON value is not an integer required for GPB %s",
+        json2protobuf_integer_name_by_c_type(field_descriptor->type)
+      );
     }
 
     int32_t value_int32_t = (int32_t)json_integer_value(json_value);
@@ -464,15 +429,11 @@ static int json2protobuf_process_field(
           || field_descriptor->type == PROTOBUF_C_TYPE_FIXED32
   ) {
     if (!json_is_integer(json_value)) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "JSON value is not an integer required for GPB %s",
-          json2protobuf_integer_name_by_c_type(field_descriptor->type)
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_IS_NOT_INTEGER;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
+        "JSON value is not an integer required for GPB %s",
+        json2protobuf_integer_name_by_c_type(field_descriptor->type)
+      );
     }
 
     uint32_t value_uint32_t = (uint32_t)json_integer_value(json_value);
@@ -483,15 +444,11 @@ static int json2protobuf_process_field(
           || field_descriptor->type == PROTOBUF_C_TYPE_SFIXED64
   ) {
     if (!json_is_integer(json_value)) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "JSON value is not an integer required for GPB %s",
-          json2protobuf_integer_name_by_c_type(field_descriptor->type)
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_IS_NOT_INTEGER;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
+        "JSON value is not an integer required for GPB %s",
+        json2protobuf_integer_name_by_c_type(field_descriptor->type)
+      );
     }
 
     int64_t value_int64_t = (int64_t)json_integer_value(json_value);
@@ -501,15 +458,11 @@ static int json2protobuf_process_field(
           || field_descriptor->type == PROTOBUF_C_TYPE_FIXED64
   ) {
     if (!json_is_integer(json_value)) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "JSON value is not an integer required for GPB %s",
-          json2protobuf_integer_name_by_c_type(field_descriptor->type)
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_IS_NOT_INTEGER;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
+        "JSON value is not an integer required for GPB %s",
+        json2protobuf_integer_name_by_c_type(field_descriptor->type)
+      );
     }
 
     uint64_t value_uint64_t = (uint64_t)json_integer_value(json_value);
@@ -517,14 +470,10 @@ static int json2protobuf_process_field(
     memcpy(protobuf_value, &value_uint64_t, sizeof(value_uint64_t));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_FLOAT) {
     if (!json_is_real(json_value)) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "JSON value is not a real number required for GPB float"
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_IS_NOT_REAL;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_IS_NOT_REAL,
+        "JSON value is not a real number required for GPB float"
+      );
     }
 
     float value_float = (float)json_real_value(json_value);
@@ -532,14 +481,10 @@ static int json2protobuf_process_field(
     memcpy(protobuf_value, &value_float, sizeof(value_float));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_DOUBLE) {
     if (!json_is_real(json_value)) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "JSON value is not a real number required for GPB double"
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_IS_NOT_REAL;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_IS_NOT_REAL,
+        "JSON value is not a real number required for GPB double"
+      );
     }
 
     double value_double = (double)json_real_value(json_value);
@@ -547,14 +492,10 @@ static int json2protobuf_process_field(
     memcpy(protobuf_value, &value_double, sizeof(value_double));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_BOOL) {
     if (!json_is_boolean(json_value)) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "JSON value is not a boolean required for GPB bool"
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_IS_NOT_BOOLEAN;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_IS_NOT_BOOLEAN,
+        "JSON value is not a boolean required for GPB bool"
+      );
     }
 
     protobuf_c_boolean value_boolean = (protobuf_c_boolean)json_boolean_value(json_value);
@@ -562,14 +503,10 @@ static int json2protobuf_process_field(
     memcpy(protobuf_value, &value_boolean, sizeof(value_boolean));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_ENUM) {
     if (!json_is_string(json_value)) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "JSON value is not a string required for GPB enum"
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_IS_NOT_STRING;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_IS_NOT_STRING,
+        "JSON value is not a string required for GPB enum"
+      );
     }
 
     const char* enum_value_name = json_string_value(json_value);
@@ -578,15 +515,11 @@ static int json2protobuf_process_field(
 
     enum_value = protobuf_c_enum_descriptor_get_value_by_name(field_descriptor->descriptor, enum_value_name);
     if (!enum_value) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "Unknown value '%s' for enum '%s'",
-          enum_value_name, ((ProtobufCEnumDescriptor *)field_descriptor->descriptor)->name
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_UNKNOWN_ENUM_VALUE,
+        "Unknown value '%s' for enum '%s'",
+        enum_value_name, ((ProtobufCEnumDescriptor *)field_descriptor->descriptor)->name
+      );
     }
 
     int32_t value_enum = (int32_t)enum_value->value;
@@ -594,14 +527,10 @@ static int json2protobuf_process_field(
     memcpy(protobuf_value, &value_enum, sizeof(value_enum));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
     if (!json_is_string(json_value)) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "JSON value is not a string required for GPB string"
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_IS_NOT_STRING;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_IS_NOT_STRING,
+        "JSON value is not a string required for GPB string"
+      );
     }
 
     const char* value_string = json_string_value(json_value);
@@ -609,15 +538,11 @@ static int json2protobuf_process_field(
 
     char* value_string_copy = calloc(value_string_length + 1, sizeof(char));
     if (!value_string_copy) {
-      if (error_string && error_size) {
-        snprintf(
-          error_string, error_size,
-          "Cannot allocate %zu bytes using calloc(3)",
-          value_string_length * sizeof(char)
-        );
-      }
-
-      return PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY;
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
+        "Cannot allocate %zu bytes using calloc(3)",
+        value_string_length * sizeof(char)
+      );
     }
 
     memcpy(value_string_copy, value_string, value_string_length + 1);
@@ -867,16 +792,13 @@ int json2protobuf_string(
 
   json_object = json_loads(json_string, json_flags, &error);
   if (!json_object) {
-    if (error_string && error_size) {
-      snprintf(
-        error_string, error_size,
-        "JSON parsing error at line %d column %d (position %d): %s",
-        error.line, error.column, error.position, error.text
-      );
-    }
-
     json_decref(json_object);
-    return PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING;
+
+    RETURN_AND_SET_ERROR_STRING(
+      PROTOBUF2JSON_ERR_CANNOT_PARSE_STRING,
+      "JSON parsing error at line %d column %d (position %d): %s",
+      error.line, error.column, error.position, error.text
+    );
   }
 
   int result = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message, error_string, error_size);
@@ -902,16 +824,13 @@ int json2protobuf_file(
 
   json_object = json_load_file(json_file, json_flags, &error);
   if (!json_object) {
-    if (error_string && error_size) {
-      snprintf(
-        error_string, error_size,
-        "JSON parsing error at line %d column %d (position %d): %s",
-        error.line, error.column, error.position, error.text
-      );
-    }
-
     json_decref(json_object);
-    return PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE;
+
+    RETURN_AND_SET_ERROR_STRING(
+      PROTOBUF2JSON_ERR_CANNOT_PARSE_FILE,
+      "JSON parsing error at line %d column %d (position %d): %s",
+      error.line, error.column, error.position, error.text
+    );
   }
 
   int result = json2protobuf_object(json_object, protobuf_message_descriptor, protobuf_message, error_string, error_size);
