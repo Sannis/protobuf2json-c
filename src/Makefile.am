@@ -7,7 +7,7 @@
 lib_LTLIBRARIES = libprotobuf2json-c.la
 
 libprotobuf2json_c_la_SOURCES = protobuf2json.c
-libprotobuf2json_c_la_LDFLAGS = -version-info 0:0:0
+libprotobuf2json_c_la_LDFLAGS = -version-info 1:0:1
 
 AM_CFLAGS = -I$(top_srcdir)/include
 libprotobuf2json_c_la_LIBADD =

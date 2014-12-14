@@ -4,18 +4,36 @@ protobuf2json-c releases
 master - UNRELEASED
 -------------------
 
+tbd
+
+
+v0.2.0 - 14 Dec 2014
+--------------------
+
  * Incompatible changes
 
-   - build: remove jansson_compat.h, require newest jansson version (2.7)
+   - build: remove jansson_compat.h, require latest jansson version (2.7)
 
  * New features:
 
    - protobuf2json: implement protobuf2json_file() function
    - protobuf2json: implement bytes type support
+   - protobuf2json: implement presented required fields check
+
+ * Fixes:
+
+   - protobuf2json: fix null pointer dereference reported by cppcheck
+   - protobuf2json: fix memory leaks reported by valgrind
+   - test: cover more types mismatch error messages, correct some error codes
 
  * Other
 
    - docs: API documentation
+   - build: specify -version-info for libtool
+   - build: run cppcheck in builds
+   - test: get rid of protobuf_c_default_allocator usage
+   - build: remove allow_failures from Travis CI config
+   - build: add coveralls support
 
 
 v0.1.1 - 04 May 2014
