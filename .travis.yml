@@ -7,6 +7,7 @@ env:
   - SANITIZE=address
   - SANITIZE=undefined
   - SANITIZE=integer
+  - MY_VALGRIND=1
   - MY_COVERAGE=1
 matrix:
   exclude:
@@ -17,6 +18,8 @@ matrix:
     - compiler: gcc
       env: SANITIZE=integer
     - compiler: clang
+      env: MY_VALGRIND=1
+    - compiler: clang
       env: MY_COVERAGE=1
 before_install:
   - sudo add-apt-repository --yes ppa:pi-rho/security
@@ -24,11 +27,13 @@ before_install:
   - sudo apt-get install libprotobuf-c0-dev libprotobuf-c0 protobuf-c-compiler
   - sudo apt-get install libjansson4-dev libjansson4
   - sudo apt-get install cppcheck
+  - if [ "x$MY_VALGRIND" = "x1" ]; then sudo apt-get install valgrind; fi
   - if [ "x$MY_COVERAGE" = "x1" ]; then sudo apt-get install lcov; fi
   - if [ "x$MY_COVERAGE" = "x1" ]; then sudo pip install cpp-coveralls; fi
 install:
   - ./autogen.sh
   - ./configure
+  - if [ "x$MY_VALGRIND" = "x1" ]; then ./configure --enable-my-valgrind; fi
   - if [ "x$MY_COVERAGE" = "x1" ]; then ./configure --enable-my-coverage; fi
   - make
 script:

@@ -4,7 +4,9 @@ protobuf2json-c releases
 master - UNRELEASED
 -------------------
 
-tbd
+ * Other
+
+   - build: implement valgrind check
 
 
 v0.2.0 - 14 Dec 2014

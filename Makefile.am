@@ -12,10 +12,10 @@ cppcheck:
 	cppcheck --enable=style src/protobuf2json.c include/protobuf2json.h --error-exitcode=2
 
 test: check
-	@./test/run-tests
+	@MY_VALGRIND_EXEC_PREFIX@./test/run-tests
 
 benchmark: check
-	@./test/run-benchmarks
+	@MY_VALGRIND_EXEC_PREFIX@./test/run-benchmarks
 
 MY_COVERAGE_DIRECTORY = $(abs_top_builddir)/src
 @MY_COVERAGE_RULES@
