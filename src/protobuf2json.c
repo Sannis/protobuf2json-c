@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <errno.h>
 
+/* Interface definitions */
 #include "protobuf2json.h"
 
 /* Simple bitmap implementation */
