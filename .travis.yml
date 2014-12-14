@@ -4,19 +4,19 @@ compiler:
   - clang
 env:
   -
-  - SANITIZE=address
-  - SANITIZE=undefined
-  - SANITIZE=integer
+  - MY_SANITIZE=address
+  - MY_SANITIZE=undefined
+  - MY_SANITIZE=integer
   - MY_VALGRIND=1
   - MY_COVERAGE=1
 matrix:
   exclude:
     - compiler: gcc
-      env: SANITIZE=address
+      env: MY_SANITIZE=address
     - compiler: gcc
-      env: SANITIZE=undefined
+      env: MY_SANITIZE=undefined
     - compiler: gcc
-      env: SANITIZE=integer
+      env: MY_SANITIZE=integer
     - compiler: clang
       env: MY_VALGRIND=1
     - compiler: clang
@@ -33,6 +33,7 @@ before_install:
 install:
   - ./autogen.sh
   - ./configure
+  - if [ "x$MY_SANITIZE" != "x" ]; then ./configure --enable-my-sanitize=$MY_SANITIZE; fi
   - if [ "x$MY_VALGRIND" = "x1" ]; then ./configure --enable-my-valgrind; fi
   - if [ "x$MY_COVERAGE" = "x1" ]; then ./configure --enable-my-coverage; fi
   - make
