@@ -7,6 +7,8 @@
  */
 
 TEST_DECLARE(protobuf2json_file__person__success)
+TEST_DECLARE(protobuf2json_file__person__error_cannot_open_file)
+TEST_DECLARE(protobuf2json_file__person__error_cannot_dump_file)
 TEST_DECLARE(protobuf2json_string__person__required)
 TEST_DECLARE(protobuf2json_string__person__optional)
 TEST_DECLARE(protobuf2json_string__person__repeated_message)
@@ -48,6 +50,8 @@ TEST_DECLARE(json2protobuf_string__boolean_values__error_is_not_boolean_required
 
 TASK_LIST_START
   TEST_ENTRY(protobuf2json_file__person__success)
+  TEST_ENTRY(protobuf2json_file__person__error_cannot_open_file)
+  TEST_ENTRY(protobuf2json_file__person__error_cannot_dump_file)
   TEST_ENTRY(protobuf2json_string__person__required)
   TEST_ENTRY(protobuf2json_string__person__optional)
   TEST_ENTRY(protobuf2json_string__person__repeated_message)

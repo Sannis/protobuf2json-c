@@ -9,6 +9,7 @@
 #include <libgen.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "task.h"
 #include "person.pb-c.h"
@@ -67,6 +68,72 @@ TEST_IMPL(protobuf2json_file__person__success) {
 
   result = unlink(file_name);
   ASSERT_ZERO(result);
+
+  RETURN_OK();
+}
+
+TEST_IMPL(protobuf2json_file__person__error_cannot_open_file) {
+  int result;
+  char error_string[256] = {0};
+
+  char file_path[MAXPATHLEN] = {0};
+  char file_name[MAXPATHLEN] = {0};
+  long json_string_length = 0;
+
+  result = realpath(dirname(executable_path), file_path) ? 1 : 0;
+  ASSERT(result > 0);
+
+  result = snprintf(file_name, sizeof(file_name) - 1, "%s/fixtures/unexistent.json", file_path);
+  ASSERT(result > 0);
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  result = protobuf2json_file(&person.base, 0, file_name, "r", error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE);
+
+  char expected_error_string[MAXPATHLEN + 100];
+  sprintf(expected_error_string, "Cannot open file '%s' with mode 'r' to dump JSON, errno=%d", file_name, ENOENT);
+
+  ASSERT_STRCMP(
+    error_string,
+    (const char *)expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(protobuf2json_file__person__error_cannot_dump_file) {
+  int result;
+  char error_string[256] = {0};
+
+  char file_path[MAXPATHLEN] = {0};
+  char file_name[MAXPATHLEN] = {0};
+  long json_string_length = 0;
+
+  result = realpath(dirname(executable_path), file_path) ? 1 : 0;
+  ASSERT(result > 0);
+
+  result = snprintf(file_name, sizeof(file_name) - 1, "%s/fixtures/good.json", file_path);
+  ASSERT(result > 0);
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  result = protobuf2json_file(&person.base, 0, file_name, "r", error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE);
+
+  char expected_error_string[MAXPATHLEN + 100];
+  sprintf(expected_error_string, "Cannot write JSON to file '%s' with mode 'r', errno=%d", file_name, EBADF);
+
+  ASSERT_STRCMP(
+    error_string,
+    (const char *)expected_error_string
+  );
 
   RETURN_OK();
 }
