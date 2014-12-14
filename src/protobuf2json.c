@@ -133,7 +133,7 @@ static int protobuf2json_process_field(
     case PROTOBUF_C_TYPE_BYTES: {
         const ProtobufCBinaryData *protobuf_binary = (const ProtobufCBinaryData *)protobuf_value;
 
-        *json_value = json_stringn(protobuf_binary->data, protobuf_binary->len);
+        *json_value = json_stringn((const char *)protobuf_binary->data, protobuf_binary->len);
 
         break;
     }
@@ -588,7 +588,7 @@ static int json2protobuf_process_field(
 
     ProtobufCBinaryData value_binary;
 
-    value_binary.data = value_string_copy;
+    value_binary.data = (uint8_t *)value_string_copy;
     value_binary.len = value_string_length;
 
     memcpy(protobuf_value, &value_binary, sizeof(value_binary));
