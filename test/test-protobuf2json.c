@@ -72,7 +72,85 @@ TEST_IMPL(protobuf2json_file__person__success) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_file__person__error_cannot_open_file) {
+void* failed_malloc(size_t size) {
+  return NULL;
+}
+
+TEST_IMPL(protobuf2json_file__person__error) {
+  int result;
+  char error_string[256] = {0};
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  json_set_alloc_funcs(failed_malloc, free);
+  result = protobuf2json_file(&person.base, 0, "not null", "r", error_string, sizeof(error_string));
+  json_set_alloc_funcs(malloc, free);
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY);
+
+  const char *expected_error_string = \
+    "Cannot allocate JSON structure using json_object()"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(protobuf2json_file__person__error_cannot_open_null_file) {
+  int result;
+  char error_string[256] = {0};
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  result = protobuf2json_file(&person.base, 0, NULL, "r", error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE);
+
+  const char *expected_error_string = \
+    "Cannot open NULL to dump JSON"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(protobuf2json_file__person__error_cannot_open_null_fopen_mode) {
+  int result;
+  char error_string[256] = {0};
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  result = protobuf2json_file(&person.base, 0, "not null", NULL, error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE);
+
+  const char *expected_error_string = \
+    "Cannot open file with NULL fopen(3) mode to dump JSON"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(protobuf2json_file__person__error_cannot_open_unexistent_file) {
   int result;
   char error_string[256] = {0};
 
@@ -322,7 +400,7 @@ TEST_IMPL(protobuf2json_string__person__error_in_nested_message) {
 }
 
 #define STRBUFFER_MIN_SIZE 16
-void* failed_malloc(size_t size) {
+void* failed_strbuffer_malloc(size_t size) {
   return (size == STRBUFFER_MIN_SIZE) ? NULL : malloc(size);
 }
 
@@ -336,7 +414,7 @@ TEST_IMPL(protobuf2json_string__person__error_cannot_dump_string) {
   person.id = 42;
 
   char *json_string;
-  json_set_alloc_funcs(failed_malloc, free);
+  json_set_alloc_funcs(failed_strbuffer_malloc, free);
   result = protobuf2json_string(&person.base, 0, &json_string, error_string, sizeof(error_string));
   json_set_alloc_funcs(malloc, free);
   ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING);

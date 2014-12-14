@@ -333,13 +333,28 @@ int protobuf2json_file(
   size_t error_size
 ) {
   char *json_string = NULL;
+  FILE *fd = NULL;
+
+  if (!json_file) {
+    RETURN_AND_SET_ERROR_STRING(
+      PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE,
+      "Cannot open NULL to dump JSON"
+    );
+  }
+
+  if (!fopen_mode) {
+    RETURN_AND_SET_ERROR_STRING(
+      PROTOBUF2JSON_ERR_CANNOT_DUMP_FILE,
+      "Cannot open file with NULL fopen(3) mode to dump JSON"
+    );
+  }
 
   int ret = protobuf2json_string(protobuf_message, json_flags, &json_string, error_string, error_size);
   if (ret) {
     return ret;
   }
 
-  FILE *fd = fopen(json_file, fopen_mode);
+  fd = fopen(json_file, fopen_mode);
   if (!fd) {
     free(json_string);
 
