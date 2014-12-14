@@ -452,6 +452,47 @@ TEST_IMPL(json2protobuf_string__boolean_values__values) {
   RETURN_OK();
 }
 
+TEST_IMPL(json2protobuf_string__bytes_values__values) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"optional_bytes\": \"qwerty12345\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bytes_values__descriptor, &protobuf_message, NULL, 0);
+  ASSERT_ZERO(result);
+
+  Foo__BytesValues *bytes_values = (Foo__BytesValues *)protobuf_message;
+
+  ASSERT(bytes_values->has_optional_bytes);
+  ASSERT(strcmp(bytes_values->optional_bytes.data, "qwerty12345") == 0);
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  const char *expected_json_string = \
+    "{\n"
+    "  \"optional_bytes\": \"qwerty12345\"\n"
+    "}"
+  ;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+  free(json_string);
+
+  RETURN_OK();
+}
+
 TEST_IMPL(json2protobuf_string__person__error_is_not_object) {
   int result;
   char error_string[256] = {0};

@@ -11,6 +11,7 @@ master - UNRELEASED
  * New features:
 
    - protobuf2json: implement protobuf2json_file() function
+   - protobuf2json: implement bytes type support
 
  * Other
 

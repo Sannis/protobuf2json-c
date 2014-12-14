@@ -130,8 +130,11 @@ static int protobuf2json_process_field(
       *json_value = json_string(*(char **)protobuf_value);
       break;
     case PROTOBUF_C_TYPE_BYTES: {
-      // TODO: implement
-      assert(0);
+        const ProtobufCBinaryData *protobuf_binary = (const ProtobufCBinaryData *)protobuf_value;
+
+        *json_value = json_stringn(protobuf_binary->data, protobuf_binary->len);
+
+        break;
     }
     case PROTOBUF_C_TYPE_MESSAGE: {
       const ProtobufCMessage **protobuf_message = (const ProtobufCMessage **)protobuf_value;
@@ -538,7 +541,7 @@ static int json2protobuf_process_field(
       RETURN_AND_SET_ERROR_STRING(
         PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
         "Cannot allocate %zu bytes using calloc(3)",
-        value_string_length * sizeof(char)
+        (value_string_length + 1) * sizeof(char)
       );
     }
 
@@ -546,8 +549,33 @@ static int json2protobuf_process_field(
 
     *(char **)(protobuf_value) = value_string_copy;
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_BYTES) {
-    // TODO: implement
-    assert(0);
+    if (!json_is_string(json_value)) {
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_IS_NOT_STRING,
+        "JSON value is not a string required for GPB bytes"
+      );
+    }
+
+    const char* value_string = json_string_value(json_value);
+    size_t value_string_length = json_string_length(json_value);
+
+    char* value_string_copy = calloc(value_string_length, sizeof(char));
+    if (!value_string_copy) {
+      RETURN_AND_SET_ERROR_STRING(
+        PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
+        "Cannot allocate %zu bytes using calloc(3)",
+        value_string_length * sizeof(char)
+      );
+    }
+
+    memcpy(value_string_copy, value_string, value_string_length);
+
+    ProtobufCBinaryData value_binary;
+
+    value_binary.data = value_string_copy;
+    value_binary.len = value_string_length;
+
+    memcpy(protobuf_value, &value_binary, sizeof(value_binary));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
     ProtobufCMessage *protobuf_message;
 

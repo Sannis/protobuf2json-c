@@ -16,10 +16,6 @@ message Bar {
   optional FizzBuzzType enum_optional_default = 6 [default = FIZZBUZZ];
 }
 
-message List {
-  repeated int32 numbers = 1;
-}
-
 message NumericValues {
   optional int32    value_int32 = 1;
   optional sint32   value_sint32 = 2;
@@ -45,9 +41,7 @@ message BooleanValues {
   optional bool value_false = 2;
 }
 
-message RepeatedThings {
-  repeated int32  values_int32 = 1;
-  repeated int64  values_int64 = 2;
-  repeated float  values_float = 3;
-  repeated double values_double = 4;
+message BytesValues {
+  optional bytes optional_bytes = 1;
+  repeated bytes repeated_bytes = 2;
 }
