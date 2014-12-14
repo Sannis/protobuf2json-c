@@ -457,7 +457,11 @@ TEST_IMPL(json2protobuf_string__bytes_values__values) {
 
   const char *initial_json_string = \
     "{\n"
-    "  \"optional_bytes\": \"qwerty \\u0000 12345\"\n"
+    "  \"optional_bytes\": \"qwerty \\u0000 12345\",\n"
+    "  \"repeated_bytes\": [\n"
+    "    \"qwerty \\u0000\",\n"
+    "    \"\\u0000 12345\"\n"
+    "  ]\n"
     "}"
   ;
 
@@ -472,6 +476,8 @@ TEST_IMPL(json2protobuf_string__bytes_values__values) {
   ASSERT(bytes_values->optional_bytes.len == 14);
   ASSERT_STRNCMP(bytes_values->optional_bytes.data, "qwerty \0 12345", bytes_values->optional_bytes.len);
 
+  ASSERT(bytes_values->n_repeated_bytes == 2);
+
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
   ASSERT_ZERO(result);
@@ -479,7 +485,11 @@ TEST_IMPL(json2protobuf_string__bytes_values__values) {
 
   const char *expected_json_string = \
     "{\n"
-    "  \"optional_bytes\": \"qwerty \\u0000 12345\"\n"
+    "  \"optional_bytes\": \"qwerty \\u0000 12345\",\n"
+    "  \"repeated_bytes\": [\n"
+    "    \"qwerty \\u0000\",\n"
+    "    \"\\u0000 12345\"\n"
+    "  ]\n"
     "}"
   ;
 
