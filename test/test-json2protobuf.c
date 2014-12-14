@@ -474,7 +474,7 @@ TEST_IMPL(json2protobuf_string__bytes_values__values) {
 
   ASSERT(bytes_values->has_optional_bytes);
   ASSERT(bytes_values->optional_bytes.len == 14);
-  ASSERT_STRNCMP(bytes_values->optional_bytes.data, "qwerty \0 12345", bytes_values->optional_bytes.len);
+  ASSERT_STRNCMP((const char *)bytes_values->optional_bytes.data, "qwerty \0 12345", bytes_values->optional_bytes.len);
 
   ASSERT(bytes_values->n_repeated_bytes == 2);
 
