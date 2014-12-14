@@ -4,6 +4,10 @@ protobuf2json-c releases
 master - UNRELEASED
 -------------------
 
+ * Incompatible changes
+
+   - build: remove jansson_compat.h, require newest jansson version (2.7)
+
  * New features:
 
    - protobuf2json: implement protobuf2json_file() function

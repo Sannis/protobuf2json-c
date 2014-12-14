@@ -13,9 +13,6 @@
 
 #include "protobuf2json.h"
 
-/* For compatibility with old Jansson from repositories */
-#include "jansson_compat.h"
-
 /* Simple bitmap implementation */
 #include "bitmap.h"
 
