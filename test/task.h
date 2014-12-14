@@ -132,7 +132,7 @@
   }                                                       \
  } while (0)
 
-/* Assert that string are equal */
+/* Assert that string are equal using strcmp */
 #define ASSERT_STRCMP(actual, expected)                                                         \
  do {                                                                                           \
   if (strcmp(actual, expected)) {                                                               \
@@ -145,6 +145,21 @@
     abort();                                                                                    \
   }                                                                                             \
  } while (0)
+
+/* Assert that string are equal using strncmp */
+#define ASSERT_STRNCMP(actual, expected, length)                                                         \
+ do {                                                                                           \
+  if (strncmp(actual, expected, length)) {                                                               \
+    fprintf(stderr,                                                                             \
+            "Assertion failed in %s on line %d:\n%s\n --- not equal to expected --- \n%s\n",    \
+            __FILE__,                                                                           \
+            __LINE__,                                                                           \
+            actual,                                                                             \
+            expected);                                                                          \
+    abort();                                                                                    \
+  }                                                                                             \
+ } while (0)
+
 
 /* Just sugar for wrapping the main() for a task or helper. */
 #define TEST_IMPL(name)                                                       \

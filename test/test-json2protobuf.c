@@ -457,19 +457,20 @@ TEST_IMPL(json2protobuf_string__bytes_values__values) {
 
   const char *initial_json_string = \
     "{\n"
-    "  \"optional_bytes\": \"qwerty12345\"\n"
+    "  \"optional_bytes\": \"qwerty \\u0000 12345\"\n"
     "}"
   ;
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bytes_values__descriptor, &protobuf_message, NULL, 0);
+  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__bytes_values__descriptor, &protobuf_message, NULL, 0);
   ASSERT_ZERO(result);
 
   Foo__BytesValues *bytes_values = (Foo__BytesValues *)protobuf_message;
 
   ASSERT(bytes_values->has_optional_bytes);
-  ASSERT(strcmp(bytes_values->optional_bytes.data, "qwerty12345") == 0);
+  ASSERT(bytes_values->optional_bytes.len == 14);
+  ASSERT_STRNCMP(bytes_values->optional_bytes.data, "qwerty \0 12345", bytes_values->optional_bytes.len);
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
@@ -478,7 +479,7 @@ TEST_IMPL(json2protobuf_string__bytes_values__values) {
 
   const char *expected_json_string = \
     "{\n"
-    "  \"optional_bytes\": \"qwerty12345\"\n"
+    "  \"optional_bytes\": \"qwerty \\u0000 12345\"\n"
     "}"
   ;
 
