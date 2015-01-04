@@ -485,25 +485,33 @@ static int json2protobuf_process_field(
 
     memcpy(protobuf_value, &value_uint64_t, sizeof(value_uint64_t));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_FLOAT) {
-    if (!json_is_real(json_value)) {
+    float value_float;
+
+    if (json_is_integer(json_value)) {
+      value_float = (float)json_integer_value(json_value);
+    } else if (json_is_real(json_value)) {
+      value_float = (float)json_real_value(json_value);
+    } else {
       SET_ERROR_STRING_AND_RETURN(
-        PROTOBUF2JSON_ERR_IS_NOT_REAL,
-        "JSON value is not a real number required for GPB float"
+        PROTOBUF2JSON_ERR_IS_NOT_INTEGER_OR_REAL,
+        "JSON value is not a integer/real required for GPB float"
       );
     }
-
-    float value_float = (float)json_real_value(json_value);
 
     memcpy(protobuf_value, &value_float, sizeof(value_float));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_DOUBLE) {
-    if (!json_is_real(json_value)) {
+    double value_double;
+
+    if (json_is_integer(json_value)) {
+      value_double = (double)json_integer_value(json_value);
+    } else if (json_is_real(json_value)) {
+      value_double = (double)json_real_value(json_value);
+    } else {
       SET_ERROR_STRING_AND_RETURN(
-        PROTOBUF2JSON_ERR_IS_NOT_REAL,
-        "JSON value is not a real number required for GPB double"
+        PROTOBUF2JSON_ERR_IS_NOT_INTEGER_OR_REAL,
+        "JSON value is not a integer/real required for GPB double"
       );
     }
-
-    double value_double = (double)json_real_value(json_value);
 
     memcpy(protobuf_value, &value_double, sizeof(value_double));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_BOOL) {
