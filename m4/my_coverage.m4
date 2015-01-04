@@ -114,7 +114,7 @@ AC_DEFUN([MY_COVERAGE],
     dnl Add the special compiler flags
     MY_COVERAGE_CFLAGS="--coverage -g -O0"
     MY_COVERAGE_CXXFLAGS="--coverage -g -O0"
-    MY_COVERAGE_LDFLAGS="-lgcov"
+    MY_COVERAGE_LDFLAGS="--coverage"
   fi
 
   AC_SUBST(MY_COVERAGE_CFLAGS)
