@@ -36,11 +36,6 @@ message RepeatedValues {
   // skip message
 }
 
-message BooleanValues {
-  optional bool value_true = 1;
-  optional bool value_false = 2;
-}
-
 message StringValues {
   optional string optional_string = 1;
   repeated string repeated_string = 2;

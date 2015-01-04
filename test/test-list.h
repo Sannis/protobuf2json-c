@@ -75,7 +75,6 @@ TASK_LIST_START
   TEST_ENTRY(json2protobuf_string__person)
   TEST_ENTRY(json2protobuf_string__bar__default_values)
   TEST_ENTRY(json2protobuf_string__repeated_values__values)
-  TEST_ENTRY(json2protobuf_string__boolean_values__values)
   TEST_ENTRY(json2protobuf_string__string_values__values)
   TEST_ENTRY(json2protobuf_string__bytes_values__values)
   TEST_ENTRY(json2protobuf_string__person__error_is_not_object)
@@ -97,5 +96,4 @@ TASK_LIST_START
   TEST_ENTRY(json2protobuf_string__repeated_values__error_is_not_integer_required_for_fixed64)
   TEST_ENTRY(json2protobuf_string__repeated_values__error_is_not_real_number_required_for_float)
   TEST_ENTRY(json2protobuf_string__repeated_values__error_is_not_real_number_required_for_double)
-  TEST_ENTRY(json2protobuf_string__boolean_values__error_is_not_boolean_required_for_bool)
 TASK_LIST_END

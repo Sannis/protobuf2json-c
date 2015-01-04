@@ -490,49 +490,6 @@ TEST_IMPL(json2protobuf_string__repeated_values__values) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__boolean_values__values) {
-  int result;
-
-  const char *initial_json_string = \
-    "{\n"
-    "  \"value_true\": true,\n"
-    "  \"value_false\": false\n"
-    "}"
-  ;
-
-  ProtobufCMessage *protobuf_message;
-
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__boolean_values__descriptor, &protobuf_message, NULL, 0);
-  ASSERT_ZERO(result);
-
-  Foo__BooleanValues *boolean_values = (Foo__BooleanValues *)protobuf_message;
-
-  ASSERT(boolean_values->value_true);
-  ASSERT(!boolean_values->value_false);
-
-  char *json_string;
-  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT_ZERO(result);
-  ASSERT(json_string);
-
-  const char *expected_json_string = \
-    "{\n"
-    "  \"value_true\": true,\n"
-    "  \"value_false\": false\n"
-    "}"
-  ;
-
-  ASSERT_STRCMP(
-    json_string,
-    expected_json_string
-  );
-
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-  free(json_string);
-
-  RETURN_OK();
-}
-
 TEST_IMPL(json2protobuf_string__string_values__values) {
   int result;
 
@@ -938,19 +895,20 @@ TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_real_number_requir
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__boolean_values__error_is_not_boolean_required_for_bool) {
+
+TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_boolean_required_for_bool) {
   int result;
   char error_string[256] = {0};
 
   const char *initial_json_string = \
     "{\n"
-    "  \"value_true\": \"string\"\n"
+    "  \"value_bool\": [\"string\"]\n"
     "}"
   ;
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__boolean_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__repeated_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
   ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_BOOLEAN);
 
   const char *expected_error_string = \
