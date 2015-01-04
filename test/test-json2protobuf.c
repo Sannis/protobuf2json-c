@@ -303,6 +303,7 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
     "  \"string_required\": \"required\",\n"
     "  \"string_required_default\": \"default value 1\",\n"
     "  \"string_optional_default\": \"default value 2\",\n"
+    "  \"bytes_optional_default\": \"default value 3\",\n"
     "  \"enum_optional_default\": \"FIZZBUZZ\"\n"
     "}"
   ;
@@ -740,7 +741,35 @@ TEST_IMPL(json2protobuf_string__person__error_required_is_missing) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__bar__error_string_is_not_string_required_for_string) {
+TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_enum) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"string_required\": \"required\",\n"
+    "  \"enum_optional\": 42"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
+
+  const char *expected_error_string = \
+    "JSON value is not a string required for GPB enum"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_string) {
   int result;
   char error_string[256] = {0};
 
@@ -769,14 +798,14 @@ TEST_IMPL(json2protobuf_string__bar__error_string_is_not_string_required_for_str
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_enum) {
+TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_bytes) {
   int result;
   char error_string[256] = {0};
 
   const char *initial_json_string = \
     "{\n"
     "  \"string_required\": \"required\",\n"
-    "  \"enum_optional\": 42"
+    "  \"bytes_optional\": 42\n"
     "}"
   ;
 
@@ -786,13 +815,15 @@ TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_enum) {
   ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
 
   const char *expected_error_string = \
-    "JSON value is not a string required for GPB enum"
+    "JSON value is not a string required for GPB bytes"
   ;
 
   ASSERT_STRCMP(
     error_string,
     expected_error_string
   );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
 
   RETURN_OK();
 }
