@@ -318,56 +318,61 @@ TEST_IMPL(json2protobuf_string__bar__default_values) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__numeric_values__values) {
+TEST_IMPL(json2protobuf_string__repeated_values__values) {
   int result;
 
   const char *initial_json_string = \
     "{\n"
 
-    "  \"value_int32\": 2147483647,\n"
-    "  \"value_sint32\": -2147483648,\n"
-    "  \"value_sfixed32\": -2147483648,\n"
+    "  \"value_int32\": [2147483647],\n"
+    "  \"value_sint32\": [-2147483648],\n"
+    "  \"value_sfixed32\": [-2147483648],\n"
 
-    "  \"value_uint32\": 4294967295,\n"\
-    "  \"value_fixed32\": 4294967295,\n"
+    "  \"value_uint32\": [4294967295],\n"\
+    "  \"value_fixed32\": [4294967295],\n"
 
-    "  \"value_int64\": 9223372036854775807,\n"
-    "  \"value_sint64\": -9223372036854775808,\n"
-    "  \"value_sfixed64\": -9223372036854775808,\n"
+    "  \"value_int64\": [9223372036854775807],\n"
+    "  \"value_sint64\": [-9223372036854775808],\n"
+    "  \"value_sfixed64\": [-9223372036854775808],\n"
     /* JSON does not support max(unsigned long long) */
-    "  \"value_uint64\": 9223372036854775807,\n"
-    "  \"value_fixed64\": 9223372036854775807,\n"
+    "  \"value_uint64\": [9223372036854775807],\n"
+    "  \"value_fixed64\": [9223372036854775807],\n"
 
-    "  \"value_float\": 0.33000001311302185,\n"
-    "  \"value_double\": 0.0077705550333011103\n"
+    "  \"value_float\": [0.33000001311302185],\n"
+    "  \"value_double\": [0.0077705550333011103],\n"
+
+    "  \"value_bool\": [true, false]\n"
 
     "}"
   ;
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, NULL, 0);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__repeated_values__descriptor, &protobuf_message, NULL, 0);
   ASSERT_ZERO(result);
 
-  Foo__NumericValues *numeric_values = (Foo__NumericValues *)protobuf_message;
+  Foo__RepeatedValues *repeated_values = (Foo__RepeatedValues *)protobuf_message;
 
-  ASSERT(numeric_values->value_int32 == 2147483647);
-  ASSERT(numeric_values->value_sint32 == -2147483647 - 1);
-  ASSERT(numeric_values->value_sfixed32 == -2147483647 - 1);
+  ASSERT(repeated_values->value_int32[0] == 2147483647);
+  ASSERT(repeated_values->value_sint32[0] == -2147483647 - 1);
+  ASSERT(repeated_values->value_sfixed32[0] == -2147483647 - 1);
   
-  ASSERT(numeric_values->value_uint32 == 4294967295);
-  ASSERT(numeric_values->value_fixed32 == 4294967295);
+  ASSERT(repeated_values->value_uint32[0] == 4294967295);
+  ASSERT(repeated_values->value_fixed32[0] == 4294967295);
   
-  ASSERT(numeric_values->value_int64 == 9223372036854775807);
-  ASSERT(numeric_values->value_sint64 == -9223372036854775807 - 1);
-  ASSERT(numeric_values->value_sfixed64 == -9223372036854775807 - 1);
+  ASSERT(repeated_values->value_int64[0] == 9223372036854775807);
+  ASSERT(repeated_values->value_sint64[0] == -9223372036854775807 - 1);
+  ASSERT(repeated_values->value_sfixed64[0] == -9223372036854775807 - 1);
   
   /* JSON does not support max(unsigned long long) */
-  ASSERT(numeric_values->value_uint64 == 9223372036854775807);
-  ASSERT(numeric_values->value_fixed64 == 9223372036854775807);
+  ASSERT(repeated_values->value_uint64[0] == 9223372036854775807);
+  ASSERT(repeated_values->value_fixed64[0] == 9223372036854775807);
   
-  ASSERT(fabs(numeric_values->value_float - 0.33000001311302185) < 1e-10);
-  ASSERT(fabs(numeric_values->value_double - 0.0077705550333011103) < 1e-10);
+  ASSERT(fabs(repeated_values->value_float[0] - 0.33000001311302185) < 1e-10);
+  ASSERT(fabs(repeated_values->value_double[0] - 0.0077705550333011103) < 1e-10);
+
+  ASSERT(repeated_values->value_bool[0]);
+  ASSERT(!repeated_values->value_bool[1]);
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
@@ -377,23 +382,52 @@ TEST_IMPL(json2protobuf_string__numeric_values__values) {
   const char *expected_json_string = \
     "{\n"
 
-    "  \"value_int32\": 2147483647,\n"
-    "  \"value_sint32\": -2147483648,\n"
-    "  \"value_sfixed32\": -2147483648,\n"
+    "  \"value_int32\": [\n"
+    "    2147483647\n"
+    "  ],\n"
+    "  \"value_sint32\": [\n"
+    "    -2147483648\n"
+    "  ],\n"
+    "  \"value_sfixed32\": [\n"
+    "    -2147483648\n"
+    "  ],\n"
 
-    "  \"value_uint32\": 4294967295,\n"\
-    "  \"value_fixed32\": 4294967295,\n"
+    "  \"value_uint32\": [\n"
+    "    4294967295\n"
+    "  ],\n"\
+    "  \"value_fixed32\": [\n"
+    "    4294967295\n"
+    "  ],\n"
 
-    "  \"value_int64\": 9223372036854775807,\n"
-    "  \"value_sint64\": -9223372036854775808,\n"
-    "  \"value_sfixed64\": -9223372036854775808,\n"
+    "  \"value_int64\": [\n"
+    "    9223372036854775807\n"
+    "  ],\n"
+    "  \"value_sint64\": [\n"
+    "    -9223372036854775808\n"
+    "  ],\n"
+    "  \"value_sfixed64\": [\n"
+    "    -9223372036854775808\n"
+    "  ],\n"
 
     /* JSON does not support max(unsigned long long) */
-    "  \"value_uint64\": 9223372036854775807,\n"
-    "  \"value_fixed64\": 9223372036854775807,\n"
+    "  \"value_uint64\": [\n"
+    "    9223372036854775807\n"
+    "  ],\n"
+    "  \"value_fixed64\": [\n"
+    "    9223372036854775807\n"
+    "  ],\n"
 
-    "  \"value_float\": 0.33000001311302185,\n"
-    "  \"value_double\": 0.0077705550333011103\n"
+    "  \"value_float\": [\n"
+    "    0.33000001311302185\n"
+    "  ],\n"
+    "  \"value_double\": [\n"
+    "    0.0077705550333011103\n"
+    "  ],\n"
+
+    "  \"value_bool\": [\n"
+    "    true,\n"
+    "    false\n"
+    "  ]\n"
 
     "}"
   ;
@@ -708,17 +742,32 @@ TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_enum) {
 }
 
 #define TEST_IMPL_IS_NOT_INTEGER(type) \
-  TEST_IMPL(json2protobuf_string__numeric_values__error_is_not_integer_required_for_ ## type) { \
-    int result; \
-    char error_string[256] = {0}; \
-    const char *initial_json_string = "{\n  \"value_" #type "\": \"string\"\n}"; \
-    ProtobufCMessage *protobuf_message = NULL; \
-    result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, error_string, sizeof(error_string)); \
-    ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_INTEGER); \
-    const char *expected_error_string = "JSON value is not an integer required for GPB " #type; \
-    ASSERT_STRCMP(error_string, expected_error_string); \
-    protobuf_c_message_free_unpacked(protobuf_message, NULL); \
-    RETURN_OK(); \
+  TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_integer_required_for_ ## type) { \
+    int result;                                                                                          \
+    char error_string[256] = {0};                                                                        \
+                                                                                                         \
+    const char *initial_json_string =                                                                    \
+      "{\n"                                                                                              \
+      "  \"value_" #type "\": [\"string\"]\n"                                                            \
+      "}"                                                                                                \
+    ;                                                                                                    \
+                                                                                                         \
+    ProtobufCMessage *protobuf_message = NULL;                                                           \
+                                                                                                         \
+    result = json2protobuf_string(                                                                       \
+      (char *)initial_json_string,                                                                       \
+      0,                                                                                                 \
+      &foo__repeated_values__descriptor,                                                         \
+      &protobuf_message,                                                                                 \
+      error_string,                                                                                      \
+      sizeof(error_string)                                                                               \
+    );                                                                                                   \
+                                                                                                         \
+    ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_INTEGER);                                             \
+    const char *expected_error_string = "JSON value is not an integer required for GPB " #type;          \
+    ASSERT_STRCMP(error_string, expected_error_string);                                                  \
+    protobuf_c_message_free_unpacked(protobuf_message, NULL);                                            \
+    RETURN_OK();                                                                                         \
   }
 
 TEST_IMPL_IS_NOT_INTEGER(int32)
@@ -732,19 +781,19 @@ TEST_IMPL_IS_NOT_INTEGER(sfixed64)
 TEST_IMPL_IS_NOT_INTEGER(uint64)
 TEST_IMPL_IS_NOT_INTEGER(fixed64)
 
-TEST_IMPL(json2protobuf_string__numeric_values__error_is_not_real_number_required_for_float) {
+TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_real_number_required_for_float) {
   int result;
   char error_string[256] = {0};
 
   const char *initial_json_string = \
     "{\n"
-    "  \"value_float\": \"string\"\n"
+    "  \"value_float\": [\"string\"]\n"
     "}"
   ;
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__repeated_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
   ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_REAL);
 
   const char *expected_error_string = \
@@ -761,19 +810,19 @@ TEST_IMPL(json2protobuf_string__numeric_values__error_is_not_real_number_require
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__numeric_values__error_is_not_real_number_required_for_double) {
+TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_real_number_required_for_double) {
   int result;
   char error_string[256] = {0};
 
   const char *initial_json_string = \
     "{\n"
-    "  \"value_double\": \"string\"\n"
+    "  \"value_double\": [\"string\"]\n"
     "}"
   ;
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__numeric_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__repeated_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
   ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_REAL);
 
   const char *expected_error_string = \
