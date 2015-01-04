@@ -533,6 +533,58 @@ TEST_IMPL(json2protobuf_string__boolean_values__values) {
   RETURN_OK();
 }
 
+TEST_IMPL(json2protobuf_string__string_values__values) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"optional_string\": \"qwerty \\u0000 12345\",\n" /* Note: \0-byte terminated string */
+    "  \"repeated_string\": [\n"
+    "    \"qwerty \\u0000\",\n"                          /* Note: \0-byte terminated string */
+    "    \"\\u0000 12345\"\n"                            /* Note: \0-byte terminated string */
+    "  ]\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__string_values__descriptor, &protobuf_message, NULL, 0);
+  ASSERT_ZERO(result);
+
+  Foo__StringValues *string_values = (Foo__StringValues *)protobuf_message;
+
+  ASSERT(string_values->optional_string);
+  ASSERT(strlen(string_values->optional_string) == 7);
+  ASSERT_STRNCMP((const char *)string_values->optional_string, "qwerty ", strlen(string_values->optional_string));
+
+  ASSERT(string_values->n_repeated_string == 2);
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  const char *expected_json_string = \
+    "{\n"
+    "  \"optional_string\": \"qwerty \",\n" /* Note: \0-byte terminated string */
+    "  \"repeated_string\": [\n"
+    "    \"qwerty \",\n"                    /* Note: \0-byte terminated string */
+    "    \"\"\n"                            /* Note: \0-byte terminated string */
+    "  ]\n"
+    "}"
+  ;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+  free(json_string);
+
+  RETURN_OK();
+}
+
 TEST_IMPL(json2protobuf_string__bytes_values__values) {
   int result;
 

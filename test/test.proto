@@ -41,6 +41,11 @@ message BooleanValues {
   optional bool value_false = 2;
 }
 
+message StringValues {
+  optional string optional_string = 1;
+  repeated string repeated_string = 2;
+}
+
 message BytesValues {
   optional bytes optional_bytes = 1;
   repeated bytes repeated_bytes = 2;
