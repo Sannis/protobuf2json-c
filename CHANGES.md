@@ -4,9 +4,22 @@ protobuf2json-c releases
 master - UNRELEASED
 -------------------
 
+  Nothing
+
+v0.2.1 - 05 Jan 2015
+--------------------
+
+ * New features
+
+   - protobuf2json: allow integers in JSON for float/double protobuf fields
+
  * Other
 
    - build: implement valgrind check
+   - test: add tests for protobuf2json_file function fails
+   - other: fix warnings that can be muted with -Wpointer-sign
+   - test: fix coverage info generation on OS X
+   - test: better coverage for repeated values support
 
 
 v0.2.0 - 14 Dec 2014
