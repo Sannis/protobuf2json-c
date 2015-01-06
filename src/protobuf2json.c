@@ -653,6 +653,9 @@ static int json2protobuf_process_message(
   if (!presented_fields) {
     bitmap_free(presented_fields);
 
+    protobuf_c_message_free_unpacked(*protobuf_message, NULL);
+    *protobuf_message = NULL;
+
     SET_ERROR_STRING_AND_RETURN(
       PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
       "Cannot allocate bitmap structure using bitmap_alloc()"
@@ -665,6 +668,9 @@ static int json2protobuf_process_message(
     const ProtobufCFieldDescriptor *field_descriptor = protobuf_c_message_descriptor_get_field_by_name(protobuf_message_descriptor, json_key);
     if (!field_descriptor) {
       bitmap_free(presented_fields);
+
+      protobuf_c_message_free_unpacked(*protobuf_message, NULL);
+      *protobuf_message = NULL;
 
       SET_ERROR_STRING_AND_RETURN(
         PROTOBUF2JSON_ERR_UNKNOWN_FIELD,
@@ -695,6 +701,9 @@ static int json2protobuf_process_message(
       if (result) {
         bitmap_free(presented_fields);
 
+        protobuf_c_message_free_unpacked(*protobuf_message, NULL);
+        *protobuf_message = NULL;
+
         return result;
       }
     } else if (field_descriptor->label == PROTOBUF_C_LABEL_OPTIONAL) {
@@ -708,11 +717,17 @@ static int json2protobuf_process_message(
       if (result) {
         bitmap_free(presented_fields);
 
+        protobuf_c_message_free_unpacked(*protobuf_message, NULL);
+        *protobuf_message = NULL;
+
         return result;
       }
     } else { // PROTOBUF_C_LABEL_REPEATED
       if (!json_is_array(json_object_value)) {
         bitmap_free(presented_fields);
+
+        protobuf_c_message_free_unpacked(*protobuf_message, NULL);
+        *protobuf_message = NULL;
 
         SET_ERROR_STRING_AND_RETURN(
           PROTOBUF2JSON_ERR_IS_NOT_ARRAY,
@@ -729,6 +744,9 @@ static int json2protobuf_process_message(
         if (!value_size) {
           bitmap_free(presented_fields);
 
+          protobuf_c_message_free_unpacked(*protobuf_message, NULL);
+          *protobuf_message = NULL;
+
           SET_ERROR_STRING_AND_RETURN(
             PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE,
             "Cannot calculate value size for %d using protobuf2json_value_size_by_type()",
@@ -739,6 +757,9 @@ static int json2protobuf_process_message(
         void *protobuf_value_repeated = calloc(*protobuf_values_count, value_size);
         if (!protobuf_value_repeated) {
           bitmap_free(presented_fields);
+
+          protobuf_c_message_free_unpacked(*protobuf_message, NULL);
+          *protobuf_message = NULL;
 
           SET_ERROR_STRING_AND_RETURN(
             PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
@@ -756,6 +777,36 @@ static int json2protobuf_process_message(
           if (result) {
             bitmap_free(presented_fields);
 
+            {
+              if (field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
+                size_t t;
+                for (t = 0; t <= json_index; t++) {
+                  free(((char **)protobuf_value_repeated)[t]);
+                }
+              } else if (field_descriptor->type == PROTOBUF_C_TYPE_BYTES) {
+                size_t t;
+                for (t = 0; t <= json_index; t++) {
+                  free(((ProtobufCBinaryData *)protobuf_value_repeated)[t].data);
+                }
+              } else if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {
+                size_t t;
+                for (t = 0; t <= json_index; t++) {
+                  if (((ProtobufCMessage **)protobuf_value_repeated)[t]) {
+                    protobuf_c_message_free_unpacked(
+                      ((ProtobufCMessage **)protobuf_value_repeated)[t],
+                      NULL
+                    );
+                  }
+                }
+              }
+
+              free(protobuf_value_repeated);
+              *protobuf_values_count = 0;
+            }
+
+            protobuf_c_message_free_unpacked(*protobuf_message, NULL);
+            *protobuf_message = NULL;
+
             return result;
           }
         }
@@ -771,6 +822,9 @@ static int json2protobuf_process_message(
 
     if ((field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) && !field_descriptor->default_value && !bitmap_get(presented_fields, i)) {
       bitmap_free(presented_fields);
+
+      protobuf_c_message_free_unpacked(*protobuf_message, NULL);
+      *protobuf_message = NULL;
 
       SET_ERROR_STRING_AND_RETURN(
         PROTOBUF2JSON_ERR_REQUIRED_IS_MISSING,

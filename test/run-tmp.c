@@ -130,8 +130,6 @@ void person__error_unknown_enum_value(void) {
     expected_error_string
   );
 
-  //protobuf_c_message_free_unpacked(protobuf_message, NULL);
-
   printf("Debug: %s OK\n", __FUNCTION__);
 }
 
@@ -157,8 +155,6 @@ void person__bad_json_string(void) {
     error_string,
     expected_error_string
   );
-
-  //protobuf_c_message_free_unpacked(protobuf_message, NULL);
 
   printf("Debug: %s OK\n", __FUNCTION__);
 }
@@ -191,8 +187,6 @@ void person__error_is_not_array(void) {
     expected_error_string
   );
 
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-
   printf("Debug: %s OK\n", __FUNCTION__);
 }
 
@@ -223,8 +217,6 @@ void person__error_unknown_field(void) {
     error_string,
     expected_error_string
   );
-
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
 
   printf("Debug: %s OK\n", __FUNCTION__);
 }
@@ -263,8 +255,6 @@ void person__error_unknown_field_nested(void) {
     expected_error_string
   );
 
-  //protobuf_c_message_free_unpacked(protobuf_message, NULL);
-
   printf("Debug: %s OK\n", __FUNCTION__);
 }
 
@@ -274,7 +264,7 @@ void repeated_values__error_is_not_string_required_for_string(void) {
 
   const char *initial_json_string = \
     "{\n"
-    "  \"value_string\": [42]\n"
+    "  \"value_string\": [\"42\", 42]\n"
     "}"
   ;
 
@@ -293,8 +283,6 @@ void repeated_values__error_is_not_string_required_for_string(void) {
     error_string,
     expected_error_string
   );
-
-  //protobuf_c_message_free_unpacked(protobuf_message, NULL);
 
   printf("Debug: %s OK\n", __FUNCTION__);
 }

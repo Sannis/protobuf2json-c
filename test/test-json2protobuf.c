@@ -18,7 +18,6 @@ extern char executable_path[MAXPATHLEN];
 
 TEST_IMPL(json2protobuf_file__person__success) {
   int result;
-  char error_string[256] = {0};
 
   char file_path[MAXPATHLEN] = {0};
   char file_name[MAXPATHLEN] = {0};
@@ -31,7 +30,7 @@ TEST_IMPL(json2protobuf_file__person__success) {
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_file((char *)file_name, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  result = json2protobuf_file((char *)file_name, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
   ASSERT_ZERO(result);
 
   char *json_string;
@@ -642,8 +641,6 @@ TEST_IMPL(json2protobuf_string__person__error_unknown_field) {
     expected_error_string
   );
 
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-
   RETURN_OK();
 }
 
@@ -707,8 +704,6 @@ TEST_IMPL(json2protobuf_string__person__error_is_not_array) {
     expected_error_string
   );
 
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-
   RETURN_OK();
 }
 
@@ -736,125 +731,35 @@ TEST_IMPL(json2protobuf_string__person__error_required_is_missing) {
     expected_error_string
   );
 
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-
-  RETURN_OK();
-}
-
-TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_enum) {
-  int result;
-  char error_string[256] = {0};
-
-  const char *initial_json_string = \
-    "{\n"
-    "  \"string_required\": \"required\",\n"
-    "  \"enum_optional\": 42"
-    "}"
-  ;
-
-  ProtobufCMessage *protobuf_message = NULL;
-
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
-
-  const char *expected_error_string = \
-    "JSON value is not a string required for GPB enum"
-  ;
-
-  ASSERT_STRCMP(
-    error_string,
-    expected_error_string
-  );
-
-  RETURN_OK();
-}
-
-TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_string) {
-  int result;
-  char error_string[256] = {0};
-
-  const char *initial_json_string = \
-    "{\n"
-    "  \"string_required\": 42\n"
-    "}"
-  ;
-
-  ProtobufCMessage *protobuf_message = NULL;
-
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
-
-  const char *expected_error_string = \
-    "JSON value is not a string required for GPB string"
-  ;
-
-  ASSERT_STRCMP(
-    error_string,
-    expected_error_string
-  );
-
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-
-  RETURN_OK();
-}
-
-TEST_IMPL(json2protobuf_string__bar__error_is_not_string_required_for_bytes) {
-  int result;
-  char error_string[256] = {0};
-
-  const char *initial_json_string = \
-    "{\n"
-    "  \"string_required\": \"required\",\n"
-    "  \"bytes_optional\": 42\n"
-    "}"
-  ;
-
-  ProtobufCMessage *protobuf_message = NULL;
-
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
-
-  const char *expected_error_string = \
-    "JSON value is not a string required for GPB bytes"
-  ;
-
-  ASSERT_STRCMP(
-    error_string,
-    expected_error_string
-  );
-
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-
   RETURN_OK();
 }
 
 #define TEST_IMPL_IS_NOT_INTEGER(type) \
   TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_integer_required_for_ ## type) { \
-    int result;               \
-    char error_string[256] = {0};                \
-                     \
-    const char *initial_json_string =            \
-      "{\n"                   \
-      "  \"value_" #type "\": [\"string\"]\n"             \
-      "}"            \
-    ;                \
-                     \
-    ProtobufCMessage *protobuf_message = NULL;            \
-                     \
-    result = json2protobuf_string(               \
-      (char *)initial_json_string,               \
-      0,             \
-      &foo__repeated_values__descriptor,          \
-      &protobuf_message,      \
-      error_string,           \
-      sizeof(error_string)    \
-    );               \
-                     \
-    ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_INTEGER);                 \
-    const char *expected_error_string = "JSON value is not an integer required for GPB " #type;          \
-    ASSERT_STRCMP(error_string, expected_error_string);                      \
-    protobuf_c_message_free_unpacked(protobuf_message, NULL);                \
-    RETURN_OK();              \
+    int result;                                                                                  \
+    char error_string[256] = {0};                                                                \
+                                                                                                 \
+    const char *initial_json_string =                                                            \
+      "{\n"                                                                                      \
+      "  \"value_" #type "\": [\"string\"]\n"                                                    \
+      "}"                                                                                        \
+    ;                                                                                            \
+                                                                                                 \
+    ProtobufCMessage *protobuf_message = NULL;                                                   \
+                                                                                                 \
+    result = json2protobuf_string(                                                               \
+      (char *)initial_json_string,                                                               \
+      0,                                                                                         \
+      &foo__repeated_values__descriptor,                                                         \
+      &protobuf_message,                                                                         \
+      error_string,                                                                              \
+      sizeof(error_string)                                                                       \
+    );                                                                                           \
+                                                                                                 \
+    ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_INTEGER);                                     \
+    const char *expected_error_string = "JSON value is not an integer required for GPB " #type;  \
+    ASSERT_STRCMP(error_string, expected_error_string);                                          \
+    RETURN_OK();                                                                                 \
   }
 
 TEST_IMPL_IS_NOT_INTEGER(int32)
@@ -892,8 +797,6 @@ TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_real_number_requir
     expected_error_string
   );
 
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-
   RETURN_OK();
 }
 
@@ -921,11 +824,8 @@ TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_real_number_requir
     expected_error_string
   );
 
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
-
   RETURN_OK();
 }
-
 
 TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_boolean_required_for_bool) {
   int result;
@@ -951,7 +851,86 @@ TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_boolean_required_f
     expected_error_string
   );
 
-  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_string_required_for_enum) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"value_enum\": [42]\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__repeated_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
+
+  const char *expected_error_string = \
+    "JSON value is not a string required for GPB enum"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_string_required_for_string) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"value_string\": [42]\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__repeated_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
+
+  const char *expected_error_string = \
+    "JSON value is not a string required for GPB string"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_string_required_for_bytes) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"value_bytes\": [42]\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__repeated_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
+
+  const char *expected_error_string = \
+    "JSON value is not a string required for GPB bytes"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
 
   RETURN_OK();
 }
