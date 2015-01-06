@@ -119,9 +119,15 @@ int run_test_part(const char* test, const char* part);
 
 
 /*
- * Print tests in sorted order to `stream`. Used by `./run-tests --list`.
+ * Print tests in sorted order.
  */
-void print_tests(FILE* stream);
+void print_tests();
+
+
+/*
+ * Print help.
+ */
+void print_help(const char* argv0);
 
 
 /*

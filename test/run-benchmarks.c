@@ -30,8 +30,13 @@
 
 
 static int maybe_run_test(int argc, char **argv) {
-  if (strcmp(argv[1], "--list") == 0) {
-    print_tests(stdout);
+  if ((strcmp(argv[1], "--list") == 0) || (strcmp(argv[1], "-l") == 0)) {
+    print_tests();
+    return 0;
+  }
+
+  if ((strcmp(argv[1], "--help") == 0) || (strcmp(argv[1], "-h") == 0)) {
+    print_help(argv[0]);
     return 0;
   }
 

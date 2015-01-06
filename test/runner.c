@@ -382,7 +382,7 @@ static int find_helpers(const task_entry_t* task,
 }
 
 
-void print_tests(FILE* stream) {
+void print_tests() {
   const task_entry_t* helpers[1024];
   const task_entry_t* task;
   int n_helpers;
@@ -408,4 +408,17 @@ void print_tests(FILE* stream) {
       printf("%s\n", task->task_name);
     }
   }
+}
+
+
+void print_help(const char* argv0) {
+  printf("Runner based in libuv tests runner.\n");
+  printf("\n");
+  printf("Usage:\n");
+  printf("  $> %s               # run all tasks\n", argv0);
+  printf("  $> %s <task>        # run only <task>, starts up any helpers\n", argv0);
+  printf("  $> %s <task> <part> # run only <part> of <task>\n", argv0);
+  printf("  $> %s (-l|--list)   # list all tasks\n", argv0);
+  printf("  $> %s (-h|--help)   # show this help message\n", argv0);
+  printf("\n");
 }
