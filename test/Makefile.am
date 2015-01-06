@@ -81,4 +81,5 @@ endif
 # run-tmp
 
 run_tmp_SOURCES = run-tmp.c \
-                  person.pb-c.c
+                  person.pb-c.c \
+                  test.pb-c.c

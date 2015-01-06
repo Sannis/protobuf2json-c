@@ -7,10 +7,13 @@
  */
 
 #include "task.h"
+
 #include "person.pb-c.h"
+#include "test.pb-c.h"
+
 #include "protobuf2json.h"
 
-int person__debug(void) {
+void person__debug(void) {
   int result;
 
   const char *initial_json_string = \
@@ -86,14 +89,13 @@ int person__debug(void) {
     expected_json_string
   );
 
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
   free(json_string);
 
-  printf("Debug: OK\n");
-
-  return 0;
+  printf("Debug: %s OK\n", __FUNCTION__);
 }
 
-int person__error_unknown_enum_value(void) {
+void person__error_unknown_enum_value(void) {
   int result;
   char error_string[256] = {0};
 
@@ -128,10 +130,12 @@ int person__error_unknown_enum_value(void) {
     expected_error_string
   );
 
-  return 0;
+  //protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
+  printf("Debug: %s OK\n", __FUNCTION__);
 }
 
-int person__bad_json_string(void) {
+void person__bad_json_string(void) {
   int result;
   char error_string[256] = {0};
 
@@ -154,10 +158,12 @@ int person__bad_json_string(void) {
     expected_error_string
   );
 
-  return 0;
+  //protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
+  printf("Debug: %s OK\n", __FUNCTION__);
 }
 
-int person__error_is_not_array(void) {
+void person__error_is_not_array(void) {
   int result;
   char error_string[256] = {0};
 
@@ -185,10 +191,12 @@ int person__error_is_not_array(void) {
     expected_error_string
   );
 
-  return 0;
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
+  printf("Debug: %s OK\n", __FUNCTION__);
 }
 
-int person__error_unknown_field(void) {
+void person__error_unknown_field(void) {
   int result;
   char error_string[256] = {0};
 
@@ -216,10 +224,12 @@ int person__error_unknown_field(void) {
     expected_error_string
   );
 
-  return 0;
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
+  printf("Debug: %s OK\n", __FUNCTION__);
 }
 
-int person__error_unknown_field_nested(void) {
+void person__error_unknown_field_nested(void) {
   int result;
   char error_string[256] = {0};
 
@@ -253,7 +263,40 @@ int person__error_unknown_field_nested(void) {
     expected_error_string
   );
 
-  return 0;
+  //protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
+  printf("Debug: %s OK\n", __FUNCTION__);
+}
+
+void repeated_values__error_is_not_string_required_for_string(void) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"value_string\": [42]\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  //asm volatile ("int $3");
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__repeated_values__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_STRING);
+
+  const char *expected_error_string = \
+    "JSON value is not a string required for GPB string"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  //protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
+  printf("Debug: %s OK\n", __FUNCTION__);
 }
 
 int main(int argc, char **argv) {
@@ -268,4 +311,8 @@ int main(int argc, char **argv) {
   person__error_unknown_field();
 
   person__error_unknown_field_nested();
+
+  repeated_values__error_is_not_string_required_for_string();
+
+  return 0;
 }

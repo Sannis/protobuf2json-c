@@ -1,5 +1,11 @@
 package Foo;
 
+enum FizzBuzzType {
+  FIZZ = 3;
+  BUZZ = 5;
+  FIZZBUZZ = 15;
+}
+
 message Bar {
   required string string_required = 1;
   required string string_required_default = 2 [default = "default value 1"];
@@ -9,12 +15,6 @@ message Bar {
 
   optional bytes bytes_optional = 5;
   optional bytes bytes_optional_default = 6 [default = "default value 3"];
-
-  enum FizzBuzzType {
-    FIZZ = 3;
-    BUZZ = 5;
-    FIZZBUZZ = 15;
-  }
 
   optional FizzBuzzType enum_optional = 7;
   optional FizzBuzzType enum_optional_default = 8 [default = FIZZBUZZ];
@@ -34,9 +34,11 @@ message RepeatedValues {
   repeated float    value_float = 11;
   repeated double   value_double = 12;
   repeated bool     value_bool = 13;
-  // skip enum
-  // skip string
-  // skip bytes
+
+  repeated FizzBuzzType value_enum = 14;
+  repeated string       value_string = 15;
+  repeated bytes        value_bytes = 16;
+
   // skip message
 }
 
