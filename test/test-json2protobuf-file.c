@@ -14,7 +14,7 @@
 
 extern char executable_path[MAXPATHLEN];
 
-TEST_IMPL(json2protobuf_file__person__success) {
+TEST_IMPL(json2protobuf_file__success) {
   int result;
 
   char file_path[MAXPATHLEN] = {0};
@@ -49,7 +49,7 @@ TEST_IMPL(json2protobuf_file__person__success) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_file__person__error_cannot_parse_bad_message) {
+TEST_IMPL(json2protobuf_file__error_cannot_parse_bad_message) {
   int result;
   char error_string[256] = {0};
 
@@ -79,7 +79,7 @@ TEST_IMPL(json2protobuf_file__person__error_cannot_parse_bad_message) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_file__person__error_cannot_parse_bad_json) {
+TEST_IMPL(json2protobuf_file__error_cannot_parse_bad_json) {
   int result;
   char error_string[256] = {0};
 
@@ -110,7 +110,7 @@ TEST_IMPL(json2protobuf_file__person__error_cannot_parse_bad_json) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_file__person__error_cannot_parse_unexistent_file) {
+TEST_IMPL(json2protobuf_file__error_cannot_parse_unexistent_file) {
   int result;
   char error_string[256] = {0};
 

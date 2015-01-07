@@ -12,7 +12,7 @@
 
 #include <math.h>
 
-TEST_IMPL(json2protobuf_string__person__error_cannot_parse_wrong_string) {
+TEST_IMPL(json2protobuf_string__error_cannot_parse_wrong_string) {
   int result;
   char error_string[256] = {0};
 
@@ -36,7 +36,7 @@ TEST_IMPL(json2protobuf_string__person__error_cannot_parse_wrong_string) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__person__error_duplicate_field) {
+TEST_IMPL(json2protobuf_string__error_duplicate_field) {
   int result;
   char error_string[256] = {0};
 
@@ -66,7 +66,7 @@ TEST_IMPL(json2protobuf_string__person__error_duplicate_field) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__person__error_is_not_object) {
+TEST_IMPL(json2protobuf_string__error_is_not_object) {
   int result;
   char error_string[256] = {0};
 
@@ -89,7 +89,7 @@ TEST_IMPL(json2protobuf_string__person__error_is_not_object) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__person__error_unknown_field) {
+TEST_IMPL(json2protobuf_string__error_unknown_field) {
   int result;
   char error_string[256] = {0};
 
@@ -116,7 +116,7 @@ TEST_IMPL(json2protobuf_string__person__error_unknown_field) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__person__error_unknown_enum_value) {
+TEST_IMPL(json2protobuf_string__error_unknown_enum_value) {
   int result;
   char error_string[256] = {0};
 
@@ -150,7 +150,7 @@ TEST_IMPL(json2protobuf_string__person__error_unknown_enum_value) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__person__error_is_not_array) {
+TEST_IMPL(json2protobuf_string__error_is_not_array) {
   int result;
   char error_string[256] = {0};
 
@@ -179,7 +179,7 @@ TEST_IMPL(json2protobuf_string__person__error_is_not_array) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__person__error_required_is_missing) {
+TEST_IMPL(json2protobuf_string__error_required_is_missing) {
   int result;
   char error_string[256] = {0};
 
@@ -206,8 +206,8 @@ TEST_IMPL(json2protobuf_string__person__error_required_is_missing) {
   RETURN_OK();
 }
 
-#define TEST_IMPL_IS_NOT_INTEGER(type) \
-  TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_integer_required_for_ ## type) { \
+#define TEST_IMPL_IS_NOT_INTEGER(type)                                                           \
+  TEST_IMPL(json2protobuf_string__error_is_not_integer_required_for_ ## type) {                  \
     int result;                                                                                  \
     char error_string[256] = {0};                                                                \
                                                                                                  \
@@ -229,8 +229,10 @@ TEST_IMPL(json2protobuf_string__person__error_required_is_missing) {
     );                                                                                           \
                                                                                                  \
     ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_INTEGER);                                     \
+                                                                                                 \
     const char *expected_error_string = "JSON value is not an integer required for GPB " #type;  \
     ASSERT_STRCMP(error_string, expected_error_string);                                          \
+                                                                                                 \
     RETURN_OK();                                                                                 \
   }
 
@@ -245,7 +247,7 @@ TEST_IMPL_IS_NOT_INTEGER(sfixed64)
 TEST_IMPL_IS_NOT_INTEGER(uint64)
 TEST_IMPL_IS_NOT_INTEGER(fixed64)
 
-TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_real_number_required_for_float) {
+TEST_IMPL(json2protobuf_string__error_is_not_real_number_required_for_float) {
   int result;
   char error_string[256] = {0};
 
@@ -272,7 +274,7 @@ TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_real_number_requir
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_real_number_required_for_double) {
+TEST_IMPL(json2protobuf_string__error_is_not_real_number_required_for_double) {
   int result;
   char error_string[256] = {0};
 
@@ -299,7 +301,7 @@ TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_real_number_requir
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_boolean_required_for_bool) {
+TEST_IMPL(json2protobuf_string__error_is_not_boolean_required_for_bool) {
   int result;
   char error_string[256] = {0};
 
@@ -326,7 +328,7 @@ TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_boolean_required_f
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_string_required_for_enum) {
+TEST_IMPL(json2protobuf_string__error_is_not_string_required_for_enum) {
   int result;
   char error_string[256] = {0};
 
@@ -353,7 +355,7 @@ TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_string_required_fo
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_string_required_for_string) {
+TEST_IMPL(json2protobuf_string__error_is_not_string_required_for_string) {
   int result;
   char error_string[256] = {0};
 
@@ -380,7 +382,7 @@ TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_string_required_fo
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__repeated_values__error_is_not_string_required_for_bytes) {
+TEST_IMPL(json2protobuf_string__error_is_not_string_required_for_bytes) {
   int result;
   char error_string[256] = {0};
 

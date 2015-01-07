@@ -10,7 +10,7 @@
 #include "test.pb-c.h"
 #include "protobuf2json.h"
 
-TEST_IMPL(protobuf2json_string__person__required) {
+TEST_IMPL(protobuf2json_string__required_field) {
   int result;
 
   Foo__Person person = FOO__PERSON__INIT;
@@ -36,7 +36,7 @@ TEST_IMPL(protobuf2json_string__person__required) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_string__person__optional) {
+TEST_IMPL(protobuf2json_string__optional_field) {
   int result;
   
   Foo__Person person = FOO__PERSON__INIT;
@@ -65,71 +65,7 @@ TEST_IMPL(protobuf2json_string__person__optional) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_string__person__repeated_message) {
-  int result;
-
-  Foo__Person person = FOO__PERSON__INIT;
-
-  person.name = "John Doe";
-  person.id = 42;
-
-  Foo__Person__PhoneNumber person_phonenumber1 = FOO__PERSON__PHONE_NUMBER__INIT;
-
-  person_phonenumber1.number = "+123456789";
-  person_phonenumber1.has_type = 1;
-  person_phonenumber1.type = FOO__PERSON__PHONE_TYPE__WORK;
-
-  Foo__Person__PhoneNumber person_phonenumber2 = FOO__PERSON__PHONE_NUMBER__INIT;
-
-  person_phonenumber2.number = "+987654321";
-  person_phonenumber2.has_type = 1;
-  person_phonenumber2.type = FOO__PERSON__PHONE_TYPE__MOBILE;
-
-  Foo__Person__PhoneNumber person_phonenumber3 = FOO__PERSON__PHONE_NUMBER__INIT;
-
-  person_phonenumber3.number = "+555555555";
-
-  person.n_phone = 3;
-  person.phone = calloc(person.n_phone, sizeof(Foo__Person__PhoneNumber*));
-  ASSERT(person.phone);
-
-  person.phone[0] = (Foo__Person__PhoneNumber*)&person_phonenumber1;
-  person.phone[1] = (Foo__Person__PhoneNumber*)&person_phonenumber2;
-  person.phone[2] = (Foo__Person__PhoneNumber*)&person_phonenumber3;
-
-  char *json_string;
-  result = protobuf2json_string(&person.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
-  ASSERT_ZERO(result);
-  ASSERT(json_string);
-
-  ASSERT_STRCMP(
-    json_string,
-    "{\n"
-    "  \"name\": \"John Doe\",\n"
-    "  \"id\": 42,\n"
-    "  \"phone\": [\n"
-    "    {\n"
-    "      \"number\": \"+123456789\",\n"
-    "      \"type\": \"WORK\"\n"
-    "    },\n"
-    "    {\n"
-    "      \"number\": \"+987654321\",\n"
-    "      \"type\": \"MOBILE\"\n"
-    "    },\n"
-    "    {\n"
-    "      \"number\": \"+555555555\",\n"
-    "      \"type\": \"HOME\"\n"
-    "    }\n"
-    "  ]\n"
-    "}"
-  );
-
-  free(json_string);
-
-  RETURN_OK();
-}
-
-TEST_IMPL(protobuf2json_string__bar__default_values) {
+TEST_IMPL(protobuf2json_string__default_values) {
   int result;
 
   Foo__Bar bar = FOO__BAR__INIT;
@@ -157,7 +93,7 @@ TEST_IMPL(protobuf2json_string__bar__default_values) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_string__person__error_in_nested_message) {
+TEST_IMPL(protobuf2json_string__error_in_nested_message) {
   int result;
   char error_string[256] = {0};
 
@@ -199,7 +135,7 @@ void* failed_strbuffer_malloc(size_t size) {
   return (size == STRBUFFER_MIN_SIZE) ? NULL : malloc(size);
 }
 
-TEST_IMPL(protobuf2json_string__person__error_cannot_dump_string) {
+TEST_IMPL(protobuf2json_string__error_cannot_dump_string) {
   int result;
   char error_string[256] = {0};
 

@@ -16,7 +16,7 @@
 
 extern char executable_path[MAXPATHLEN];
 
-TEST_IMPL(protobuf2json_file__person__success) {
+TEST_IMPL(protobuf2json_file__success) {
   int result;
 
   char file_path[MAXPATHLEN] = {0};
@@ -74,7 +74,7 @@ void* failed_malloc(size_t size) {
   return NULL;
 }
 
-TEST_IMPL(protobuf2json_file__person__error) {
+TEST_IMPL(protobuf2json_file__error_alloc) {
   int result;
   char error_string[256] = {0};
 
@@ -100,7 +100,7 @@ TEST_IMPL(protobuf2json_file__person__error) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_file__person__error_cannot_open_null_file) {
+TEST_IMPL(protobuf2json_file__error_cannot_open_null_file) {
   int result;
   char error_string[256] = {0};
 
@@ -124,7 +124,7 @@ TEST_IMPL(protobuf2json_file__person__error_cannot_open_null_file) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_file__person__error_cannot_open_null_fopen_mode) {
+TEST_IMPL(protobuf2json_file__error_cannot_open_null_fopen_mode) {
   int result;
   char error_string[256] = {0};
 
@@ -148,7 +148,7 @@ TEST_IMPL(protobuf2json_file__person__error_cannot_open_null_fopen_mode) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_file__person__error_cannot_open_unexistent_file) {
+TEST_IMPL(protobuf2json_file__error_cannot_open_unexistent_file) {
   int result;
   char error_string[256] = {0};
 
@@ -181,7 +181,7 @@ TEST_IMPL(protobuf2json_file__person__error_cannot_open_unexistent_file) {
   RETURN_OK();
 }
 
-TEST_IMPL(protobuf2json_file__person__error_cannot_dump_file) {
+TEST_IMPL(protobuf2json_file__error_cannot_dump_file) {
   int result;
   char error_string[256] = {0};
 
