@@ -45,6 +45,7 @@ run_tests_SOURCES = run-tests.c \
                     test-protobuf2json-string.c \
                     test-json2protobuf-file.c \
                     test-json2protobuf-string.c \
+                    test-reversible.c \
                     runner.c \
                     runner.h \
                     task.h \
