@@ -7,7 +7,7 @@
 # protoc
 
 BUILT_SOURCES =
-BUILT_SOURCES += person.pb-c.c test.pb-c.c
+BUILT_SOURCES += test.pb-c.c
 
 MOSTLYCLEANFILES =
 MOSTLYCLEANFILES += *.pb-c.[ch]
@@ -41,12 +41,13 @@ LDADD += $(top_srcdir)/src/libprotobuf2json-c.la
 
 run_tests_SOURCES = run-tests.c \
                     test-list.h \
-                    test-protobuf2json.c \
-                    test-json2protobuf.c \
+                    test-protobuf2json-file.c \
+                    test-protobuf2json-string.c \
+                    test-json2protobuf-file.c \
+                    test-json2protobuf-string.c \
                     runner.c \
                     runner.h \
                     task.h \
-                    person.pb-c.c \
                     test.pb-c.c \
                     getrusage-helper.h
 
@@ -66,7 +67,6 @@ run_benchmarks_SOURCES = run-benchmarks.c \
                          runner.c \
                          runner.h \
                          task.h \
-                         person.pb-c.c \
                          test.pb-c.c \
                          getrusage-helper.h
 
@@ -81,5 +81,4 @@ endif
 # run-tmp
 
 run_tmp_SOURCES = run-tmp.c \
-                  person.pb-c.c \
                   test.pb-c.c

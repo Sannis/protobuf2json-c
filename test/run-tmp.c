@@ -7,10 +7,7 @@
  */
 
 #include "task.h"
-
-#include "person.pb-c.h"
 #include "test.pb-c.h"
-
 #include "protobuf2json.h"
 
 void person__debug(void) {

@@ -12,6 +12,7 @@ TEST_DECLARE(protobuf2json_file__person__error_cannot_open_null_file)
 TEST_DECLARE(protobuf2json_file__person__error_cannot_open_null_fopen_mode)
 TEST_DECLARE(protobuf2json_file__person__error_cannot_open_unexistent_file)
 TEST_DECLARE(protobuf2json_file__person__error_cannot_dump_file)
+
 TEST_DECLARE(protobuf2json_string__person__required)
 TEST_DECLARE(protobuf2json_string__person__optional)
 TEST_DECLARE(protobuf2json_string__person__repeated_message)
@@ -23,6 +24,7 @@ TEST_DECLARE(json2protobuf_file__person__success)
 TEST_DECLARE(json2protobuf_file__person__error_cannot_parse_bad_message)
 TEST_DECLARE(json2protobuf_file__person__error_cannot_parse_bad_json)
 TEST_DECLARE(json2protobuf_file__person__error_cannot_parse_unexistent_file)
+
 TEST_DECLARE(json2protobuf_string__person__error_cannot_parse_wrong_string)
 TEST_DECLARE(json2protobuf_string__person__error_duplicate_field)
 TEST_DECLARE(json2protobuf_string__person)
@@ -60,6 +62,7 @@ TASK_LIST_START
   TEST_ENTRY(protobuf2json_file__person__error_cannot_open_null_fopen_mode)
   TEST_ENTRY(protobuf2json_file__person__error_cannot_open_unexistent_file)
   TEST_ENTRY(protobuf2json_file__person__error_cannot_dump_file)
+
   TEST_ENTRY(protobuf2json_string__person__required)
   TEST_ENTRY(protobuf2json_string__person__optional)
   TEST_ENTRY(protobuf2json_string__person__repeated_message)
@@ -71,6 +74,7 @@ TASK_LIST_START
   TEST_ENTRY(json2protobuf_file__person__error_cannot_parse_bad_message)
   TEST_ENTRY(json2protobuf_file__person__error_cannot_parse_bad_json)
   TEST_ENTRY(json2protobuf_file__person__error_cannot_parse_unexistent_file)
+
   TEST_ENTRY(json2protobuf_string__person__error_cannot_parse_wrong_string)
   TEST_ENTRY(json2protobuf_string__person__error_duplicate_field)
   TEST_ENTRY(json2protobuf_string__person)
