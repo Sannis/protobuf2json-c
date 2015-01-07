@@ -49,11 +49,11 @@ TEST_DECLARE(json2protobuf_string__repeated_values__error_is_not_string_required
 TEST_DECLARE(json2protobuf_string__repeated_values__error_is_not_string_required_for_string)
 TEST_DECLARE(json2protobuf_string__repeated_values__error_is_not_string_required_for_bytes)
 
-TEST_DECLARE(reversible__person)
-TEST_DECLARE(reversible__bar__default_values)
-TEST_DECLARE(reversible__repeated_values__values)
-TEST_DECLARE(reversible__string_values__values)
-TEST_DECLARE(reversible__bytes_values__values)
+TEST_DECLARE(reversible__messages)
+TEST_DECLARE(reversible__default_values)
+TEST_DECLARE(reversible__numbers)
+TEST_DECLARE(reversible__strings)
+TEST_DECLARE(reversible__bytes)
 
 TASK_LIST_START
   TEST_ENTRY(protobuf2json_file__person__success)
@@ -99,9 +99,9 @@ TASK_LIST_START
   TEST_ENTRY(json2protobuf_string__repeated_values__error_is_not_string_required_for_string)
   TEST_ENTRY(json2protobuf_string__repeated_values__error_is_not_string_required_for_bytes)
 
-  TEST_ENTRY(reversible__person)
-  TEST_ENTRY(reversible__bar__default_values)
-  TEST_ENTRY(reversible__repeated_values__values)
-  TEST_ENTRY(reversible__string_values__values)
-  TEST_ENTRY(reversible__bytes_values__values)
+  TEST_ENTRY(reversible__messages)
+  TEST_ENTRY(reversible__default_values)
+  TEST_ENTRY(reversible__numbers)
+  TEST_ENTRY(reversible__strings)
+  TEST_ENTRY(reversible__bytes)
 TASK_LIST_END

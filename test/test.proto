@@ -58,15 +58,5 @@ message RepeatedValues {
   repeated string       value_string = 15;
   repeated bytes        value_bytes = 16;
 
-  // skip message
-}
-
-message StringValues {
-  optional string optional_string = 1;
-  repeated string repeated_string = 2;
-}
-
-message BytesValues {
-  optional bytes optional_bytes = 1;
-  repeated bytes repeated_bytes = 2;
+  repeated Person value_message = 17;
 }

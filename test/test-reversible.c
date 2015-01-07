@@ -12,7 +12,7 @@
 
 #include <math.h>
 
-TEST_IMPL(reversible__person) {
+TEST_IMPL(reversible__messages) {
   int result;
 
   const char *initial_json_string = \
@@ -93,7 +93,7 @@ TEST_IMPL(reversible__person) {
   RETURN_OK();
 }
 
-TEST_IMPL(reversible__bar__default_values) {
+TEST_IMPL(reversible__default_values) {
   int result;
 
   const char *initial_json_string = \
@@ -136,7 +136,7 @@ TEST_IMPL(reversible__bar__default_values) {
   RETURN_OK();
 }
 
-TEST_IMPL(reversible__repeated_values__values) {
+TEST_IMPL(reversible__numbers) {
   int result;
 
   const char *initial_json_string = \
@@ -308,13 +308,13 @@ TEST_IMPL(reversible__repeated_values__values) {
   RETURN_OK();
 }
 
-TEST_IMPL(reversible__string_values__values) {
+TEST_IMPL(reversible__strings) {
   int result;
 
   const char *initial_json_string = \
     "{\n"
-    "  \"optional_string\": \"qwerty \\u0000 12345\",\n" /* Note: \0-byte terminated string */
-    "  \"repeated_string\": [\n"
+    "  \"value_string\": [\n"
+    "    \"qwerty \\u0000 12345\",\n"                    /* Note: \0-byte terminated string */
     "    \"qwerty \\u0000\",\n"                          /* Note: \0-byte terminated string */
     "    \"\\u0000 12345\"\n"                            /* Note: \0-byte terminated string */
     "  ]\n"
@@ -323,16 +323,14 @@ TEST_IMPL(reversible__string_values__values) {
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__string_values__descriptor, &protobuf_message, NULL, 0);
+  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__repeated_values__descriptor, &protobuf_message, NULL, 0);
   ASSERT_ZERO(result);
 
-  Foo__StringValues *string_values = (Foo__StringValues *)protobuf_message;
+  Foo__RepeatedValues *repeated_values = (Foo__RepeatedValues *)protobuf_message;
 
-  ASSERT(string_values->optional_string);
-  ASSERT(strlen(string_values->optional_string) == 7);
-  ASSERT_STRNCMP((const char *)string_values->optional_string, "qwerty ", strlen(string_values->optional_string));
-
-  ASSERT(string_values->n_repeated_string == 2);
+  ASSERT(repeated_values->n_value_string == 3);
+  ASSERT(strlen(repeated_values->value_string[0]) == 7);
+  ASSERT_STRNCMP((const char *)repeated_values->value_string[0], "qwerty ", strlen(repeated_values->value_string[0]));
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
@@ -341,8 +339,8 @@ TEST_IMPL(reversible__string_values__values) {
 
   const char *expected_json_string = \
     "{\n"
-    "  \"optional_string\": \"qwerty \",\n" /* Note: \0-byte terminated string */
-    "  \"repeated_string\": [\n"
+    "  \"value_string\": [\n"
+    "    \"qwerty \",\n"                    /* Note: \0-byte terminated string */
     "    \"qwerty \",\n"                    /* Note: \0-byte terminated string */
     "    \"\"\n"                            /* Note: \0-byte terminated string */
     "  ]\n"
@@ -360,13 +358,13 @@ TEST_IMPL(reversible__string_values__values) {
   RETURN_OK();
 }
 
-TEST_IMPL(reversible__bytes_values__values) {
+TEST_IMPL(reversible__bytes) {
   int result;
 
   const char *initial_json_string = \
     "{\n"
-    "  \"optional_bytes\": \"qwerty \\u0000 12345\",\n"
-    "  \"repeated_bytes\": [\n"
+    "  \"value_bytes\": [\n"
+    "    \"qwerty \\u0000 12345\",\n"
     "    \"qwerty \\u0000\",\n"
     "    \"\\u0000 12345\"\n"
     "  ]\n"
@@ -375,16 +373,14 @@ TEST_IMPL(reversible__bytes_values__values) {
 
   ProtobufCMessage *protobuf_message;
 
-  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__bytes_values__descriptor, &protobuf_message, NULL, 0);
+  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__repeated_values__descriptor, &protobuf_message, NULL, 0);
   ASSERT_ZERO(result);
 
-  Foo__BytesValues *bytes_values = (Foo__BytesValues *)protobuf_message;
+  Foo__RepeatedValues *repeated_values = (Foo__RepeatedValues *)protobuf_message;
 
-  ASSERT(bytes_values->has_optional_bytes);
-  ASSERT(bytes_values->optional_bytes.len == 14);
-  ASSERT_STRNCMP((const char *)bytes_values->optional_bytes.data, "qwerty \0 12345", bytes_values->optional_bytes.len);
-
-  ASSERT(bytes_values->n_repeated_bytes == 2);
+  ASSERT(repeated_values->n_value_bytes == 3);
+  ASSERT(repeated_values->value_bytes[0].len == 14);
+  ASSERT_STRNCMP((const char *)repeated_values->value_bytes[0].data, "qwerty \0 12345", repeated_values->value_bytes[0].len);
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
@@ -393,8 +389,8 @@ TEST_IMPL(reversible__bytes_values__values) {
 
   const char *expected_json_string = \
     "{\n"
-    "  \"optional_bytes\": \"qwerty \\u0000 12345\",\n"
-    "  \"repeated_bytes\": [\n"
+    "  \"value_bytes\": [\n"
+    "    \"qwerty \\u0000 12345\",\n"
     "    \"qwerty \\u0000\",\n"
     "    \"\\u0000 12345\"\n"
     "  ]\n"
