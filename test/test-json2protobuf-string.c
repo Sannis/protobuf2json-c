@@ -66,19 +66,25 @@ TEST_IMPL(json2protobuf_string__error_duplicate_field) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__error_is_not_object) {
+TEST_IMPL(json2protobuf_string__error_is_not_array) {
   int result;
   char error_string[256] = {0};
 
-  const char *initial_json_string = "[]";
+  const char *initial_json_string = \
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42,\n"
+    "  \"phone\": {}\n"
+    "}"
+  ;
 
   ProtobufCMessage *protobuf_message = NULL;
 
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__bar__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_OBJECT);
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_ARRAY);
 
   const char *expected_error_string = \
-    "JSON is not an object required for GPB message"
+    "JSON is not an array required for repeatable GPB field"
   ;
 
   ASSERT_STRCMP(
@@ -150,35 +156,6 @@ TEST_IMPL(json2protobuf_string__error_unknown_enum_value) {
   RETURN_OK();
 }
 
-TEST_IMPL(json2protobuf_string__error_is_not_array) {
-  int result;
-  char error_string[256] = {0};
-
-  const char *initial_json_string = \
-    "{\n"
-    "  \"name\": \"John Doe\",\n"
-    "  \"id\": 42,\n"
-    "  \"phone\": {}\n"
-    "}"
-  ;
-
-  ProtobufCMessage *protobuf_message = NULL;
-
-  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
-  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_ARRAY);
-
-  const char *expected_error_string = \
-    "JSON is not an array required for repeatable GPB field"
-  ;
-
-  ASSERT_STRCMP(
-    error_string,
-    expected_error_string
-  );
-
-  RETURN_OK();
-}
-
 TEST_IMPL(json2protobuf_string__error_required_is_missing) {
   int result;
   char error_string[256] = {0};
@@ -196,6 +173,35 @@ TEST_IMPL(json2protobuf_string__error_required_is_missing) {
 
   const char *expected_error_string = \
     "Required field 'id' is missing in message 'Foo.Person'"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(json2protobuf_string__error_is_not_object_required_for_message) {
+  int result;
+  char error_string[256] = {0};
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42,\n"
+    "  \"phone\": [[]]\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_string((char *)initial_json_string, 0, &foo__person__descriptor, &protobuf_message, error_string, sizeof(error_string));
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_IS_NOT_OBJECT);
+
+  const char *expected_error_string = \
+    "JSON is not an object required for GPB message"
   ;
 
   ASSERT_STRCMP(
