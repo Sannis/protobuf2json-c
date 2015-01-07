@@ -616,6 +616,17 @@ static int json2protobuf_process_field(
   return 0;
 }
 
+#define SAFE_FREE_BITMAP_AND_MESSAGE                           \
+do {                                                           \
+  if (presented_fields) {                                      \
+    bitmap_free(presented_fields);                             \
+  }                                                            \
+  if (protobuf_message) {                                      \
+    protobuf_c_message_free_unpacked(*protobuf_message, NULL); \
+    *protobuf_message = NULL;                                  \
+  }                                                            \
+} while (0)
+
 static int json2protobuf_process_message(
   json_t *json_object,
   const ProtobufCMessageDescriptor *protobuf_message_descriptor,
@@ -628,8 +639,6 @@ static int json2protobuf_process_message(
   int result = 0;
 
   if (!json_is_object(json_object)) {
-    bitmap_free(presented_fields);
-
     SET_ERROR_STRING_AND_RETURN(
       PROTOBUF2JSON_ERR_IS_NOT_OBJECT,
       "JSON is not an object required for GPB message"
@@ -638,8 +647,6 @@ static int json2protobuf_process_message(
 
   *protobuf_message = calloc(1, protobuf_message_descriptor->sizeof_message);
   if (!*protobuf_message) {
-    bitmap_free(presented_fields);
-
     SET_ERROR_STRING_AND_RETURN(
       PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
       "Cannot allocate %zu bytes using calloc(3)",
@@ -651,10 +658,7 @@ static int json2protobuf_process_message(
 
   presented_fields = bitmap_alloc(protobuf_message_descriptor->n_fields);
   if (!presented_fields) {
-    bitmap_free(presented_fields);
-
-    protobuf_c_message_free_unpacked(*protobuf_message, NULL);
-    *protobuf_message = NULL;
+    SAFE_FREE_BITMAP_AND_MESSAGE;
 
     SET_ERROR_STRING_AND_RETURN(
       PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
@@ -667,10 +671,7 @@ static int json2protobuf_process_message(
   json_object_foreach(json_object, json_key, json_object_value) {
     const ProtobufCFieldDescriptor *field_descriptor = protobuf_c_message_descriptor_get_field_by_name(protobuf_message_descriptor, json_key);
     if (!field_descriptor) {
-      bitmap_free(presented_fields);
-
-      protobuf_c_message_free_unpacked(*protobuf_message, NULL);
-      *protobuf_message = NULL;
+      SAFE_FREE_BITMAP_AND_MESSAGE;
 
       SET_ERROR_STRING_AND_RETURN(
         PROTOBUF2JSON_ERR_UNKNOWN_FIELD,
@@ -683,7 +684,7 @@ static int json2protobuf_process_message(
 
     // This cannot happen because Jansson handle this on his side
     /*if (bitmap_get(presented_fields, field_number)) {
-      bitmap_free(presented_fields);
+      SAFE_FREE_BITMAP_AND_MESSAGE;
 
       SET_ERROR_STRING_AND_RETURN(
         PROTOBUF2JSON_ERR_DUPLICATE_FIELD,
@@ -699,10 +700,7 @@ static int json2protobuf_process_message(
     if (field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) {
       result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value, error_string, error_size);
       if (result) {
-        bitmap_free(presented_fields);
-
-        protobuf_c_message_free_unpacked(*protobuf_message, NULL);
-        *protobuf_message = NULL;
+        SAFE_FREE_BITMAP_AND_MESSAGE;
 
         return result;
       }
@@ -715,19 +713,13 @@ static int json2protobuf_process_message(
 
       result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value, error_string, error_size);
       if (result) {
-        bitmap_free(presented_fields);
-
-        protobuf_c_message_free_unpacked(*protobuf_message, NULL);
-        *protobuf_message = NULL;
+        SAFE_FREE_BITMAP_AND_MESSAGE;
 
         return result;
       }
     } else { // PROTOBUF_C_LABEL_REPEATED
       if (!json_is_array(json_object_value)) {
-        bitmap_free(presented_fields);
-
-        protobuf_c_message_free_unpacked(*protobuf_message, NULL);
-        *protobuf_message = NULL;
+        SAFE_FREE_BITMAP_AND_MESSAGE;
 
         SET_ERROR_STRING_AND_RETURN(
           PROTOBUF2JSON_ERR_IS_NOT_ARRAY,
@@ -742,10 +734,7 @@ static int json2protobuf_process_message(
       if (*protobuf_values_count) {
         size_t value_size = protobuf2json_value_size_by_type(field_descriptor->type);
         if (!value_size) {
-          bitmap_free(presented_fields);
-
-          protobuf_c_message_free_unpacked(*protobuf_message, NULL);
-          *protobuf_message = NULL;
+          SAFE_FREE_BITMAP_AND_MESSAGE;
 
           SET_ERROR_STRING_AND_RETURN(
             PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE,
@@ -756,10 +745,7 @@ static int json2protobuf_process_message(
 
         void *protobuf_value_repeated = calloc(*protobuf_values_count, value_size);
         if (!protobuf_value_repeated) {
-          bitmap_free(presented_fields);
-
-          protobuf_c_message_free_unpacked(*protobuf_message, NULL);
-          *protobuf_message = NULL;
+          SAFE_FREE_BITMAP_AND_MESSAGE;
 
           SET_ERROR_STRING_AND_RETURN(
             PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
@@ -775,8 +761,7 @@ static int json2protobuf_process_message(
 
           result = json2protobuf_process_field(field_descriptor, json_array_value, (void *)protobuf_value_repeated_value, error_string, error_size);
           if (result) {
-            bitmap_free(presented_fields);
-
+            /* Free already processed repeated field items */
             {
               if (field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
                 size_t t;
@@ -804,8 +789,7 @@ static int json2protobuf_process_message(
               *protobuf_values_count = 0;
             }
 
-            protobuf_c_message_free_unpacked(*protobuf_message, NULL);
-            *protobuf_message = NULL;
+            SAFE_FREE_BITMAP_AND_MESSAGE;
 
             return result;
           }
@@ -821,10 +805,7 @@ static int json2protobuf_process_message(
     const ProtobufCFieldDescriptor *field_descriptor = protobuf_message_descriptor->fields + i;
 
     if ((field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) && !field_descriptor->default_value && !bitmap_get(presented_fields, i)) {
-      bitmap_free(presented_fields);
-
-      protobuf_c_message_free_unpacked(*protobuf_message, NULL);
-      *protobuf_message = NULL;
+      SAFE_FREE_BITMAP_AND_MESSAGE;
 
       SET_ERROR_STRING_AND_RETURN(
         PROTOBUF2JSON_ERR_REQUIRED_IS_MISSING,
