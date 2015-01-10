@@ -42,4 +42,4 @@ script:
   - make test
   - make benchmark
 after_success:
-  - if [ "x$MY_COVERAGE" = "x1" ]; then cpp-coveralls --build-root src --exclude test/ --exclude src/.libs --gcov-options '\-lp'; fi
+  - if [ "x$MY_COVERAGE" = "x1" ]; then cpp-coveralls --build-root src --exclude test/ --exclude include/ --exclude src/.libs --gcov-options '\-lp'; fi
