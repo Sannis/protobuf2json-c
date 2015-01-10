@@ -17,6 +17,8 @@ TEST_DECLARE(protobuf2json_string__required_field)
 TEST_DECLARE(protobuf2json_string__optional_field)
 TEST_DECLARE(protobuf2json_string__default_values)
 TEST_DECLARE(protobuf2json_string__error_in_nested_message)
+TEST_DECLARE(protobuf2json_string__error_cannot_create_json_object)
+TEST_DECLARE(protobuf2json_string__error_cannot_create_json_value)
 TEST_DECLARE(protobuf2json_string__error_cannot_dump_string)
 
 TEST_DECLARE(json2protobuf_file__success)
@@ -66,6 +68,8 @@ TASK_LIST_START
   TEST_ENTRY(protobuf2json_string__optional_field)
   TEST_ENTRY(protobuf2json_string__default_values)
   TEST_ENTRY(protobuf2json_string__error_in_nested_message)
+  TEST_ENTRY(protobuf2json_string__error_cannot_create_json_object)
+  TEST_ENTRY(protobuf2json_string__error_cannot_create_json_value)
   TEST_ENTRY(protobuf2json_string__error_cannot_dump_string)
 
   TEST_ENTRY(json2protobuf_file__success)
