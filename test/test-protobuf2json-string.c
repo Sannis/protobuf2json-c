@@ -10,6 +10,8 @@
 #include "test.pb-c.h"
 #include "protobuf2json.h"
 
+#include "failed-alloc-helper.h"
+
 TEST_IMPL(protobuf2json_string__required_field) {
   int result;
 
@@ -130,11 +132,6 @@ TEST_IMPL(protobuf2json_string__error_in_nested_message) {
   RETURN_OK();
 }
 
-#define STRBUFFER_MIN_SIZE 16
-void* failed_strbuffer_malloc(size_t size) {
-  return (size == STRBUFFER_MIN_SIZE) ? NULL : malloc(size);
-}
-
 TEST_IMPL(protobuf2json_string__error_cannot_dump_string) {
   int result;
   char error_string[256] = {0};
@@ -145,9 +142,9 @@ TEST_IMPL(protobuf2json_string__error_cannot_dump_string) {
   person.id = 42;
 
   char *json_string;
-  json_set_alloc_funcs(failed_strbuffer_malloc, free);
+  failed_alloc_json_set(16 /* STRBUFFER_MIN_SIZE */);
   result = protobuf2json_string(&person.base, 0, &json_string, error_string, sizeof(error_string));
-  json_set_alloc_funcs(malloc, free);
+  failed_alloc_json_unset();
   ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_DUMP_STRING);
 
   const char *expected_error_string = \

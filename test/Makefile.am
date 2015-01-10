@@ -49,8 +49,7 @@ run_tests_SOURCES = run-tests.c \
                     runner.c \
                     runner.h \
                     task.h \
-                    test.pb-c.c \
-                    getrusage-helper.h
+                    test.pb-c.c
 
 if WINNT
   run_tests_SOURCES += runner-win.c \
@@ -68,8 +67,7 @@ run_benchmarks_SOURCES = run-benchmarks.c \
                          runner.c \
                          runner.h \
                          task.h \
-                         test.pb-c.c \
-                         getrusage-helper.h
+                         test.pb-c.c
 
 if WINNT
   run_benchmarks_SOURCES += runner-win.c \

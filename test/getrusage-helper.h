@@ -12,7 +12,7 @@
 #include <sys/resource.h>
 #include <errno.h>
 
-int getrusage_helper(double *ru_stime, double *ru_utime) {
+static int getrusage_helper(double *ru_stime, double *ru_utime) {
   struct rusage usage;
 
   if (getrusage(RUSAGE_SELF, &usage))
@@ -24,7 +24,7 @@ int getrusage_helper(double *ru_stime, double *ru_utime) {
   return 0;
 }
 
-int getrusage_helper_sub(double *ru_stime, double *ru_utime, double ru_stime_sub, double ru_utime_sub) {
+static int getrusage_helper_sub(double *ru_stime, double *ru_utime, double ru_stime_sub, double ru_utime_sub) {
   struct rusage usage;
 
   if (getrusage(RUSAGE_SELF, &usage))
@@ -36,7 +36,7 @@ int getrusage_helper_sub(double *ru_stime, double *ru_utime, double ru_stime_sub
   return 0;
 }
 
-void getrusage_helper_printf(const char *message, double ru_stime, double ru_utime) {
+static void getrusage_helper_printf(const char *message, double ru_stime, double ru_utime) {
   printf("%s rusage: %.5f system, %.5f user\n", message, ru_stime, ru_utime);
 }
 
