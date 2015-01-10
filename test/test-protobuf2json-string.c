@@ -186,6 +186,134 @@ TEST_IMPL(protobuf2json_string__error_cannot_create_json_value) {
   RETURN_OK();
 }
 
+TEST_IMPL(protobuf2json_string__error_in_json_object_set_new_1) {
+  int result;
+  char error_string[256] = {0};
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  person.email = "john@doe.name";
+
+  char *json_string;
+  failed_alloc_json_set_by_count(4);
+  result = protobuf2json_string(&person.base, 0, &json_string, error_string, sizeof(error_string));
+  failed_alloc_json_unset();
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_JANSSON_INTERNAL);
+
+  const char *expected_error_string = \
+    "Error in json_object_set_new()"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(protobuf2json_string__error_in_json_object_set_new_2) {
+  int result;
+  char error_string[256] = {0};
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  person.email = "john@doe.name";
+
+  char *json_string;
+  failed_alloc_json_set_by_count(9);
+  result = protobuf2json_string(&person.base, 0, &json_string, error_string, sizeof(error_string));
+  failed_alloc_json_unset();
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_JANSSON_INTERNAL);
+
+  const char *expected_error_string = \
+    "Error in json_object_set_new()"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(protobuf2json_string__error_cannot_create_json_array) {
+  int result;
+  char error_string[256] = {0};
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  person.email = "john@doe.name";
+
+  person.n_phone = 1;
+
+  char *json_string;
+  failed_alloc_json_set_by_count(10);
+  result = protobuf2json_string(&person.base, 0, &json_string, error_string, sizeof(error_string));
+  failed_alloc_json_unset();
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY);
+
+  const char *expected_error_string = \
+    "Cannot allocate JSON structure using json_array()"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
+TEST_IMPL(protobuf2json_string__error_in_json_object_set_new_3) {
+  int result;
+  char error_string[256] = {0};
+
+  Foo__Person person = FOO__PERSON__INIT;
+
+  person.name = "John Doe";
+  person.id = 42;
+
+  person.email = "john@doe.name";
+
+  Foo__Person__PhoneNumber person_phonenumber1 = FOO__PERSON__PHONE_NUMBER__INIT;
+
+  person_phonenumber1.number = "+123456789";
+
+  person.n_phone = 1;
+  person.phone = calloc(person.n_phone, sizeof(Foo__Person__PhoneNumber*));
+  ASSERT(person.phone);
+
+  person.phone[0] = (Foo__Person__PhoneNumber*)&person_phonenumber1;
+
+  char *json_string;
+  failed_alloc_json_set_by_count(20);
+  result = protobuf2json_string(&person.base, 0, &json_string, error_string, sizeof(error_string));
+  failed_alloc_json_unset();
+  ASSERT_EQUALS(result, PROTOBUF2JSON_ERR_JANSSON_INTERNAL);
+
+  const char *expected_error_string = \
+    "Error in json_object_set_new()"
+  ;
+
+  ASSERT_STRCMP(
+    error_string,
+    expected_error_string
+  );
+
+  RETURN_OK();
+}
+
 TEST_IMPL(protobuf2json_string__error_cannot_dump_string) {
   int result;
   char error_string[256] = {0};
