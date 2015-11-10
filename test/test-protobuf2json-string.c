@@ -313,6 +313,8 @@ TEST_IMPL(protobuf2json_string__error_in_json_object_set_new_3) {
     expected_error_string
   );
 
+  free(person.phone);
+
   RETURN_OK();
 }
 
