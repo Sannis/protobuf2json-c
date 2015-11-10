@@ -129,6 +129,8 @@ TEST_IMPL(protobuf2json_string__error_in_nested_message) {
     expected_error_string
   );
 
+  free(person.phone);
+
   RETURN_OK();
 }
 
