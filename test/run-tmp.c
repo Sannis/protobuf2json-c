@@ -10,6 +10,10 @@
 #include "test.pb-c.h"
 #include "protobuf2json.h"
 
+#include <libgen.h> /* dirname */
+
+char executable_path[MAXPATHLEN] = {0};
+
 void person__debug(void) {
   int result;
 
@@ -284,7 +288,46 @@ void repeated_values__error_is_not_string_required_for_string(void) {
   printf("Debug: %s OK\n", __FUNCTION__);
 }
 
+void read_file_success(void) {
+  int result;
+
+  char file_path[MAXPATHLEN] = {0};
+  char file_name[MAXPATHLEN] = {0};
+
+  result = realpath(dirname(executable_path), file_path) ? 1 : 0;
+  ASSERT(result > 0);
+
+  result = snprintf(file_name, sizeof(file_name) - 1, "%s/fixtures/good.json", file_path);
+  ASSERT(result > 0);
+
+  ProtobufCMessage *protobuf_message = NULL;
+
+  result = json2protobuf_file((char *)file_name, 0, &foo__person__descriptor, &protobuf_message, NULL, 0);
+  ASSERT_ZERO(result);
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  ASSERT_STRCMP(
+    json_string,
+    "{\n"
+    "  \"name\": \"John Doe\",\n"
+    "  \"id\": 42\n"
+    "}"
+  );
+
+  free(json_string);
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
+  printf("Debug: %s OK\n", __FUNCTION__);
+}
+
 int main(int argc, char **argv) {
+  strncpy(executable_path, argv[0], sizeof(executable_path) - 1);
+
   person__debug();
 
   person__error_unknown_enum_value();
@@ -298,6 +341,8 @@ int main(int argc, char **argv) {
   person__error_unknown_field_nested();
 
   repeated_values__error_is_not_string_required_for_string();
+
+  read_file_success();
 
   return 0;
 }
