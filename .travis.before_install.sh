@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# Copyright (c) 2014 Oleg Efimov <efimovov@gmail.com>
+#
+# protobuf2json-c is free software; you can redistribute it
+# and/or modify it under the terms of the MIT license.
+# See LICENSE for details.
+
 echo $TRAVIS_OS_NAME
 
 if [ "x$TRAVIS_OS_NAME" = "xosx" ]; then
@@ -16,5 +22,3 @@ else # linux
 	if [ "x$MY_COVERAGE" = "x1" ]; then sudo apt-get install lcov; fi
 	if [ "x$MY_COVERAGE" = "x1" ]; then sudo pip install cpp-coveralls; fi
 fi
-
-
