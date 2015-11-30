@@ -46,6 +46,8 @@ TEST_IMPL(json2protobuf_file__success) {
 
   free(json_string);
 
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+
   RETURN_OK();
 }
 
