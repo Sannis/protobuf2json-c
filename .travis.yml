@@ -41,6 +41,5 @@ script:
   - make cppcheck
   - make test
   - make benchmark
-  - ./test/run-tmp
 after_success:
   - if [ "x$MY_COVERAGE" = "x1" ]; then cpp-coveralls --build-root src --exclude test/ --exclude include/ --exclude src/.libs --gcov-options '\-lp'; fi
