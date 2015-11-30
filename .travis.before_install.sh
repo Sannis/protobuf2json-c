@@ -3,7 +3,9 @@
 echo $TRAVIS_OS_NAME
 
 if [ "x$TRAVIS_OS_NAME" = "xosx" ]; then
-	echo "Do nothing for now on OSX"
+	brew update
+	brew install protobuf-c
+	brew install jansson
 else # linux
 	sudo add-apt-repository --yes ppa:pi-rho/security
 	sudo apt-get update
