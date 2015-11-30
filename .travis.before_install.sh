@@ -13,6 +13,7 @@ if [ "x$TRAVIS_OS_NAME" = "xosx" ]; then
 	brew install protobuf-c
 	brew install jansson
 	brew install cppcheck
+	if [ "x$MY_VALGRIND" = "x1" ]; then brew install valgrind; fi
 else # linux
 	sudo add-apt-repository --yes ppa:pi-rho/security
 	sudo apt-get update
