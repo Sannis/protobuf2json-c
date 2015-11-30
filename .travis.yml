@@ -27,6 +27,15 @@ matrix:
       env: MY_COVERAGE=1
     # OS-dependent features
     - os: osx
+      compiler: clang
+      env: MY_SANITIZE=address
+    - os: osx
+      compiler: clang
+      env: MY_SANITIZE=undefined
+    - os: osx
+      compiler: clang
+      env: MY_SANITIZE=integer
+    - os: osx
       compiler: gcc
       env: MY_COVERAGE=1
 before_install:
