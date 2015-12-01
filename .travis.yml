@@ -37,6 +37,9 @@ matrix:
       env: MY_SANITIZE=integer
     - os: osx
       compiler: gcc
+      env: MY_VALGRIND=1
+    - os: osx
+      compiler: gcc
       env: MY_COVERAGE=1
 before_install:
   - ./.travis.before_install.sh
