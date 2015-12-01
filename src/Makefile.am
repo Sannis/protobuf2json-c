@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Oleg Efimov <efimovov@gmail.com>
+# Copyright (c) 2014-2015 Oleg Efimov <efimovov@gmail.com>
 #
 # protobuf2json-c is free software; you can redistribute it
 # and/or modify it under the terms of the MIT license.
