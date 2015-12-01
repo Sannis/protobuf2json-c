@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 Oleg Efimov <efimovov@gmail.com>
+ * Copyright (c) 2014-2015 Oleg Efimov <efimovov@gmail.com>
  *
  * protobuf2json-c is free software; you can redistribute it
  * and/or modify it under the terms of the MIT license.
@@ -30,7 +30,7 @@ void bitmap_set(bitmap_t bitmap, unsigned int i) {
 }
 
 int bitmap_get(bitmap_t bitmap, unsigned int i) {
-    return bitmap[i / bitmap_word_t_bits] & (1 << (i & (bitmap_word_t_bits - 1))) ? 1 : 0;
+    return (bitmap[i / bitmap_word_t_bits] & (1 << (i & (bitmap_word_t_bits - 1)))) ? 1 : 0;
 }
 
 #endif /* BITMAP_H */

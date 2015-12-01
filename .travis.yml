@@ -2,6 +2,9 @@ language: c
 compiler:
   - gcc
   - clang
+os:
+  - linux
+  - osx
 env:
   -
   - MY_SANITIZE=address
@@ -11,6 +14,7 @@ env:
   - MY_COVERAGE=1
 matrix:
   exclude:
+    # Pairs because of some comilers does not support some features at all
     - compiler: gcc
       env: MY_SANITIZE=address
     - compiler: gcc
@@ -21,15 +25,24 @@ matrix:
       env: MY_VALGRIND=1
     - compiler: clang
       env: MY_COVERAGE=1
+    # OS-dependent features
+    - os: osx
+      compiler: clang
+      env: MY_SANITIZE=address
+    - os: osx
+      compiler: clang
+      env: MY_SANITIZE=undefined
+    - os: osx
+      compiler: clang
+      env: MY_SANITIZE=integer
+    - os: osx
+      compiler: gcc
+      env: MY_VALGRIND=1
+    - os: osx
+      compiler: gcc
+      env: MY_COVERAGE=1
 before_install:
-  - sudo add-apt-repository --yes ppa:pi-rho/security
-  - sudo apt-get update
-  - sudo apt-get install libprotobuf-c0-dev libprotobuf-c0 protobuf-c-compiler
-  - sudo apt-get install libjansson4-dev libjansson4
-  - sudo apt-get install cppcheck
-  - if [ "x$MY_VALGRIND" = "x1" ]; then sudo apt-get install valgrind; fi
-  - if [ "x$MY_COVERAGE" = "x1" ]; then sudo apt-get install lcov; fi
-  - if [ "x$MY_COVERAGE" = "x1" ]; then sudo pip install cpp-coveralls; fi
+  - ./.travis.before_install.sh
 install:
   - ./autogen.sh
   - ./configure
