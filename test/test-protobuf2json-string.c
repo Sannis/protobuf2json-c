@@ -95,6 +95,62 @@ TEST_IMPL(protobuf2json_string__default_values) {
   RETURN_OK();
 }
 
+TEST_IMPL(protobuf2json_string__oneof) {
+  int result;
+
+  Foo__Something something = FOO__SOMETHING__INIT;
+
+  char *json_string;
+
+  // FOO__SOMETHING__SOMETHING__NOT_SET
+  something.something_case = FOO__SOMETHING__SOMETHING__NOT_SET;
+  result = protobuf2json_string(&something.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  ASSERT_STRCMP(
+    json_string,
+    "{}"
+  );
+
+  free(json_string);
+
+  // FOO__SOMETHING__SOMETHING_ONEOF_STRING
+  something.something_case = FOO__SOMETHING__SOMETHING_ONEOF_STRING;
+  something.oneof_string = "string";
+  result = protobuf2json_string(&something.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  ASSERT_STRCMP(
+    json_string,
+    "{\n"
+    "  \"oneof_string\": \"string\"\n"
+    "}"
+  );
+
+  free(json_string);
+
+  // FOO__SOMETHING__SOMETHING_ONEOF_BYTES
+  something.oneof_bytes.len = 5;
+  something.oneof_bytes.data = (uint8_t*)"bytes";
+  something.something_case = FOO__SOMETHING__SOMETHING_ONEOF_BYTES;
+  result = protobuf2json_string(&something.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  ASSERT_STRCMP(
+    json_string,
+    "{\n"
+    "  \"oneof_bytes\": \"bytes\"\n"
+    "}"
+  );
+
+  free(json_string);
+
+  RETURN_OK();
+}
+
 TEST_IMPL(protobuf2json_string__error_in_nested_message) {
   int result;
   char error_string[256] = {0};

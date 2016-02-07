@@ -14,6 +14,38 @@
 
 char executable_path[MAXPATHLEN] = {0};
 
+void oneof(void) {
+  int result;
+
+  Foo__Something something = FOO__SOMETHING__INIT;
+
+  char *json_string;
+
+  // FOO__SOMETHING__SOMETHING__NOT_SET
+  something.something_case = FOO__SOMETHING__SOMETHING__NOT_SET;
+  result = protobuf2json_string(&something.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
+
+  printf("Debug: %s\n", json_string);
+  free(json_string);
+
+  // FOO__SOMETHING__SOMETHING_ONEOF_STRING
+  something.oneof_string = "string";
+  something.something_case = FOO__SOMETHING__SOMETHING_ONEOF_STRING;
+  result = protobuf2json_string(&something.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
+
+  printf("Debug: %s\n", json_string);
+  free(json_string);
+
+  // FOO__SOMETHING__SOMETHING_ONEOF_BYTES
+  something.oneof_bytes.len = 5;
+  something.oneof_bytes.data = (uint8_t*)"bytes";
+  something.something_case = FOO__SOMETHING__SOMETHING_ONEOF_BYTES;
+  result = protobuf2json_string(&something.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
+
+  printf("Debug: %s\n", json_string);
+  free(json_string);
+}
+
 void person__debug(void) {
   int result;
 
@@ -327,6 +359,8 @@ void read_file_success(void) {
 
 int main(int argc, char **argv) {
   strncpy(executable_path, argv[0], sizeof(executable_path) - 1);
+
+  oneof();
 
   person__debug();
 
