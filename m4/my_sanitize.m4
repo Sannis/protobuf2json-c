@@ -1,4 +1,4 @@
-dnl Copyright (c) 2014-2015 Oleg Efimov <efimovov@gmail.com>
+dnl Copyright (c) 2014-2016 Oleg Efimov <efimovov@gmail.com>
 dnl
 dnl protobuf2json-c is free software; you can redistribute it
 dnl and/or modify it under the terms of the MIT license.
