@@ -102,6 +102,20 @@ TEST_IMPL(protobuf2json_string__oneof) {
 
   char *json_string;
 
+  // FOO__SOMETHING__SOMETHING_ONEOF_STRING but not set
+  something.something_case = FOO__SOMETHING__SOMETHING_ONEOF_STRING;
+  something.oneof_string = NULL;
+  result = protobuf2json_string(&something.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  ASSERT_STRCMP(
+    json_string,
+    "{}"
+  );
+
+  free(json_string);
+
   // FOO__SOMETHING__SOMETHING__NOT_SET
   something.something_case = FOO__SOMETHING__SOMETHING__NOT_SET;
   result = protobuf2json_string(&something.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
