@@ -22,6 +22,8 @@ libprotobuf2json_c_la_SOURCES = protobuf2json.c
 # current[:revision[:age]]
 libprotobuf2json_c_la_LDFLAGS = -version-info 2:0:2
 
+include_HEADERS = ../include/protobuf2json.h
+
 AM_CFLAGS = -I$(top_srcdir)/include
 libprotobuf2json_c_la_LIBADD =
 
