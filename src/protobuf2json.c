@@ -198,6 +198,18 @@ static int protobuf2json_process_message(
         );
       }
     } else if (field_descriptor->label == PROTOBUF_C_LABEL_OPTIONAL) {
+      if (field_descriptor->flags & PROTOBUF_C_FIELD_FLAG_ONEOF) {
+        if (*(uint32_t *)protobuf_value_quantifier == field_descriptor->id) {
+          if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE || field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
+            if (protobuf_value == NULL || protobuf_value == field_descriptor->default_value) {
+              continue;
+            }
+          }
+        } else {
+          continue;
+        }
+      }
+
       protobuf_c_boolean is_set = 0;
 
       if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE || field_descriptor->type == PROTOBUF_C_TYPE_STRING) {

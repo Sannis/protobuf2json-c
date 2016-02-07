@@ -60,3 +60,10 @@ message RepeatedValues {
 
   repeated Person value_message = 17;
 }
+
+message Something {
+  oneof something {
+    string oneof_string = 11;
+    bytes oneof_bytes = 22;
+  }
+}
