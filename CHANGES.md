@@ -6,6 +6,23 @@ master - UNRELEASED
 
   Nothing
 
+
+v0.3.0 - 07 Feb 2016
+--------------------
+
+ * New features
+
+   - protobuf2json: support oneof
+
+ * Fixes:
+
+   - protobuf2json: few memory leaks fixed
+
+ * Other
+
+   - build: add Travis OS X tests
+
+
 v0.2.1 - 05 Jan 2015
 --------------------
 

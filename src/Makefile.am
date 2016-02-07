@@ -20,7 +20,7 @@ libprotobuf2json_c_la_SOURCES = protobuf2json.c
 #    Bump current, set revision and age to 0.
 #
 # current[:revision[:age]]
-libprotobuf2json_c_la_LDFLAGS = -version-info 1:0:1
+libprotobuf2json_c_la_LDFLAGS = -version-info 2:0:2
 
 AM_CFLAGS = -I$(top_srcdir)/include
 libprotobuf2json_c_la_LIBADD =
