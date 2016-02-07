@@ -7,6 +7,14 @@ master - UNRELEASED
   Nothing
 
 
+v0.3.1 - 07 Feb 2016
+--------------------
+
+ * Fixes:
+
+   - protobuf2json.h installation
+
+
 v0.3.0 - 07 Feb 2016
 --------------------
 
