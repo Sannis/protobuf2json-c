@@ -51,28 +51,27 @@ size_t base64_encode(char *dst, const char *src, size_t src_len)
   const unsigned char *basis64 = base64_default_tables.encode;
 
   while (src_len > 2) {
-      *d++ = basis64[(s[0] >> 2) & 0x3f];
-      *d++ = basis64[((s[0] & 3) << 4) | (s[1] >> 4)];
-      *d++ = basis64[((s[1] & 0x0f) << 2) | (s[2] >> 6)];
-      *d++ = basis64[s[2] & 0x3f];
+    *d++ = basis64[(s[0] >> 2) & 0x3f];
+    *d++ = basis64[((s[0] & 3) << 4) | (s[1] >> 4)];
+    *d++ = basis64[((s[1] & 0x0f) << 2) | (s[2] >> 6)];
+    *d++ = basis64[s[2] & 0x3f];
 
-      s += 3;
-      src_len -= 3;
+    s += 3;
+    src_len -= 3;
   }
 
   if (src_len) {
-      *d++ = basis64[(s[0] >> 2) & 0x3f];
+    *d++ = basis64[(s[0] >> 2) & 0x3f];
 
-      if (src_len == 1) {
-          *d++ = basis64[(s[0] & 3) << 4];
-          *d++ = base64_default_tables.padding;
-
-      } else {
-          *d++ = basis64[((s[0] & 3) << 4) | (s[1] >> 4)];
-          *d++ = basis64[(s[1] & 0x0f) << 2];
-      }
-
+    if (src_len == 1) {
+      *d++ = basis64[(s[0] & 3) << 4];
       *d++ = base64_default_tables.padding;
+    } else {
+      *d++ = basis64[((s[0] & 3) << 4) | (s[1] >> 4)];
+      *d++ = basis64[(s[1] & 0x0f) << 2];
+    }
+
+    *d++ = base64_default_tables.padding;
   }
 
   return (d - dst);
@@ -86,35 +85,34 @@ size_t base64_decode(char *dst, const char *src, size_t src_len)
   const unsigned char *basis = base64_default_tables.decode;
 
   for (len = 0; len < src_len; len++) {
-
     if (s[len] == base64_default_tables.padding) {
-          break;
-      }
+      break;
+    }
 
-      if (basis[s[len]] == 77) {
-          return 0;
-      }
+    if (basis[s[len]] == 77) {
+      return 0;
+    }
   }
 
   if (len % 4 == 1) {
-      return 0;
+    return 0;
   }
 
   while (len > 3) {
-      *d++ = (char) (basis[s[0]] << 2 | basis[s[1]] >> 4);
-      *d++ = (char) (basis[s[1]] << 4 | basis[s[2]] >> 2);
-      *d++ = (char) (basis[s[2]] << 6 | basis[s[3]]);
+    *d++ = (char) (basis[s[0]] << 2 | basis[s[1]] >> 4);
+    *d++ = (char) (basis[s[1]] << 4 | basis[s[2]] >> 2);
+    *d++ = (char) (basis[s[2]] << 6 | basis[s[3]]);
 
-      s += 4;
-      len -= 4;
+    s += 4;
+    len -= 4;
   }
 
   if (len > 1) {
-      *d++ = (char) (basis[s[0]] << 2 | basis[s[1]] >> 4);
+    *d++ = (char) (basis[s[0]] << 2 | basis[s[1]] >> 4);
   }
 
   if (len > 2) {
-      *d++ = (char) (basis[s[1]] << 4 | basis[s[2]] >> 2);
+    *d++ = (char) (basis[s[1]] << 4 | basis[s[2]] >> 2);
   }
 
   return (d - dst);
