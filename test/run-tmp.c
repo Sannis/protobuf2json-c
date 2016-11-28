@@ -357,6 +357,23 @@ void read_file_success(void) {
   printf("Debug: %s OK\n", __FUNCTION__);
 }
 
+void bytes_encode(void) {
+  int result;
+
+  Foo__Something something = FOO__SOMETHING__INIT;
+
+  char *json_string;
+
+  // FOO__SOMETHING__SOMETHING_ONEOF_BYTES
+  something.oneof_bytes.len = 1;
+  something.oneof_bytes.data = (uint8_t*)"\0";
+  something.something_case = FOO__SOMETHING__SOMETHING_ONEOF_BYTES;
+  result = protobuf2json_string(&something.base, TEST_JSON_FLAGS, &json_string, NULL, 0);
+
+  printf("Debug: %s\n", json_string);
+  free(json_string);
+}
+
 int main(int argc, char **argv) {
   strncpy(executable_path, argv[0], sizeof(executable_path) - 1);
 
@@ -377,6 +394,8 @@ int main(int argc, char **argv) {
   repeated_values__error_is_not_string_required_for_string();
 
   read_file_success();
+
+  bytes_encode();
 
   return 0;
 }

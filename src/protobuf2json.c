@@ -17,6 +17,9 @@
 /* Simple bitmap implementation */
 #include "bitmap.h"
 
+/* Simple base64 implementation */
+#include "base64.h"
+
 /* === Defines === obviously private === */
 
 #define SET_ERROR_STRING_AND_RETURN(error, error_string_format, ...)                           \
@@ -131,11 +134,26 @@ static int protobuf2json_process_field(
       *json_value = json_string(*(char **)protobuf_value);
       break;
     case PROTOBUF_C_TYPE_BYTES: {
-        const ProtobufCBinaryData *protobuf_binary = (const ProtobufCBinaryData *)protobuf_value;
+      const ProtobufCBinaryData *protobuf_binary = (const ProtobufCBinaryData *)protobuf_value;
 
-        *json_value = json_stringn((const char *)protobuf_binary->data, protobuf_binary->len);
+      int base64_encoded_length = base64_encoded_len(protobuf_binary->len);
 
-        break;
+      char* base64_encoded_data = calloc(base64_encoded_length, sizeof(char));
+      if (!base64_encoded_data) {
+        SET_ERROR_STRING_AND_RETURN(
+          PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
+          "Cannot allocate %zu bytes using calloc(3)",
+          base64_encoded_length * sizeof(char)
+        );
+      }
+
+      base64_encoded_length = base64_encode(base64_encoded_data, (const char *)protobuf_binary->data, protobuf_binary->len);
+
+      *json_value = json_stringn((const char *)base64_encoded_data, base64_encoded_length);
+
+      free(base64_encoded_data);
+
+      break;
     }
     case PROTOBUF_C_TYPE_MESSAGE: {
       const ProtobufCMessage **protobuf_message = (const ProtobufCMessage **)protobuf_value;
@@ -595,21 +613,37 @@ static int json2protobuf_process_field(
     const char* value_string = json_string_value(json_value);
     size_t value_string_length = json_string_length(json_value);
 
-    char* value_string_copy = calloc(value_string_length, sizeof(char));
+    int base64_decoded_length = base64_decoded_len(value_string_length);
+
+    char* base64_decoded_data = calloc(base64_decoded_length, sizeof(char));
+    if (!base64_decoded_data) {
+      SET_ERROR_STRING_AND_RETURN(
+        PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
+        "Cannot allocate %zu bytes using calloc(3)",
+        base64_decoded_length * sizeof(char)
+      );
+    }
+
+    /* @todo: check for zero length / error */
+    base64_decoded_length = base64_decode(base64_decoded_data, value_string, value_string_length);
+
+    char* value_string_copy = calloc(base64_decoded_length, sizeof(char));
     if (!value_string_copy) {
       SET_ERROR_STRING_AND_RETURN(
         PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
         "Cannot allocate %zu bytes using calloc(3)",
-        value_string_length * sizeof(char)
+        base64_decoded_length * sizeof(char)
       );
     }
 
-    memcpy(value_string_copy, value_string, value_string_length);
+    memcpy(value_string_copy, base64_decoded_data, base64_decoded_length);
+
+    free(base64_decoded_data);
 
     ProtobufCBinaryData value_binary;
 
     value_binary.data = (uint8_t *)value_string_copy;
-    value_binary.len = value_string_length;
+    value_binary.len = base64_decoded_length;
 
     memcpy(protobuf_value, &value_binary, sizeof(value_binary));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE) {

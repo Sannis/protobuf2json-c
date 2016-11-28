@@ -85,7 +85,7 @@ TEST_IMPL(protobuf2json_string__default_values) {
     "  \"string_required\": \"required\",\n"
     "  \"string_required_default\": \"default value 1\",\n"
     "  \"string_optional_default\": \"default value 2\",\n"
-    "  \"bytes_optional_default\": \"default value 3\",\n"
+    "  \"bytes_optional_default\": \"ZGVmYXVsdCB2YWx1ZSAz\",\n"
     "  \"enum_optional_default\": \"FIZZBUZZ\"\n"
     "}"
   );
@@ -156,7 +156,7 @@ TEST_IMPL(protobuf2json_string__oneof) {
   ASSERT_STRCMP(
     json_string,
     "{\n"
-    "  \"oneof_bytes\": \"bytes\"\n"
+    "  \"oneof_bytes\": \"Ynl0ZXM=\"\n"
     "}"
   );
 

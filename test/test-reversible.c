@@ -120,7 +120,7 @@ TEST_IMPL(reversible__default_values) {
     "  \"string_required\": \"required\",\n"
     "  \"string_required_default\": \"default value 1\",\n"
     "  \"string_optional_default\": \"default value 2\",\n"
-    "  \"bytes_optional_default\": \"default value 3\",\n"
+    "  \"bytes_optional_default\": \"ZGVmYXVsdCB2YWx1ZSAz\",\n"
     "  \"enum_optional_default\": \"FIZZBUZZ\"\n"
     "}"
   ;
@@ -364,9 +364,10 @@ TEST_IMPL(reversible__bytes) {
   const char *initial_json_string = \
     "{\n"
     "  \"value_bytes\": [\n"
-    "    \"qwerty \\u0000 12345\",\n"
-    "    \"qwerty \\u0000\",\n"
-    "    \"\\u0000 12345\"\n"
+    "    \"AA==\",\n"                   /* "\0" */
+    "    \"cXdlcnR5IAAgMTIzNA==\",\n"   /* "qwerty \0 12345" */
+    "    \"cXdlcnR5IA==\",\n"           /* "qwerty \0" */
+    "    \"ACAxMjM0NQ==\"\n"            /* "\0 12345" */
     "  ]\n"
     "}"
   ;
@@ -378,9 +379,19 @@ TEST_IMPL(reversible__bytes) {
 
   Foo__RepeatedValues *repeated_values = (Foo__RepeatedValues *)protobuf_message;
 
-  ASSERT(repeated_values->n_value_bytes == 3);
-  ASSERT(repeated_values->value_bytes[0].len == 14);
-  ASSERT_STRNCMP((const char *)repeated_values->value_bytes[0].data, "qwerty \0 12345", repeated_values->value_bytes[0].len);
+  ASSERT(repeated_values->n_value_bytes == 4);
+  /* 0 */
+  ASSERT(repeated_values->value_bytes[0].len == 1);
+  ASSERT_STRNCMP((const char *)repeated_values->value_bytes[0].data, "\0", repeated_values->value_bytes[0].len);
+  /* 1 */
+  ASSERT(repeated_values->value_bytes[1].len == 13);
+  ASSERT_STRNCMP((const char *)repeated_values->value_bytes[1].data, "qwerty \0 12345", repeated_values->value_bytes[1].len);
+  /* 0 */
+  ASSERT(repeated_values->value_bytes[2].len == 7);
+  ASSERT_STRNCMP((const char *)repeated_values->value_bytes[2].data, "qwerty \0", repeated_values->value_bytes[2].len);
+  /* 0 */
+  ASSERT(repeated_values->value_bytes[3].len == 7);
+  ASSERT_STRNCMP((const char *)repeated_values->value_bytes[3].data, "\0 12345", repeated_values->value_bytes[3].len);
 
   char *json_string;
   result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
@@ -390,9 +401,10 @@ TEST_IMPL(reversible__bytes) {
   const char *expected_json_string = \
     "{\n"
     "  \"value_bytes\": [\n"
-    "    \"qwerty \\u0000 12345\",\n"
-    "    \"qwerty \\u0000\",\n"
-    "    \"\\u0000 12345\"\n"
+    "    \"AA==\",\n"                   /* "\0" */
+    "    \"cXdlcnR5IAAgMTIzNA==\",\n"   /* "qwerty \0 12345" */
+    "    \"cXdlcnR5IA==\",\n"           /* "qwerty \0" */
+    "    \"ACAxMjM0NQ==\"\n"            /* "\0 12345" */
     "  ]\n"
     "}"
   ;
