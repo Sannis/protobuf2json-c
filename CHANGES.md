@@ -6,6 +6,12 @@ master - UNRELEASED
 
   Nothing
 
+v0.4.0 - 28 Nov 2016
+--------------------
+
+ * New features
+
+   - protobuf2json: bytes fields now encoded with base64
 
 v0.3.1 - 07 Feb 2016
 --------------------

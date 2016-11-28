@@ -99,7 +99,6 @@ int json2protobuf_file(
 Each of them have `error_string` and `error_size` arguments used to pass error description from `protobuf2json-c` functions.
 You can pass `NULL` and `0` to avoid setting error description.
 
-
 Credits
 -------
 
