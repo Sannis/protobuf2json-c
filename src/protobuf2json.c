@@ -743,6 +743,10 @@ static int json2protobuf_process_message(
     void *protobuf_value = ((char *)*protobuf_message) + field_descriptor->offset;
     void *protobuf_value_quantifier = ((char *)*protobuf_message) + field_descriptor->quantifier_offset;
 
+    if (field_descriptor->flags & PROTOBUF_C_FIELD_FLAG_ONEOF) {
+      *(uint32_t*)protobuf_value_quantifier = field_descriptor->id;
+    }
+
     if (field_descriptor->label == PROTOBUF_C_LABEL_REQUIRED) {
       result = json2protobuf_process_field(field_descriptor, json_object_value, protobuf_value, error_string, error_size);
       if (result) {
@@ -751,7 +755,8 @@ static int json2protobuf_process_message(
         return result;
       }
     } else if (field_descriptor->label == PROTOBUF_C_LABEL_OPTIONAL) {
-      if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE || field_descriptor->type == PROTOBUF_C_TYPE_STRING) {
+      if (field_descriptor->type == PROTOBUF_C_TYPE_MESSAGE || field_descriptor->type == PROTOBUF_C_TYPE_STRING
+        || (field_descriptor->flags & PROTOBUF_C_FIELD_FLAG_ONEOF)) {
         // Do nothing
       } else {
         *(protobuf_c_boolean *)protobuf_value_quantifier = 1;
