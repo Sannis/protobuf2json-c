@@ -531,6 +531,9 @@ TEST_IMPL(reversible__oneof_other) {
 }
 
 TEST_IMPL(reversible__oneof_both_first) {
+#if JANSSON_VERSION_HEX < 0x020800
+  RETURN_SKIP("behavior for multiple oneof values can only be guaranteed for Jansson >= 2.8");
+#else
   int result;
 
   const char *initial_json_string = \
@@ -572,9 +575,13 @@ TEST_IMPL(reversible__oneof_both_first) {
   free(json_string);
 
   RETURN_OK();
+#endif
 }
 
 TEST_IMPL(reversible__oneof_both_second) {
+#if JANSSON_VERSION_HEX < 0x020800
+  RETURN_SKIP("behavior for multiple oneof values can only be guaranteed for Jansson >= 2.8");
+#else
   int result;
 
   const char *initial_json_string = \
@@ -615,4 +622,5 @@ TEST_IMPL(reversible__oneof_both_second) {
   free(json_string);
 
   RETURN_OK();
+#endif
 }
