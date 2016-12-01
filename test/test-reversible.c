@@ -434,7 +434,7 @@ TEST_IMPL(reversible__oneof_none) {
 
   Foo__Something *something = (Foo__Something *)protobuf_message;
 
-  ASSERT(something->something_case == FOO__SOMETHING__SOMETHING__NOT_SET);
+  ASSERT_EQUALS(something->something_case, FOO__SOMETHING__SOMETHING__NOT_SET);
   ASSERT(something->oneof_string == NULL);
 
   char *json_string;
@@ -471,7 +471,7 @@ TEST_IMPL(reversible__oneof_one) {
 
   Foo__Something *something = (Foo__Something *)protobuf_message;
 
-  ASSERT(something->something_case == FOO__SOMETHING__SOMETHING_ONEOF_STRING);
+  ASSERT_EQUALS(something->something_case, FOO__SOMETHING__SOMETHING_ONEOF_STRING);
   ASSERT_STRCMP(something->oneof_string, "hello");
 
   char *json_string;
@@ -508,8 +508,8 @@ TEST_IMPL(reversible__oneof_other) {
 
   Foo__Something *something = (Foo__Something *)protobuf_message;
 
-  ASSERT(something->something_case == FOO__SOMETHING__SOMETHING_ONEOF_BYTES);
-  ASSERT(something->oneof_bytes.len == 5);
+  ASSERT_EQUALS(something->something_case, FOO__SOMETHING__SOMETHING_ONEOF_BYTES);
+  ASSERT_EQUALS((int)something->oneof_bytes.len, 5);
   ASSERT_STRCMP((const char*)something->oneof_bytes.data, "world");
 
   char *json_string;
@@ -548,8 +548,8 @@ TEST_IMPL(reversible__oneof_both_first) {
   Foo__Something *something = (Foo__Something *)protobuf_message;
 
   // last input wins, irrespective of order in proto definition
-  ASSERT(something->something_case == FOO__SOMETHING__SOMETHING_ONEOF_BYTES);
-  ASSERT(something->oneof_bytes.len == 5);
+  ASSERT_EQUALS(something->something_case, FOO__SOMETHING__SOMETHING_ONEOF_BYTES);
+  ASSERT_EQUALS((int)something->oneof_bytes.len, 5);
   ASSERT_STRCMP((const char*)something->oneof_bytes.data, "world");
 
   char *json_string;
@@ -592,7 +592,7 @@ TEST_IMPL(reversible__oneof_both_second) {
   Foo__Something *something = (Foo__Something *)protobuf_message;
 
   // last input wins, irrespective of order in proto definition
-  ASSERT(something->something_case == FOO__SOMETHING__SOMETHING_ONEOF_STRING);
+  ASSERT_EQUALS(something->something_case, FOO__SOMETHING__SOMETHING_ONEOF_STRING);
   ASSERT_STRCMP(something->oneof_string, "hello");
 
   char *json_string;
