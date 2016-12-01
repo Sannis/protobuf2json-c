@@ -419,3 +419,200 @@ TEST_IMPL(reversible__bytes) {
 
   RETURN_OK();
 }
+
+TEST_IMPL(reversible__oneof_none) {
+  int result;
+
+  const char *initial_json_string = \
+    "{}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__something__descriptor, &protobuf_message, NULL, 0);
+  ASSERT_ZERO(result);
+
+  Foo__Something *something = (Foo__Something *)protobuf_message;
+
+  ASSERT(something->something_case == FOO__SOMETHING__SOMETHING__NOT_SET);
+  ASSERT(something->oneof_string == NULL);
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  const char *expected_json_string = initial_json_string;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+  free(json_string);
+
+  RETURN_OK();
+}
+
+TEST_IMPL(reversible__oneof_one) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"oneof_string\": \"hello\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__something__descriptor, &protobuf_message, NULL, 0);
+  ASSERT_ZERO(result);
+
+  Foo__Something *something = (Foo__Something *)protobuf_message;
+
+  ASSERT(something->something_case == FOO__SOMETHING__SOMETHING_ONEOF_STRING);
+  ASSERT_STRCMP(something->oneof_string, "hello");
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  const char *expected_json_string = initial_json_string;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+  free(json_string);
+
+  RETURN_OK();
+}
+
+TEST_IMPL(reversible__oneof_other) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"oneof_bytes\": \"d29ybGQ=\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__something__descriptor, &protobuf_message, NULL, 0);
+  ASSERT_ZERO(result);
+
+  Foo__Something *something = (Foo__Something *)protobuf_message;
+
+  ASSERT(something->something_case == FOO__SOMETHING__SOMETHING_ONEOF_BYTES);
+  ASSERT(something->oneof_bytes.len == 5);
+  ASSERT_STRCMP((const char*)something->oneof_bytes.data, "world");
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  const char *expected_json_string = initial_json_string;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+  free(json_string);
+
+  RETURN_OK();
+}
+
+TEST_IMPL(reversible__oneof_both_first) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"oneof_string\": \"hello\",\n"
+    "  \"oneof_bytes\": \"d29ybGQ=\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__something__descriptor, &protobuf_message, NULL, 0);
+  ASSERT_ZERO(result);
+
+  Foo__Something *something = (Foo__Something *)protobuf_message;
+
+  // last input wins, irrespective of order in proto definition
+  ASSERT(something->something_case == FOO__SOMETHING__SOMETHING_ONEOF_BYTES);
+  ASSERT(something->oneof_bytes.len == 5);
+  ASSERT_STRCMP((const char*)something->oneof_bytes.data, "world");
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  const char *expected_json_string = \
+    "{\n"
+    "  \"oneof_bytes\": \"d29ybGQ=\"\n"
+    "}"
+  ;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+  free(json_string);
+
+  RETURN_OK();
+}
+
+TEST_IMPL(reversible__oneof_both_second) {
+  int result;
+
+  const char *initial_json_string = \
+    "{\n"
+    "  \"oneof_bytes\": \"d29ybGQ=\",\n"
+    "  \"oneof_string\": \"hello\"\n"
+    "}"
+  ;
+
+  ProtobufCMessage *protobuf_message;
+
+  result = json2protobuf_string((char *)initial_json_string, JSON_ALLOW_NUL, &foo__something__descriptor, &protobuf_message, NULL, 0);
+  ASSERT_ZERO(result);
+
+  Foo__Something *something = (Foo__Something *)protobuf_message;
+
+  // last input wins, irrespective of order in proto definition
+  ASSERT(something->something_case == FOO__SOMETHING__SOMETHING_ONEOF_STRING);
+  ASSERT_STRCMP(something->oneof_string, "hello");
+
+  char *json_string;
+  result = protobuf2json_string(protobuf_message, TEST_JSON_FLAGS, &json_string, NULL, 0);
+  ASSERT_ZERO(result);
+  ASSERT(json_string);
+
+  const char *expected_json_string = \
+    "{\n"
+    "  \"oneof_string\": \"hello\"\n"
+    "}"
+  ;
+
+  ASSERT_STRCMP(
+    json_string,
+    expected_json_string
+  );
+
+  protobuf_c_message_free_unpacked(protobuf_message, NULL);
+  free(json_string);
+
+  RETURN_OK();
+}

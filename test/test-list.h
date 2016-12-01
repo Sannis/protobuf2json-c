@@ -60,6 +60,11 @@ TEST_DECLARE(reversible__default_values)
 TEST_DECLARE(reversible__numbers)
 TEST_DECLARE(reversible__strings)
 TEST_DECLARE(reversible__bytes)
+TEST_DECLARE(reversible__oneof_none)
+TEST_DECLARE(reversible__oneof_one)
+TEST_DECLARE(reversible__oneof_other)
+TEST_DECLARE(reversible__oneof_both_first)
+TEST_DECLARE(reversible__oneof_both_second)
 
 TASK_LIST_START
   TEST_ENTRY(protobuf2json_file__success)
@@ -116,4 +121,9 @@ TASK_LIST_START
   TEST_ENTRY(reversible__numbers)
   TEST_ENTRY(reversible__strings)
   TEST_ENTRY(reversible__bytes)
+  TEST_ENTRY(reversible__oneof_none)
+  TEST_ENTRY(reversible__oneof_one)
+  TEST_ENTRY(reversible__oneof_other)
+  TEST_ENTRY(reversible__oneof_both_first)
+  TEST_ENTRY(reversible__oneof_both_second)
 TASK_LIST_END
