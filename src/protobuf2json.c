@@ -302,6 +302,21 @@ static int protobuf2json_process_message(
           );
         }
       }
+      else {
+        json_t *array = json_array();
+        if (!array) {
+          SET_ERROR_STRING_AND_RETURN(
+            PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
+            "Cannot allocate JSON structure using json_array()"
+          );
+        }
+        if (json_object_set_new(*json_message, field_descriptor->name, array)) {
+          SET_ERROR_STRING_AND_RETURN(
+            PROTOBUF2JSON_ERR_JANSSON_INTERNAL,
+            "Error in json_object_set_new()"
+          );
+        }
+      }
     }
   }
 
