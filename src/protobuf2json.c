@@ -258,15 +258,15 @@ static int protobuf2json_process_message(
     } else { // PROTOBUF_C_LABEL_REPEATED
       const size_t *protobuf_values_count = (const size_t *)protobuf_value_quantifier;
 
-      if (*protobuf_values_count) {
-        json_t *array = json_array();
-        if (!array) {
-          SET_ERROR_STRING_AND_RETURN(
-            PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
-            "Cannot allocate JSON structure using json_array()"
-          );
-        }
+      json_t *array = json_array();
+      if (!array) {
+        SET_ERROR_STRING_AND_RETURN(
+          PROTOBUF2JSON_ERR_CANNOT_ALLOCATE_MEMORY,
+          "Cannot allocate JSON structure using json_array()"
+        );
+      }
 
+      if (*protobuf_values_count) {
         size_t value_size = protobuf2json_value_size_by_type(field_descriptor->type);
         if (!value_size) {
           SET_ERROR_STRING_AND_RETURN(
@@ -294,13 +294,13 @@ static int protobuf2json_process_message(
             );
           }
         }
+      }
 
-        if (json_object_set_new(*json_message, field_descriptor->name, array)) {
-          SET_ERROR_STRING_AND_RETURN(
-            PROTOBUF2JSON_ERR_JANSSON_INTERNAL,
-            "Error in json_object_set_new()"
-          );
-        }
+      if (json_object_set_new(*json_message, field_descriptor->name, array)) {
+        SET_ERROR_STRING_AND_RETURN(
+          PROTOBUF2JSON_ERR_JANSSON_INTERNAL,
+          "Error in json_object_set_new()"
+        );
       }
     }
   }
