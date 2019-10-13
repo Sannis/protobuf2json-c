@@ -57,7 +57,8 @@ TEST_IMPL(protobuf2json_file__success) {
     json_string,
     "{\n"
     "  \"name\": \"John Doe\",\n"
-    "  \"id\": 42\n"
+    "  \"id\": 42,\n"
+    "  \"phone\": []\n"
     "}"
   );
 

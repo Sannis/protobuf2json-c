@@ -346,7 +346,8 @@ void read_file_success(void) {
     json_string,
     "{\n"
     "  \"name\": \"John Doe\",\n"
-    "  \"id\": 42\n"
+    "  \"id\": 42,\n"
+    "  \"phone\": []\n"
     "}"
   );
 

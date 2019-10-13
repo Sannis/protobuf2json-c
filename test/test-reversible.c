@@ -292,7 +292,11 @@ TEST_IMPL(reversible__numbers) {
     "    true,\n"
     "    false,\n"
     "    false\n"
-    "  ]\n"
+    "  ],\n"
+    "  \"value_enum\": [],\n"
+    "  \"value_string\": [],\n"
+    "  \"value_bytes\": [],\n"
+    "  \"value_message\": []\n"
 
     "}"
   ;
@@ -339,11 +343,27 @@ TEST_IMPL(reversible__strings) {
 
   const char *expected_json_string = \
     "{\n"
+    "  \"value_int32\": [],\n"
+    "  \"value_sint32\": [],\n"
+    "  \"value_sfixed32\": [],\n"
+    "  \"value_uint32\": [],\n"
+    "  \"value_fixed32\": [],\n"
+    "  \"value_int64\": [],\n"
+    "  \"value_sint64\": [],\n"
+    "  \"value_sfixed64\": [],\n"
+    "  \"value_uint64\": [],\n"
+    "  \"value_fixed64\": [],\n"
+    "  \"value_float\": [],\n"
+    "  \"value_double\": [],\n"
+    "  \"value_bool\": [],\n"
+    "  \"value_enum\": [],\n"
     "  \"value_string\": [\n"
     "    \"qwerty \",\n"                    /* Note: \0-byte terminated string */
     "    \"qwerty \",\n"                    /* Note: \0-byte terminated string */
     "    \"\"\n"                            /* Note: \0-byte terminated string */
-    "  ]\n"
+    "  ],\n"
+    "  \"value_bytes\": [],\n"
+    "  \"value_message\": []\n"
     "}"
   ;
 
@@ -400,12 +420,28 @@ TEST_IMPL(reversible__bytes) {
 
   const char *expected_json_string = \
     "{\n"
+    "  \"value_int32\": [],\n"
+    "  \"value_sint32\": [],\n"
+    "  \"value_sfixed32\": [],\n"
+    "  \"value_uint32\": [],\n"
+    "  \"value_fixed32\": [],\n"
+    "  \"value_int64\": [],\n"
+    "  \"value_sint64\": [],\n"
+    "  \"value_sfixed64\": [],\n"
+    "  \"value_uint64\": [],\n"
+    "  \"value_fixed64\": [],\n"
+    "  \"value_float\": [],\n"
+    "  \"value_double\": [],\n"
+    "  \"value_bool\": [],\n"
+    "  \"value_enum\": [],\n"
+    "  \"value_string\": [],\n"
     "  \"value_bytes\": [\n"
     "    \"AA==\",\n"                   /* "\0" */
     "    \"cXdlcnR5IAAgMTIzNA==\",\n"   /* "qwerty \0 12345" */
     "    \"cXdlcnR5IA==\",\n"           /* "qwerty \0" */
     "    \"ACAxMjM0NQ==\"\n"            /* "\0 12345" */
-    "  ]\n"
+    "  ],\n"
+    "  \"value_message\": []\n"
     "}"
   ;
 

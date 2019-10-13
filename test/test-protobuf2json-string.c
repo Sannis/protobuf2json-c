@@ -29,7 +29,8 @@ TEST_IMPL(protobuf2json_string__required_field) {
     json_string,
     "{\n"
     "  \"name\": \"John Doe\",\n"
-    "  \"id\": 42\n"
+    "  \"id\": 42,\n"
+    "  \"phone\": []\n"
     "}"
   );
 
@@ -58,7 +59,8 @@ TEST_IMPL(protobuf2json_string__optional_field) {
     "{\n"
     "  \"name\": \"John Doe\",\n"
     "  \"id\": 42,\n"
-    "  \"email\": \"john@doe.name\"\n"
+    "  \"email\": \"john@doe.name\",\n"
+    "  \"phone\": []\n"
     "}"
   );
 
