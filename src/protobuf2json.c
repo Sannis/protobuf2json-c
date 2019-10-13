@@ -10,6 +10,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
+#include <stdbool.h>
+#include <inttypes.h>
 
 /* Interface definitions */
 #include "protobuf2json.h"
@@ -84,6 +86,8 @@ static int protobuf2json_process_field(
   char *error_string,
   size_t error_size
 ) {
+  char buf[32];
+
   switch (field_descriptor->type) {
     case PROTOBUF_C_TYPE_INT32:
     case PROTOBUF_C_TYPE_SINT32:
@@ -97,11 +101,13 @@ static int protobuf2json_process_field(
     case PROTOBUF_C_TYPE_INT64:
     case PROTOBUF_C_TYPE_SINT64:
     case PROTOBUF_C_TYPE_SFIXED64:
-      *json_value = json_integer(*(int64_t *)protobuf_value);
+      sprintf (buf, "%" PRId64, *(int64_t *)protobuf_value);
+      *json_value = json_string(buf);
       break;
     case PROTOBUF_C_TYPE_UINT64:
     case PROTOBUF_C_TYPE_FIXED64:
-      *json_value = json_integer(*(uint64_t *)protobuf_value);
+      sprintf (buf, "%" PRIu64, *(uint64_t *)protobuf_value);
+      *json_value = json_string(buf);
       break;
     case PROTOBUF_C_TYPE_FLOAT:
       *json_value = json_real(*(float *)protobuf_value);
@@ -449,6 +455,188 @@ static const char* json2protobuf_integer_name_by_c_type(ProtobufCType type) {
   }
 }
 
+static bool json2protobuf_integer_within_range (
+  ProtobufCType type,
+  long long value
+) {
+  switch (type) {
+    case PROTOBUF_C_TYPE_INT32:
+    case PROTOBUF_C_TYPE_SINT32:
+    case PROTOBUF_C_TYPE_SFIXED32:
+      if (value < INT32_MIN || value > INT32_MAX)
+      {
+        return false;
+      }
+      break;
+    case PROTOBUF_C_TYPE_UINT32:
+    case PROTOBUF_C_TYPE_FIXED32:
+      if (value < 0 || value > UINT32_MAX)
+      {
+        return false;
+      }
+      break;
+    case PROTOBUF_C_TYPE_INT64:
+    case PROTOBUF_C_TYPE_SINT64:
+    case PROTOBUF_C_TYPE_SFIXED64:
+      if (value < INT64_MIN || value > INT64_MAX)
+      {
+        return false;
+      }
+      break;
+    case PROTOBUF_C_TYPE_UINT64:
+    case PROTOBUF_C_TYPE_FIXED64:
+      if (value < 0)
+      {
+        return false;
+      }
+      break;
+    default:
+      return false;
+  }
+  return true;
+}
+
+static int json2protobuf_process_uint64_field (
+  const ProtobufCFieldDescriptor *field_descriptor,
+  json_t *json_value,
+  void *protobuf_value,
+  char *error_string,
+  size_t error_size
+) {
+  uint64_t value_uint64_t = 0;
+  long long llvalue = 0;
+  char *endp = NULL;
+
+  // if entered as a number, maximum value allowed through by jansson will be LLONG_MAX
+  // which is too small for full uint64_t, but will fit.
+  if (json_is_integer(json_value))
+  {
+    value_uint64_t = (uint64_t) json_integer_value (json_value);
+    // Used to check sign
+    llvalue = json_integer_value (json_value);
+  }
+  // proto 3 spec states that integers may be entered as strings or numbers
+  else if (json_is_string(json_value))
+  {
+    errno = 0;
+    value_uint64_t = strtoull (json_string_value (json_value), &endp, 10);
+
+    if (errno == ERANGE || *endp != '\0')
+    {
+      SET_ERROR_STRING_AND_RETURN(
+        PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
+        "JSON string not successfully converted to value for GPB %s %s",
+        json2protobuf_integer_name_by_c_type(field_descriptor->type),
+        field_descriptor->name
+      );
+    }
+    // Used to check sign
+    llvalue = strtoll (json_string_value (json_value), &endp, 10);
+  }
+  else
+  {
+    SET_ERROR_STRING_AND_RETURN(
+      PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
+      "JSON value is not an integer or string required for GPB %s %s",
+      json2protobuf_integer_name_by_c_type(field_descriptor->type),
+      field_descriptor->name
+    );
+  }
+
+  if (!json2protobuf_integer_within_range (field_descriptor->type, llvalue))
+  {
+    /* Number/string received was negative */
+    SET_ERROR_STRING_AND_RETURN(
+      PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
+      "JSON value is not within range for GPB %s %s",
+      json2protobuf_integer_name_by_c_type(field_descriptor->type),
+      field_descriptor->name
+    );
+  }
+
+  memcpy(protobuf_value, &value_uint64_t, sizeof(value_uint64_t));
+
+  return 0;
+}
+
+static int json2protobuf_process_integer_field (
+  const ProtobufCFieldDescriptor *field_descriptor,
+  json_t *json_value,
+  void *protobuf_value,
+  char *error_string,
+  size_t error_size
+) {
+  int64_t llvalue = 0;
+  char *endp = NULL;
+
+  // Jansson can pass values up to LLONG_MAX
+  if (json_is_integer(json_value))
+  {
+    llvalue = (int64_t) json_integer_value (json_value);
+  }
+  // proto 3 spec states that integers may be entered as strings or numbers
+  else if (json_is_string(json_value))
+  {
+    errno = 0;
+    llvalue = strtoll (json_string_value (json_value), &endp, 10);;
+
+    if (errno == ERANGE || *endp != '\0')
+    {
+      SET_ERROR_STRING_AND_RETURN(
+        PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
+        "JSON string not successfully converted to value for GPB %s %s",
+        json2protobuf_integer_name_by_c_type(field_descriptor->type),
+        field_descriptor->name
+      );
+    }
+  }
+  else
+  {
+    SET_ERROR_STRING_AND_RETURN(
+      PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
+      "JSON value is not an integer or string required for GPB %s %s",
+      json2protobuf_integer_name_by_c_type(field_descriptor->type),
+      field_descriptor->name
+    );
+  }
+
+  if (!json2protobuf_integer_within_range (field_descriptor->type, llvalue))
+  {
+    SET_ERROR_STRING_AND_RETURN(
+      PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
+      "JSON value is not within range for GPB %s %s",
+      json2protobuf_integer_name_by_c_type(field_descriptor->type),
+      field_descriptor->name
+    );
+  }
+
+  if (field_descriptor->type == PROTOBUF_C_TYPE_INT32
+   || field_descriptor->type == PROTOBUF_C_TYPE_SINT32
+   || field_descriptor->type == PROTOBUF_C_TYPE_SFIXED32
+  ) {
+      int32_t value_int32_t = (int32_t) llvalue;
+
+      memcpy(protobuf_value, &value_int32_t, sizeof(value_int32_t));
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_UINT32
+          || field_descriptor->type == PROTOBUF_C_TYPE_FIXED32
+  ) {
+      uint32_t value_uint32_t = (uint32_t) llvalue;
+
+      memcpy(protobuf_value, &value_uint32_t, sizeof(value_uint32_t));
+  } else if (field_descriptor->type == PROTOBUF_C_TYPE_INT64
+          || field_descriptor->type == PROTOBUF_C_TYPE_SINT64
+          || field_descriptor->type == PROTOBUF_C_TYPE_SFIXED64
+  ) {
+      int64_t value_int64_t = (int64_t) llvalue;
+
+      memcpy(protobuf_value, &value_int64_t, sizeof(value_int64_t));
+  } else {
+    assert(0);
+  }
+
+  return 0;
+}
+
 static int json2protobuf_process_field(
   const ProtobufCFieldDescriptor *field_descriptor,
   json_t *json_value,
@@ -459,61 +647,29 @@ static int json2protobuf_process_field(
   if (field_descriptor->type == PROTOBUF_C_TYPE_INT32
    || field_descriptor->type == PROTOBUF_C_TYPE_SINT32
    || field_descriptor->type == PROTOBUF_C_TYPE_SFIXED32
+   || field_descriptor->type == PROTOBUF_C_TYPE_UINT32
+   || field_descriptor->type == PROTOBUF_C_TYPE_FIXED32
+   || field_descriptor->type == PROTOBUF_C_TYPE_INT64
+   || field_descriptor->type == PROTOBUF_C_TYPE_SINT64
+   || field_descriptor->type == PROTOBUF_C_TYPE_SFIXED64
   ) {
-    if (!json_is_integer(json_value)) {
-      SET_ERROR_STRING_AND_RETURN(
-        PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
-        "JSON value is not an integer required for GPB %s",
-        json2protobuf_integer_name_by_c_type(field_descriptor->type)
-      );
+    int result = json2protobuf_process_integer_field (field_descriptor, json_value,
+                                                      protobuf_value, error_string,
+                                                      error_size);
+    if (result)
+    {
+      return result;
     }
-
-    int32_t value_int32_t = (int32_t)json_integer_value(json_value);
-
-    memcpy(protobuf_value, &value_int32_t, sizeof(value_int32_t));
-  } else if (field_descriptor->type == PROTOBUF_C_TYPE_UINT32
-          || field_descriptor->type == PROTOBUF_C_TYPE_FIXED32
-  ) {
-    if (!json_is_integer(json_value)) {
-      SET_ERROR_STRING_AND_RETURN(
-        PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
-        "JSON value is not an integer required for GPB %s",
-        json2protobuf_integer_name_by_c_type(field_descriptor->type)
-      );
-    }
-
-    uint32_t value_uint32_t = (uint32_t)json_integer_value(json_value);
-
-    memcpy(protobuf_value, &value_uint32_t, sizeof(value_uint32_t));
-  } else if (field_descriptor->type == PROTOBUF_C_TYPE_INT64
-          || field_descriptor->type == PROTOBUF_C_TYPE_SINT64
-          || field_descriptor->type == PROTOBUF_C_TYPE_SFIXED64
-  ) {
-    if (!json_is_integer(json_value)) {
-      SET_ERROR_STRING_AND_RETURN(
-        PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
-        "JSON value is not an integer required for GPB %s",
-        json2protobuf_integer_name_by_c_type(field_descriptor->type)
-      );
-    }
-
-    int64_t value_int64_t = (int64_t)json_integer_value(json_value);
-
-    memcpy(protobuf_value, &value_int64_t, sizeof(value_int64_t));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_UINT64
           || field_descriptor->type == PROTOBUF_C_TYPE_FIXED64
   ) {
-    if (!json_is_integer(json_value)) {
-      SET_ERROR_STRING_AND_RETURN(
-        PROTOBUF2JSON_ERR_IS_NOT_INTEGER,
-        "JSON value is not an integer required for GPB %s",
-        json2protobuf_integer_name_by_c_type(field_descriptor->type)
-      );
+    int result = json2protobuf_process_uint64_field (field_descriptor, json_value,
+                                                     protobuf_value, error_string,
+                                                     error_size);
+    if (result)
+    {
+      return result;
     }
-
-    uint64_t value_uint64_t = (uint64_t)json_integer_value(json_value);
-
-    memcpy(protobuf_value, &value_uint64_t, sizeof(value_uint64_t));
   } else if (field_descriptor->type == PROTOBUF_C_TYPE_FLOAT) {
     float value_float;
 
