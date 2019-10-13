@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
+#include <inttypes.h>
 
 /* Interface definitions */
 #include "protobuf2json.h"
@@ -84,6 +85,8 @@ static int protobuf2json_process_field(
   char *error_string,
   size_t error_size
 ) {
+  char buf[32];
+
   switch (field_descriptor->type) {
     case PROTOBUF_C_TYPE_INT32:
     case PROTOBUF_C_TYPE_SINT32:
@@ -97,11 +100,13 @@ static int protobuf2json_process_field(
     case PROTOBUF_C_TYPE_INT64:
     case PROTOBUF_C_TYPE_SINT64:
     case PROTOBUF_C_TYPE_SFIXED64:
-      *json_value = json_integer(*(int64_t *)protobuf_value);
+      sprintf (buf, "%" PRId64, *(int64_t *)protobuf_value);
+      *json_value = json_string(buf);
       break;
     case PROTOBUF_C_TYPE_UINT64:
     case PROTOBUF_C_TYPE_FIXED64:
-      *json_value = json_integer(*(uint64_t *)protobuf_value);
+      sprintf (buf, "%" PRIu64, *(uint64_t *)protobuf_value);
+      *json_value = json_string(buf);
       break;
     case PROTOBUF_C_TYPE_FLOAT:
       *json_value = json_real(*(float *)protobuf_value);
