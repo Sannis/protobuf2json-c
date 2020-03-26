@@ -160,6 +160,7 @@ static int protobuf2json_process_field(
 
       int result = protobuf2json_process_message(*protobuf_message, json_value, error_string, error_size);
       if (result) {
+        json_decref(*json_value);
         return result;
       }
 
@@ -269,6 +270,7 @@ static int protobuf2json_process_message(
 
         size_t value_size = protobuf2json_value_size_by_type(field_descriptor->type);
         if (!value_size) {
+          json_decref(array);
           SET_ERROR_STRING_AND_RETURN(
             PROTOBUF2JSON_ERR_UNSUPPORTED_FIELD_TYPE,
             "Cannot calculate value size for %d using protobuf2json_value_size_by_type()",
@@ -284,10 +286,12 @@ static int protobuf2json_process_message(
 
           int result = protobuf2json_process_field(field_descriptor, (const void *)protobuf_value_repeated, &json_value, error_string, error_size);
           if (result) {
+            json_decref(array);
             return result;
           }
 
           if (json_array_append_new(array, json_value)) {
+            json_decref(array);
             SET_ERROR_STRING_AND_RETURN(
               PROTOBUF2JSON_ERR_JANSSON_INTERNAL,
               "Error in json_array_append_new()"
